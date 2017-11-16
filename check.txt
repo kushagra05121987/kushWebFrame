@@ -1,6 +1,0 @@
-new check file
-creating a new entry for this for to create a conflict
-<?php
-
-echo "new line added";
-
