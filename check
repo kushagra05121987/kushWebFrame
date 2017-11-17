@@ -1,5 +1,5 @@
-1st
 TESting
+<<<<<<< HEAD
 2nd
 tesing
 3rd
@@ -12,3 +12,8 @@ testing
 testing
 7th
 testing
+<<<<<<< d0921e8a00640456919a724ffe8d787af0d36df8
+=======
+=======
+>>>>>>> parent of fbc9b53... 2nd commit
+>>>>>>> reseting commint
