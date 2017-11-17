@@ -8,3 +8,11 @@ testing
 testing
 5th
 testing
+<<<<<<< 496ea9ec698f681166c0a5596005c20293d05fdd
+=======
+<<<<<<< HEAD
+6th
+testing
+=======
+>>>>>>> 496ea9ec698f681166c0a5596005c20293d05fdd
+>>>>>>> commit orig_head
