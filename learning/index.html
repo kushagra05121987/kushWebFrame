@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script type="text/javascript">
-
-    </script>
-</head>
-<body>
-
-</body>
+<html>
+<script type="application/javascript">
+    var websocketClient = new WebSocket("ws://sysblog.local:9000/learning/socketsTCP.php");
+    // open a new socket connection
+    websocketClient.open = function() {
+        // begin acknowledgement process
+        console.log("%c "+encodeURI('ConnectionRequest_'+Math.random())+" ", "background: yellow; color: #000");
+        websocketClient.send(encodeURI('ConnectionRequest_'.Math.random()));
+    };
+</script>
+	<body>
+		hello
+	</body>
 </html>
