@@ -32,7 +32,7 @@ function runServer($clients, $socket, $count) {
             if($client = socket_accept($socket)) {
                 array_push($clients, $client);
                 socket_getpeername($client, $addressC, $portC);
-                $readFromClient = socket_recv($client, $buff, 4096, 0);
+                $readFromClient = socket_recv($client, $buff, 4096, MSG_DONTWAIT);
                 if($readFromClient) {
                     $message = "Message: $buff received. Welcome you are now connected with us.";
                     if(socket_send($client, $message, strlen($message), 0)) {
@@ -41,6 +41,8 @@ function runServer($clients, $socket, $count) {
                         // fwrite($handle,"Client with address $addressC is connect with us on port $portC and message was not sent\n");
                     }
                 } else {
+                    $message = "Welcome you are now connected with us.";
+                    socket_send($client, $message, strlen($message), 0);
                     // fwrite($handle,"Client with address $addressC is connect with us on port $portC and message was not read\n");
                 }
             } else {
