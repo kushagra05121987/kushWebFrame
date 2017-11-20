@@ -4,7 +4,7 @@
  * User: root
  * Date: 19/11/17
  * Time: 7:53 PM
- echo "Hello World" | nc 127.0.0.1 1337
+ echo "Hello World" | nc sysblog.local 41234
  */
 $host = "sysblog.local";
 $port = "41234";
@@ -63,8 +63,10 @@ function acceptNotifyClients(&$clients, &$socket, &$readNew) {
             socket_getpeername($client, $addressC, $portC);
             $readFromClient = socket_recv($client, $buff, 4096, MSG_DONTWAIT);
             if($readFromClient) {
-                $message = "Message: $buff received. Welcome you are now connected with us.";
-                if(!socket_send($client, $message, strlen($message), 0)) {
+                $message = "Message: unmask($buff) received. Welcome you are now connected with us.";
+                if(!socket_send($client, unmask($message), strlen($message), 0)) {
+                    echo PHP_EOL;
+                    echo __LINE__;
                     echo PHP_EOL;
                     echo socket_strerror(socket_last_error($client));
                     echo PHP_EOL;
@@ -75,6 +77,8 @@ function acceptNotifyClients(&$clients, &$socket, &$readNew) {
             }
             return $client;
         } else {
+            echo PHP_EOL;
+            echo __LINE__;
             echo PHP_EOL;
             echo socket_strerror(socket_last_error($client));
             echo PHP_EOL;
@@ -90,8 +94,19 @@ function readClientsIfAvailable(&$clients, &$readAbleClients, &$write) {
                 writeClientsIfAvailable($clients, $write, $messageReceived, $clientR);
             } else {
                 echo PHP_EOL;
+                echo __LINE__;
+                echo PHP_EOL;
+                echo $lastError = socket_last_error($clientR);
+                echo PHP_EOL;
                 echo socket_strerror(socket_last_error($clientR));
                 echo PHP_EOL;
+                // remove the client if not available and notify other users
+                if(11 == $lastError) {
+                    $index = array_search($clientR, $clients);
+                    unset($clients[$index]);
+                }
+                $message = (string) $clientR." disconnected.";
+                writeClientsIfAvailable($clients, $write, $message, $clientR);
             }
         }
     }
@@ -101,15 +116,10 @@ function writeClientsIfAvailable(&$clients, &$writeAbleClients, &$message, &$foc
     foreach($clients as $clientW) {
         if($focusClient != null && $clientW != $focusClient) {
             if(in_array($clientW, $writeAbleClients)) {
+                $message = mask($message);
                 if(!socket_write($clientW, $message)) {
                     echo PHP_EOL;
-                    echo socket_strerror(socket_last_error($clientW));
-                    echo PHP_EOL;
-                }
-            }
-        } else {
-            if(in_array($clientW, $writeAbleClients)) {
-                if(!socket_write($clientW, $message)) {
+                    echo __LINE__;
                     echo PHP_EOL;
                     echo socket_strerror(socket_last_error($clientW));
                     echo PHP_EOL;
@@ -127,7 +137,67 @@ function notifyOthers(&$clients, &$clientConnected, &$write, &$focusClient) {
 function raiseExceptionForClients($clients, $exceptionClients) {
     foreach($clients as $clientE) {
         if(in_array($clientE, $exceptionClients)) {
-            // fwrite($handle,"Socket ".(string) $clientE." is in exception state.\n");
+            $exceptionClient = (string) $clientE;
+            echo "Client $exceptionClient is under exception";
         }
     }
+}
+// mask messages
+function mask($text) {
+    $b1 = 0x80 | (0x1 & 0x0f);
+    $length = strlen($text);
+
+    if($length <= 125)
+        $header = pack('CC', $b1, $length);
+    elseif($length > 125 && $length < 65536)
+        $header = pack('CCn', $b1, 126, $length);
+    elseif($length >= 65536)
+        $header = pack('CCNN', $b1, 127, $length);
+    return $header.$text;
+}
+// unmask messages
+function unmask($text) {
+    $length = ord($text[1]) & 127;
+    if($length == 126) {
+        $masks = substr($text, 4, 4);
+        $data = substr($text, 8);
+    }
+    elseif($length == 127) {
+        $masks = substr($text, 10, 4);
+        $data = substr($text, 14);
+    }
+    else {
+        $masks = substr($text, 2, 4);
+        $data = substr($text, 6);
+    }
+    $text = "";
+    for ($i = 0; $i < strlen($data); ++$i) {
+        $text .= $data[$i] ^ $masks[$i%4];
+    }
+    return $text;
+}
+
+// perform handshaking
+function perform_handshaking($receved_header,$client_conn, $host, $port) {
+    $headers = array();
+    $lines = preg_split("/\r\n/", $receved_header);
+    foreach($lines as $line)
+    {
+        $line = chop($line);
+        if(preg_match('/\A(\S+): (.*)\z/', $line, $matches))
+        {
+            $headers[$matches[1]] = $matches[2];
+        }
+    }
+
+    $secKey = $headers['Sec-WebSocket-Key'];
+    $secAccept = base64_encode(pack('H*', sha1($secKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+    //hand shaking header
+    $upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
+        "Upgrade: websocket\r\n" .
+        "Connection: Upgrade\r\n" .
+        "WebSocket-Origin: $host\r\n" .
+        "WebSocket-Location: ws://$host:$port/demo/shout.php\r\n".
+        "Sec-WebSocket-Accept:$secAccept\r\n\r\n";
+    socket_write($client_conn,$upgrade,strlen($upgrade));
 }
