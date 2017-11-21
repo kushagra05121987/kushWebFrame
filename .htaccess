@@ -11,6 +11,6 @@ Options +FollowSymLinks
 #    RewriteRule (\/[a-zA-Z0-9]+$) $1.php [L]
 #    RewriteCond %{REQUEST_URI} !\.(html)$
 #    RewriteRule ([a-zA-Z0-9]+$) $1.php [L]
-    RewriteCond %{REQUEST_URI} !\.(png|jpg|jpeg|ico|css|js)
-    RewriteRule (.*) index.php [L]
+#    RewriteCond %{REQUEST_URI} !\.(png|jpg|jpeg|ico|css|js)
+#    RewriteRule (.*) index.php [L]
 </IfModule>
