@@ -1,12 +1,22 @@
 <html>
 <script type="application/javascript">
-    var websocketClient = new WebSocket("ws://sysblog.local:41234/learning/socketsLiveServer.php");
+    var websocketClient = new WebSocket("ws://sysblog.local:41234/learning/socketsLiveServerTCP.php");
     // open a new socket connection
-//    websocketClient.open = function() {
-//        // begin acknowledgement process
-//        console.log("%c "+encodeURI('ConnectionRequest_'+Math.random())+" ", "background: yellow; color: #000");
-//        websocketClient.send(encodeURI('ConnectionRequest_'.Math.random()));
-//    };
+    websocketClient.onopen = function() {
+        // begin acknowledgement process
+        console.log("hi");
+        websocketClient.send("Ping");
+    };
+    // Log errors
+    websocketClient.onerror = function (error) {
+        console.log('WebSocket Error ', error);
+    };
+
+    // Log messages from the server
+    websocketClient.onmessage = function (e) {
+        console.log('Server: ', e.data);
+    };
+    
 </script>
 	<body>
 		hello
