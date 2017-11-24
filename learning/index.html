@@ -1,6 +1,5 @@
 <html>
 <script type="application/javascript">
-<<<<<<< HEAD
     var websocketClient = new WebSocket("ws://sysblog.local:41234/learning/socketsLiveServer.php");
     // open a new socket connection
 //    websocketClient.open = function() {
@@ -8,7 +7,6 @@
 //        console.log("%c "+encodeURI('ConnectionRequest_'+Math.random())+" ", "background: yellow; color: #000");
 //        websocketClient.send(encodeURI('ConnectionRequest_'.Math.random()));
 //    };
-=======
     var websocketClient = new WebSocket("ws://sysblog.local:41234/learning/socketsLiveServerTCP.php");
     // open a new socket connection
     websocketClient.onopen = function() {
@@ -25,8 +23,7 @@
     websocketClient.onmessage = function (e) {
         console.log('Server: ', e.data);
     };
-    
->>>>>>> origin/dell-branch
+
 </script>
 	<body>
 		hello

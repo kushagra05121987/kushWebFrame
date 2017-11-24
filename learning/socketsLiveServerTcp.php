@@ -75,6 +75,16 @@ function acceptNotifyClients(&$clients, &$socket, &$readNew) {
             // $readFromClient = socket_read($client, 1024);
             if($readFromClient) {
                 perform_handshaking($buff, $client, $host, $port);
+                $message = mask("Welcome");
+                if(!socket_write($client, $message)) {
+                    echo PHP_EOL;
+                    echo " ------ No Welcome send ------ ";
+                    echo PHP_EOL;
+                    echo __LINE__;
+                    echo PHP_EOL;
+                    echo socket_strerror(socket_last_error($client));
+                    echo PHP_EOL;
+                }
             } else {
                 echo PHP_EOL;
                 echo " ------ No Read ------ ";
