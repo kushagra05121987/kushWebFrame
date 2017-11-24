@@ -49,20 +49,6 @@ while(1) {
             // $readFromClient = socket_recv($clientNew, $buff, 4096, MSG_DONTWAIT);
             // MSG_DONTWAIT good for chatting when no headers from client are expected but if headers from client such as to perform handshake are expected then 0 instead of MSG_DONTWAIT will work.
             // $readFromClient = socket_read($client, 1024);
-<<<<<<< HEAD
-            if($readFromClient) {
-                perform_handshaking($buff, $client, $host, $port);
-                $message = mask("Welcome");
-                if(!socket_write($client, $message)) {
-                    echo PHP_EOL;
-                    echo " ------ No Welcome send ------ ";
-                    echo PHP_EOL;
-                    echo __LINE__;
-                    echo PHP_EOL;
-                    echo socket_strerror(socket_last_error($client));
-                    echo PHP_EOL;
-                }
-=======
                 if(false !== $readFromClient) {
                     perform_handshaking($buff, $clientNew, $host, $port);
                     echo $message = (string) $clientNew." connected.";
@@ -82,7 +68,6 @@ while(1) {
                     echo PHP_EOL;
                 }
 
->>>>>>> origin/dell-branch
             } else {
                 echo PHP_EOL;
                 echo " ------ No Accept ------ ";
@@ -94,9 +79,6 @@ while(1) {
                 return false;
             }
         }
-        $clientResourceString = (string) $clientNew;
-        // nostifyOthers($clients, $clientResourceString, $write, $clientConnected);
-
         //  check for read
         foreach($clients as $clientR) {
             if(in_array($clientR, $readNew)) {
@@ -160,46 +142,6 @@ function perform_handshaking($receved_header,$client_conn, $host, $port) {
     }
 }
 
-// Check if client has read access
-function readClientsIfAvailable(&$clients, &$readAbleClients, &$write) {
-    
-}
-// Check if client has write access
-function writeClientsIfAvailable(&$clients, &$writeAbleClients, $message, &$focusClient = null) {
-    foreach($clients as $clientW) {
-        if($focusClient != null && $clientW != $focusClient) {
-            // if(in_array($clientW, $writeAbleClients)) {
-                $message = mask($message);
-                if(false === socket_write($clientW, $message, strlen($message))) {
-                    removeClient($clients, $clientW);
-                    continue;
-                }
-            // }
-        } else if($focusClient == null) {
-            // if(in_array($clientW, $writeAbleClients)) {
-                $maskMessage = mask($message);
-                if(false === socket_write($clientW, $maskMessage, strlen($maskMessage))) {
-                    removeClient($clients, $clientW);
-                    continue;
-                }
-            // }
-        }
-    }
-}
-// notify other connected clients about this issues
-function notifyOthers(&$clients, &$clientConnected, &$write, &$focusClient) {
-    $message = "Client $clientConnected is now connected.";
-    writeClientsIfAvailable($clients, $write, $message, $focusClient);
-}
-// Check if client in not having exception
-function raiseExceptionForClients($clients, $exceptionClients) {
-    foreach($clients as $clientE) {
-        if(in_array($clientE, $exceptionClients)) {
-            $exceptionClient = (string) $clientE;
-            echo "Client $exceptionClient is under exception";
-        }
-    }
-}
 // mask messages
 function mask($text) {
     $b1 = 0x80 | (0x1 & 0x0f);
@@ -213,6 +155,7 @@ function mask($text) {
         $header = pack('CCNN', $b1, 127, $length);
     return $header.$text;
 }
+
 // unmask messages
 function unmask($text) {
     $length = ord($text[1]) & 127;
