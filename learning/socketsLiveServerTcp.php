@@ -32,47 +32,24 @@ while(1) {
         echo "Started .... ";
         echo PHP_EOL;
     }
-    echo PHP_EOL;
-    echo "---- clients available -----";
-    echo PHP_EOL;
-    var_dump($clients);
-    echo PHP_EOL;
+    // sweep and remove all clients that are not readable / connected
+    // sweepAndRemoveClients($clients);
+
     $readNew = $clients;
-    $write = $readNew;
-    $exception = $readNew;
+    // $write = $readNew;
+    // $exception = $readNew;
     array_unshift($readNew, $socket);
     if($socketSelect = socket_select($readNew, $write, $exception, 0, 10)) {
         // accept new client and notify him
-        if($clientConnected = acceptNotifyClients($clients, $socket, $readNew)) {
-            // notify other users connected about him
-            $clientResourceString = (string) $clientConnected;
-            notifyOthers($clients, $clientResourceString, $write, $clientConnected);
-        }
-
-        //  check for read
-        readClientsIfAvailable($clients, $readNew, $write);
-
-        // check for exception
-//        raiseExceptionForClients($clients, $exception);
-    }
-    // reset everything
-    $readNew = [];
-    $write = [];
-    $exception = [];
-    ++$count;
-}
-
-// accept read and write clients
-function acceptNotifyClients(&$clients, &$socket, &$readNew) {
-    global $host, $port;
-    if(in_array($socket, $readNew)) {
-        if($client = socket_accept($socket)) {
-            array_push($clients, $client);
-            socket_getpeername($client, $addressC, $portC);
-            $readFromClient = socket_recv($client, $buff, 4096, 0);
-            // $readFromClient = socket_recv($client, $buff, 4096, MSG_DONTWAIT);
+        if(in_array($socket, $readNew)) {
+            if($clientNew = socket_accept($socket)) {
+                array_push($clients, $clientNew);
+                socket_getpeername($clientNew, $addressC, $portC);
+                $readFromClient = socket_recv($clientNew, $buff, 1024, 0);
+            // $readFromClient = socket_recv($clientNew, $buff, 4096, MSG_DONTWAIT);
             // MSG_DONTWAIT good for chatting when no headers from client are expected but if headers from client such as to perform handshake are expected then 0 instead of MSG_DONTWAIT will work.
             // $readFromClient = socket_read($client, 1024);
+<<<<<<< HEAD
             if($readFromClient) {
                 perform_handshaking($buff, $client, $host, $port);
                 $message = mask("Welcome");
@@ -85,79 +62,127 @@ function acceptNotifyClients(&$clients, &$socket, &$readNew) {
                     echo socket_strerror(socket_last_error($client));
                     echo PHP_EOL;
                 }
-            } else {
-                echo PHP_EOL;
-                echo " ------ No Read ------ ";
-                echo PHP_EOL;
-                echo __LINE__;
-                echo PHP_EOL;
-                echo socket_strerror(socket_last_error($client));
-                echo PHP_EOL;
-            }
-
-            return $client;
-        } else {
-            echo PHP_EOL;
-            echo " ------ No Accept ------ ";
-            echo PHP_EOL;
-            echo __LINE__;
-            echo PHP_EOL;
-            echo socket_strerror(socket_last_error($client));
-            echo PHP_EOL;
-            return false;
-        }
-    }
-}
-// Check if client has read access
-function readClientsIfAvailable(&$clients, &$readAbleClients, &$write) {
-    foreach($clients as $clientR) {
-        if(in_array($clientR, $readAbleClients)) {
-            if(socket_recv($clientR, $messageReceived, 4096, 0)) {
-                $messageReceived = unmask($messageReceived);
-                writeClientsIfAvailable($clients, $write, $messageReceived, $clientR);
-            } else {
-                echo "--- read----";
-                echo PHP_EOL;
-                echo __LINE__;
-                echo PHP_EOL;
-                echo $lastError = socket_last_error($clientR);
-                echo PHP_EOL;
-                echo socket_strerror(socket_last_error($clientR));
-                echo PHP_EOL;
-                // remove the client if not available and notify other users
-                if(11 == $lastError || 32 == $lastError) {
-                    $index = array_search($clientR, $clients);
-                    unset($clients[$index]);
-                    $message = (string) $clientR." disconnected.";
-                    writeClientsIfAvailable($clients, $write, $message, $clientR);
-                }
-            }
-        }
-    }
-}
-// Check if client has write access
-function writeClientsIfAvailable(&$clients, &$writeAbleClients, &$message, &$focusClient = null) {
-    foreach($clients as $clientW) {
-        if($focusClient != null && $clientW != $focusClient) {
-            if(in_array($clientW, $writeAbleClients)) {
-                if(!socket_write($clientW, mask($message))) {
-                    // echo PHP_EOL;
-                    // var_dump(debug_backtrace());
+=======
+                if(false !== $readFromClient) {
+                    perform_handshaking($buff, $clientNew, $host, $port);
+                    echo $message = (string) $clientNew." connected.";
+                    $payload = mask(json_encode(array("message" => $message)));
+                    foreach ($clients as $cl) {
+                        if($cl != $clientNew) {
+                            socket_write($cl, $payload, strlen($payload));
+                        }
+                    }
+                } else if(false === $readFromClient) {
                     echo PHP_EOL;
-                    echo "---- Client to write to ------";
-                    echo PHP_EOL;
-                    var_dump((string) $clientW);
-                    echo PHP_EOL;
+                    echo " ------ No Read ------ ";
                     echo PHP_EOL;
                     echo __LINE__;
                     echo PHP_EOL;
-                    echo socket_strerror(socket_last_error($clientW));
+                    echo socket_strerror(socket_last_error($clientNew));
                     echo PHP_EOL;
-                    if(140 == socket_last_error($clientW)) {
-                        unset($clients[array_search($clientW, $clients)]);
+                }
+
+>>>>>>> origin/dell-branch
+            } else {
+                echo PHP_EOL;
+                echo " ------ No Accept ------ ";
+                echo PHP_EOL;
+                echo __LINE__;
+                echo PHP_EOL;
+                echo socket_strerror(socket_last_error($clientNew));
+                echo PHP_EOL;
+                return false;
+            }
+        }
+        $clientResourceString = (string) $clientNew;
+        // nostifyOthers($clients, $clientResourceString, $write, $clientConnected);
+
+        //  check for read
+        foreach($clients as $clientR) {
+            if(in_array($clientR, $readNew)) {
+                $socketReceived = socket_recv($clientR, $messageReceived, 1024, 0);
+                if(false !== $socketReceived && strlen($messageReceived) >= 1) {
+                    $messageReceived = unmask($messageReceived);
+                    $messageReceived = mask(json_encode(["message" => $messageReceived]));
+                    foreach ($clients as $cl) {
+                        if($cl != $clientR) {
+                            socket_write($cl, $messageReceived, strlen($messageReceived));
+                        }
+                    }
+                } else if(false === $socketReceived) {
+                    socket_close($clientR);
+                    $index = array_search($clientR, $clients);
+                    unset($clients[$index]);
+                    echo $message = (string) $clientR." disconnected.";
+                    $payload = mask(json_encode(array("message" => $message)));
+                    foreach ($clients as $cl) {
+                        socket_write($cl, $payload, strlen($payload));
                     }
                 }
             }
+        }
+    }
+    // reset everything
+    $count = 1;
+}
+socket_close($socket);
+
+
+// perform handshaking
+function perform_handshaking($receved_header,$client_conn, $host, $port) {
+    $headers = array();
+    $lines = preg_split("/\r\n/", $receved_header);
+    foreach($lines as $line)
+    {
+        $line = chop($line);
+        if(preg_match('/\A(\S+): (.*)\z/', $line, $matches)){
+            $headers[$matches[1]] = $matches[2];
+        }
+    }
+
+    $secKey = $headers['Sec-WebSocket-Key'];
+    $secAccept = base64_encode(pack('H*', sha1($secKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+    //hand shaking header
+    $upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
+    "Upgrade: websocket\r\n" .
+    "Connection: Upgrade\r\n" .
+    "WebSocket-Origin: $host\r\n" .
+    "WebSocket-Location: ws://$host:$port/learning/socketsLiveServerTCP.php\r\n".
+    "Sec-WebSocket-Accept:$secAccept\r\n\r\n";
+    if(!socket_write($client_conn,$upgrade,strlen($upgrade))) {
+        echo PHP_EOL;
+        echo " ------ No Handshake message sent ------ ";
+        echo PHP_EOL;
+        echo __LINE__;
+        echo PHP_EOL;
+        echo socket_strerror(socket_last_error($client_conn));
+        echo PHP_EOL;
+    }
+}
+
+// Check if client has read access
+function readClientsIfAvailable(&$clients, &$readAbleClients, &$write) {
+    
+}
+// Check if client has write access
+function writeClientsIfAvailable(&$clients, &$writeAbleClients, $message, &$focusClient = null) {
+    foreach($clients as $clientW) {
+        if($focusClient != null && $clientW != $focusClient) {
+            // if(in_array($clientW, $writeAbleClients)) {
+                $message = mask($message);
+                if(false === socket_write($clientW, $message, strlen($message))) {
+                    removeClient($clients, $clientW);
+                    continue;
+                }
+            // }
+        } else if($focusClient == null) {
+            // if(in_array($clientW, $writeAbleClients)) {
+                $maskMessage = mask($message);
+                if(false === socket_write($clientW, $maskMessage, strlen($maskMessage))) {
+                    removeClient($clients, $clientW);
+                    continue;
+                }
+            // }
         }
     }
 }
@@ -210,35 +235,20 @@ function unmask($text) {
     return $text;
 }
 
-// perform handshaking
-function perform_handshaking($receved_header,$client_conn, $host, $port) {
-    $headers = array();
-    $lines = preg_split("/\r\n/", $receved_header);
-    foreach($lines as $line)
-    {
-        $line = chop($line);
-        if(preg_match('/\A(\S+): (.*)\z/', $line, $matches))
-            {
-                $headers[$matches[1]] = $matches[2];
-            }
-        }
-
-        $secKey = $headers['Sec-WebSocket-Key'];
-        $secAccept = base64_encode(pack('H*', sha1($secKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
-    //hand shaking header
-        $upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
-        "Upgrade: websocket\r\n" .
-        "Connection: Upgrade\r\n" .
-        "WebSocket-Origin: $host\r\n" .
-        "WebSocket-Location: ws://$host:$port/learning/socketsLiveServerTCP.php\r\n".
-        "Sec-WebSocket-Accept:$secAccept\r\n\r\n";
-        if(!socket_write($client_conn,$upgrade,strlen($upgrade))) {
-            echo PHP_EOL;
-            echo " ------ No Handshake message sent ------ ";
-            echo PHP_EOL;
-            echo __LINE__;
-            echo PHP_EOL;
-            echo socket_strerror(socket_last_error($client_conn));
-            echo PHP_EOL;
-        }
+// remove client from clients array
+function removeClient(&$clients, $client) {
+    // global $write, $readNew, $exception, $socket;
+    try {
+        socket_close($client);
+        $index = array_search($client, $clients);
+        unset($clients[$index]);
+        // $readNew = $clients;
+        // $write = $readNew;
+        // $exception = $readNew;
+        // array_unshift($readNew, $socket);
+        return true;
+    } catch(Throwable $t) {
+        echo $t -> getMessage();
+        return false;
     }
+}

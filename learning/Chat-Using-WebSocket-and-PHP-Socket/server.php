@@ -1,6 +1,6 @@
 <?php
 $host = 'sysblog.local'; //host
-$port = '9000'; //port
+$port = '41234'; //port
 $null = NULL; //null var
 
 //Create TCP/IP stream socket
