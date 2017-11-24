@@ -1,0 +1,24 @@
+<html>
+<script type="application/javascript">
+    var websocketClient = new WebSocket("ws://sysblog.local:41234/learning/socketsLiveServerTCP.php");
+    // open a new socket connection
+    websocketClient.onopen = function() {
+        // begin acknowledgement process
+        console.log("hi");
+        // websocketClient.send("Ping");
+    };
+    // Log errors
+    websocketClient.onerror = function (error) {
+        console.log('WebSocket Error ', error);
+    };
+
+    // Log messages from the server
+    websocketClient.onmessage = function (e) {
+        console.log('Server: ', e);
+    };
+    
+</script>
+	<body>
+		hello
+	</body>
+</html>
