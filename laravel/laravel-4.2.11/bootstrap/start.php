@@ -26,10 +26,8 @@ $app = new Illuminate\Foundation\Application;
 
 $env = $app->detectEnvironment(array(
 
-	'local' => array('homestead'),
-
+	'local' => array('kushagra-Lenovo-G50-45'), /// here local is the environment name and its value is an array of valid hostnames / machine names which can be found using hostname linux command if. If hostname is not valid then the corresponding local environment will not be loaded.
 ));
-
 /*
 |--------------------------------------------------------------------------
 | Bind Paths
@@ -54,10 +52,14 @@ $app->bindInstallPaths(require __DIR__.'/paths.php');
 |
 */
 
+
+
 $framework = $app['path.base'].
                  '/vendor/laravel/framework/src';
 
 require $framework.'/Illuminate/Foundation/start.php';
+
+require __DIR__."/ioc/ioc.php";
 
 /*
 |--------------------------------------------------------------------------
@@ -69,5 +71,6 @@ require $framework.'/Illuminate/Foundation/start.php';
 | from the actual running of the application and sending responses.
 |
 */
+
 
 return $app;

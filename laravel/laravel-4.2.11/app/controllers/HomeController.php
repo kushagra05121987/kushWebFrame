@@ -17,7 +17,16 @@ class HomeController extends BaseController {
 
 	public function showWelcome()
 	{
-		return View::make('hello');
+		return View::make('hello') -> with("message", "created inside controller");
 	}
+
+	public function check() {
+        var_dump(Route::currentRouteName());
+        return View::make('home.check') -> with("message", "created check inside action");
+    }
+
+    public function responseMacro() {
+	    return Response::caps('kushagra');
+    }
 
 }

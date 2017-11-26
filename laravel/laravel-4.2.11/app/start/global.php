@@ -12,12 +12,10 @@
 */
 
 ClassLoader::addDirectories(array(
-
 	app_path().'/commands',
 	app_path().'/controllers',
 	app_path().'/models',
 	app_path().'/database/seeds',
-
 ));
 
 /*
@@ -51,6 +49,10 @@ App::error(function(Exception $exception, $code)
 	Log::error($exception);
 });
 
+// Fatal errors can be caught by App:fatal. All 404 error maybe handled by App::missing(function($error) {}) . To abort request with error we may use App::abort(404) or App::abort(403, 'Forbidden')
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Maintenance Mode Handler
@@ -62,9 +64,16 @@ App::error(function(Exception $exception, $code)
 |
 */
 
+// App::up is not defined App::down is used for both states
+//App::up(function() {
+//    echo "Going live .....";
+//});
 App::down(function()
 {
-	return Response::make("Be right back!", 503);
+    return View::make('maintenance');
+//	return Response::make("Be right back!", 503);
+//    return Response::view('maintenance', array(), 503);
+    return null; // if closure returns null then maintenance mode will be ignored for that request
 });
 
 /*
