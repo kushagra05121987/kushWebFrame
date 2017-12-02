@@ -2,155 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a4605a7b-a48e-49fa-9226-ca46031bff7a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/.htaccess" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/favicon.ico" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/favicon.ico" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/favicon.ico" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/favicon.ico" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/app.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/app.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/HomeController.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/HomeController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/routes.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/routes.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/start/global.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/start/global.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/views/hello.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/views/hello.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/bootstrap/start.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/bootstrap/start.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/.env.example" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/.env.example" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/.gitattributes" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/.gitattributes" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/.gitignore" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Console/Kernel.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Console/Kernel.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Exceptions/Handler.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Exceptions/Handler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/ForgotPasswordController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/ForgotPasswordController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/LoginController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/LoginController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/RegisterController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/RegisterController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/ResetPasswordController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Auth/ResetPasswordController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Controller.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Controllers/Controller.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Kernel.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Kernel.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/EncryptCookies.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/EncryptCookies.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/RedirectIfAuthenticated.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/RedirectIfAuthenticated.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/TrimStrings.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/TrimStrings.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/TrustProxies.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/TrustProxies.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/VerifyCsrfToken.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Http/Middleware/VerifyCsrfToken.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/AppServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/AppServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/AuthServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/AuthServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/BroadcastServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/BroadcastServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/EventServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/EventServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/RouteServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/Providers/RouteServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/User.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/app/User.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/artisan" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/artisan" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/bootstrap/app.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/bootstrap/app.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/app.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/app.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/auth.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/auth.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/broadcasting.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/broadcasting.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/cache.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/cache.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/database.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/database.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/filesystems.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/filesystems.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/mail.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/mail.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/queue.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/queue.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/services.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/services.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/session.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/session.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/view.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/config/view.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/.gitignore" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/factories/UserFactory.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/factories/UserFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/migrations/2014_10_12_000000_create_users_table.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/migrations/2014_10_12_000000_create_users_table.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/migrations/2014_10_12_100000_create_password_resets_table.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/migrations/2014_10_12_100000_create_password_resets_table.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/seeds/DatabaseSeeder.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/database/seeds/DatabaseSeeder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/package.json" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/phpunit.xml" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/phpunit.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/.htaccess" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/.htaccess" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/css/app.css" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/css/app.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/index.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/js/app.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/robots.txt" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/public/robots.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/app.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/bootstrap.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/bootstrap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/components/ExampleComponent.vue" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/js/components/ExampleComponent.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/sass/_variables.scss" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/sass/_variables.scss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/sass/app.scss" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/assets/sass/app.scss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/auth.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/auth.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/pagination.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/pagination.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/passwords.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/passwords.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/validation.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/lang/en/validation.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/views/welcome.blade.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/resources/views/welcome.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/api.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/api.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/channels.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/channels.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/console.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/console.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/web.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/routes/web.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/server.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/server.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/CreatesApplication.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/CreatesApplication.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/Feature/ExampleTest.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/Feature/ExampleTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/TestCase.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/TestCase.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/Unit/ExampleTest.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/tests/Unit/ExampleTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/webpack.mix.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/webpack.mix.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/4.2/yarn.lock" afterPath="$PROJECT_DIR$/laravel/viainstaller/4.2/yarn.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/.env.example" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/.env.example" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/.gitattributes" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/.gitattributes" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/.gitignore" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Console/Kernel.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Console/Kernel.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Exceptions/Handler.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Exceptions/Handler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/ForgotPasswordController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/ForgotPasswordController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/LoginController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/LoginController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/RegisterController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/RegisterController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/ResetPasswordController.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Auth/ResetPasswordController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Controller.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Controllers/Controller.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Kernel.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Kernel.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/EncryptCookies.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/EncryptCookies.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/RedirectIfAuthenticated.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/RedirectIfAuthenticated.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/TrimStrings.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/TrimStrings.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/TrustProxies.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/TrustProxies.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/VerifyCsrfToken.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Http/Middleware/VerifyCsrfToken.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/AppServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/AppServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/AuthServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/AuthServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/BroadcastServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/BroadcastServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/EventServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/EventServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/RouteServiceProvider.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/Providers/RouteServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/User.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/app/User.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/artisan" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/artisan" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/bootstrap/app.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/bootstrap/app.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/composer.json" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/composer.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/composer.lock" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/composer.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/app.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/app.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/auth.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/auth.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/broadcasting.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/broadcasting.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/cache.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/cache.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/database.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/database.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/filesystems.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/filesystems.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/mail.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/mail.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/queue.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/queue.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/services.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/services.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/session.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/session.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/view.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/config/view.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/.gitignore" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/factories/UserFactory.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/factories/UserFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/migrations/2014_10_12_000000_create_users_table.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/migrations/2014_10_12_000000_create_users_table.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/migrations/2014_10_12_100000_create_password_resets_table.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/migrations/2014_10_12_100000_create_password_resets_table.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/seeds/DatabaseSeeder.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/database/seeds/DatabaseSeeder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/package.json" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/phpunit.xml" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/phpunit.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/.htaccess" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/.htaccess" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/css/app.css" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/css/app.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/index.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/js/app.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/robots.txt" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/public/robots.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/app.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/bootstrap.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/bootstrap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/components/ExampleComponent.vue" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/js/components/ExampleComponent.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/sass/_variables.scss" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/sass/_variables.scss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/sass/app.scss" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/assets/sass/app.scss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/auth.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/auth.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/pagination.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/pagination.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/passwords.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/passwords.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/validation.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/lang/en/validation.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/views/welcome.blade.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/resources/views/welcome.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/api.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/api.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/channels.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/channels.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/console.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/console.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/web.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/routes/web.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/server.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/server.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/CreatesApplication.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/CreatesApplication.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/Feature/ExampleTest.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/Feature/ExampleTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/TestCase.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/TestCase.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/Unit/ExampleTest.php" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/tests/Unit/ExampleTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/webpack.mix.js" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/webpack.mix.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/viainstaller/5.5/yarn.lock" afterPath="$PROJECT_DIR$/laravel/viainstaller/5.5/yarn.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sysblog.local/.idea/workspace.xml" afterPath="$PROJECT_DIR$/sysblog.local/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Vagrantfile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant-php7" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/workbench.php" afterPath="$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/workbench.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -171,11 +25,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ioc.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ioc.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/bootstrap/ioc/ioc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
+            <state relative-caret-position="23">
               <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="2" selection-end-line="15" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workbench.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/workbench.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="23">
+              <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SysFrameServiceProvider.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/workbench/self/sys-frame/src/Self/SysFrame/SysFrameServiceProvider.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="437">
+              <caret line="26" column="119" lean-forward="false" selection-start-line="26" selection-start-column="119" selection-end-line="26" selection-end-column="119" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="composer.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/workbench/self/sys-frame/composer.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="92">
+              <caret line="7" column="9" lean-forward="false" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -184,21 +68,11 @@
       <file leaf-file-name="global.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/start/global.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
+            <state relative-caret-position="966">
               <caret line="51" column="150" lean-forward="false" selection-start-line="51" selection-start-column="150" selection-end-line="51" selection-end-column="150" />
               <folding>
                 <element signature="e#7#415#0#PHP" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HomeController.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/HomeController.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
-              <caret line="28" column="39" lean-forward="false" selection-start-line="28" selection-start-column="39" selection-end-line="28" selection-end-column="39" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -216,8 +90,8 @@
       <file leaf-file-name="app.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/app.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="81" column="0" lean-forward="true" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+            <state relative-caret-position="1863">
+              <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -226,18 +100,8 @@
       <file leaf-file-name=".env.local.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/.env.local.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46">
-              <caret line="2" column="30" lean-forward="false" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="database.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/database.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1242">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="69">
+              <caret line="3" column="2" lean-forward="false" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -246,7 +110,7 @@
       <file leaf-file-name="PhotoController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/PhotoController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
+            <state relative-caret-position="989">
               <caret line="43" column="82" lean-forward="false" selection-start-line="43" selection-start-column="82" selection-end-line="43" selection-end-column="82" />
               <folding />
             </state>
@@ -256,7 +120,7 @@
       <file leaf-file-name="routes.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/routes.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7">
+            <state relative-caret-position="575">
               <caret line="34" column="28" lean-forward="false" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
               <folding />
             </state>
@@ -338,6 +202,8 @@
         <option value="$PROJECT_DIR$/laravel/laravel-4.2.11/.env.local.php" />
         <option value="$PROJECT_DIR$/laravel/laravel-4.2.11/app/start/global.php" />
         <option value="$PROJECT_DIR$/laravel/laravel-4.2.11/bootstrap/ioc/ioc.php" />
+        <option value="$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/workbench.php" />
+        <option value="$PROJECT_DIR$/laravel/laravel-4.2.11/workbench/self/sys-frame/src/Self/SysFrame/SysFrameServiceProvider.php" />
       </list>
     </option>
   </component>
@@ -348,7 +214,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="y" value="-1" />
     <option name="width" value="1360" />
     <option name="height" value="318" />
@@ -368,6 +234,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -394,11 +261,33 @@
               <item name="laravel-4.2.11" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="app" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
+            <path>
+              <item name="html" type="b2602c69:ProjectViewProjectNode" />
+              <item name="html" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel-4.2.11" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="app" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="config" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="html" type="b2602c69:ProjectViewProjectNode" />
+              <item name="html" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel-4.2.11" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="workbench" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="html" type="b2602c69:ProjectViewProjectNode" />
+              <item name="html" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="laravel-4.2.11" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="workbench" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="self" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -449,6 +338,7 @@
       <workItem from="1511683990866" duration="12116000" />
       <workItem from="1511698799897" duration="268000" />
       <workItem from="1511699155341" duration="16058000" />
+      <workItem from="1512227353821" duration="2933000" />
     </task>
     <task id="LOCAL-00001" summary="1">
       <created>1511527739254</created>
@@ -461,27 +351,28 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="79109000" />
+    <option name="totallyTimeSpent" value="82042000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-1" width="1368" height="742" extended-state="6" />
+    <frame x="0" y="-1" width="1368" height="742" extended-state="7" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25757575" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25757575" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43781096" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -521,27 +412,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/public/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-345">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/BaseController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/models/User.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-131">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/queue.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1557">
@@ -763,7 +633,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="529">
           <caret line="32" column="12" lean-forward="false" selection-start-line="32" selection-start-column="12" selection-end-line="32" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -771,7 +640,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1679">
           <caret line="73" column="35" lean-forward="false" selection-start-line="73" selection-start-column="35" selection-end-line="73" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -779,7 +647,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
           <caret line="10" column="5" lean-forward="false" selection-start-line="10" selection-start-column="5" selection-end-line="10" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -787,7 +654,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="184">
           <caret line="8" column="7" lean-forward="false" selection-start-line="8" selection-start-column="7" selection-end-line="8" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -795,7 +661,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
           <caret line="5" column="8" lean-forward="true" selection-start-line="5" selection-start-column="8" selection-end-line="33" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -803,7 +668,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="605">
           <caret line="54" column="43" lean-forward="true" selection-start-line="54" selection-start-column="43" selection-end-line="54" selection-end-column="43" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -811,13 +675,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="161">
           <caret line="7" column="11" lean-forward="false" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/HomeController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
+        <state relative-caret-position="644">
           <caret line="28" column="39" lean-forward="false" selection-start-line="28" selection-start-column="39" selection-end-line="28" selection-end-column="39" />
           <folding />
         </state>
@@ -837,23 +700,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/database.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1242">
+        <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/.env.local.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="2" column="30" lean-forward="false" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/routes.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7">
+        <state relative-caret-position="575">
           <caret line="34" column="28" lean-forward="false" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
           <folding />
         </state>
@@ -869,15 +724,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/app.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="81" column="0" lean-forward="true" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+        <state relative-caret-position="1863">
+          <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/controllers/PhotoController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
+        <state relative-caret-position="989">
           <caret line="43" column="82" lean-forward="false" selection-start-line="43" selection-start-column="82" selection-end-line="43" selection-end-column="82" />
           <folding />
         </state>
@@ -885,7 +740,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/start/global.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
+        <state relative-caret-position="966">
           <caret line="51" column="150" lean-forward="false" selection-start-line="51" selection-start-column="150" selection-end-line="51" selection-end-column="150" />
           <folding>
             <element signature="e#7#415#0#PHP" expanded="true" />
@@ -895,8 +750,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/bootstrap/ioc/ioc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
+        <state relative-caret-position="23">
           <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="2" selection-end-line="15" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/.env.local.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="69">
+          <caret line="3" column="2" lean-forward="false" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/workbench/self/sys-frame/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="7" column="9" lean-forward="false" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/app/config/workbench.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/laravel/laravel-4.2.11/workbench/self/sys-frame/src/Self/SysFrame/SysFrameServiceProvider.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="26" column="119" lean-forward="false" selection-start-line="26" selection-start-column="119" selection-end-line="26" selection-end-column="119" />
           <folding />
         </state>
       </provider>
