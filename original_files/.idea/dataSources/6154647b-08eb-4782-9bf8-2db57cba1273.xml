@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="sys_blog@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.4">
+    <root id="1"/>
+    <schema id="2" parent="1" name="sys_blog">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="3" parent="1" name="information_schema"/>
+    <schema id="4" parent="1" name="mysql"/>
+    <schema id="5" parent="1" name="performance_schema"/>
+    <schema id="6" parent="1" name="phpmyadmin"/>
+    <schema id="7" parent="1" name="sys"/>
+    <table id="8" parent="2" name="test"/>
+    <table id="9" parent="2" name="users"/>
+    <routine id="10" parent="2" name="callMe">
+      <RoutineKind>procedure</RoutineKind>
+    </routine>
+    <routine id="11" parent="2" name="callMe2">
+      <RoutineKind>procedure</RoutineKind>
+    </routine>
+    <routine id="12" parent="2" name="checkFunction">
+      <RoutineKind>function</RoutineKind>
+    </routine>
+    <routine id="13" parent="2" name="checkMe">
+      <RoutineKind>procedure</RoutineKind>
+    </routine>
+    <routine id="14" parent="2" name="fMe">
+      <RoutineKind>function</RoutineKind>
+    </routine>
+    <column id="15" parent="8" name="id">
+      <Position>1</Position>
+      <DataType>int(10)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="16" parent="8" name="name">
+      <Position>2</Position>
+      <DataType>varchar(100)|0</DataType>
+    </column>
+    <column id="17" parent="8" name="is_active">
+      <Position>3</Position>
+      <DataType>int(1)|0</DataType>
+    </column>
+    <column id="18" parent="8" name="uniqueEntry">
+      <Position>4</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="19" parent="8" name="test_uniqueEntry_uindex">
+      <ColNames>uniqueEntry</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="20" parent="8" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="21" parent="8" name="test_uniqueEntry_uindex">
+      <ColNames>uniqueEntry</ColNames>
+      <UnderlyingIndexName>test_uniqueEntry_uindex</UnderlyingIndexName>
+    </key>
+    <column id="22" parent="9" name="id">
+      <Position>1</Position>
+      <DataType>int(10)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="23" parent="9" name="email">
+      <Position>2</Position>
+      <DataType>varchar(100)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="24" parent="9" name="password">
+      <Position>3</Position>
+      <DataType>char(60)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="25" parent="9" name="name">
+      <Position>4</Position>
+      <DataType>varchar(255)|0</DataType>
+    </column>
+    <column id="26" parent="9" name="deleted_at">
+      <Position>5</Position>
+      <DataType>datetime|0</DataType>
+    </column>
+    <column id="27" parent="9" name="updated_at">
+      <Position>6</Position>
+      <DataType>datetime|0</DataType>
+    </column>
+    <column id="28" parent="9" name="created_at">
+      <Position>7</Position>
+      <DataType>datetime|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="29" parent="9" name="users_email_uindex">
+      <ColNames>email</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="30" parent="9" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="31" parent="9" name="users_email_uindex">
+      <ColNames>email</ColNames>
+      <UnderlyingIndexName>users_email_uindex</UnderlyingIndexName>
+    </key>
+    <argument id="32" parent="12">
+      <ArgumentDirection>R</ArgumentDirection>
+      <DataType>int(11)|0</DataType>
+    </argument>
+    <argument id="33" parent="14">
+      <ArgumentDirection>R</ArgumentDirection>
+      <DataType>int(11)|0</DataType>
+    </argument>
+  </database-model>
+</dataSource>
