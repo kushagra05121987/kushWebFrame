@@ -150,7 +150,7 @@ class ResponseFactory implements FactoryContract
      * @param  int  $status
      * @param  array  $headers
      * @param  bool|null  $secure
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponseimp
      */
     public function redirectTo($path, $status = 302, $headers = [], $secure = null)
     {

@@ -12,12 +12,10 @@
         <CLASSES>
           <root url="phar://$MODULE_DIR$/laravel/laravel-5.5/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.1.phar/" />
           <root url="phar://$MODULE_DIR$/laravel/laravel-5.5/vendor/phar-io/manifest/tests/_fixture/test.phar/" />
-          <root url="phar://$MODULE_DIR$/laravel/laravel-4.2.11/composer.phar/" />
         </CLASSES>
         <SOURCES>
           <root url="phar://$MODULE_DIR$/laravel/laravel-5.5/vendor/phpunit/phpunit/tests/_files/phpunit-example-extension/tools/phpunit.d/phpunit-example-extension-1.0.1.phar/" />
           <root url="phar://$MODULE_DIR$/laravel/laravel-5.5/vendor/phar-io/manifest/tests/_fixture/test.phar/" />
-          <root url="phar://$MODULE_DIR$/laravel/laravel-4.2.11/composer.phar/" />
         </SOURCES>
       </library>
     </orderEntry>
