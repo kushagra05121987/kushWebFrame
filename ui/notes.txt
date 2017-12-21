@@ -1,0 +1,756 @@
+Node --- 
+Dependencies attribute is used for production environment while devDependencies are used for local development environment.
+dependencies are install when using npm install on a directory having package.json or npm install $package on other directory not having packge.json
+devDependencies are installed using npm install on a directory having package.json unless --production is supplied so if we run 
+npm install --production then devDependencies are not installed or if we run npm install $package on a directory not having package.json file then deveDependencies are not installed unless we give --dev option.
+
+Grunt -- 
+watch options
+
+these braces are just to create a holder for examples below which helps in rolling the code up they are not required in actual code
+{
+    options.spawn
+    Type: Boolean
+    Default: true
+
+    Whether to spawn task runs in a child process. Setting this option to false speeds up the reaction time of the watch (usually 500ms faster for most) and allows subsequent task runs to share the same context. Not spawning task runs can make the watch more prone to failing so please use as needed.
+
+    Example:
+
+    watch: {
+    scripts: {
+        files: ['**/*.js'],
+        tasks: ['jshint'],
+        options: {
+        spawn: false,
+        },
+    },
+    },
+    For backwards compatibility the option nospawn is still available and will do the opposite of spawn.
+
+    options.interrupt
+    Type: Boolean
+    Default: false
+
+    As files are modified this watch task will spawn tasks in child processes. The default behavior will only spawn a new child process per target when the previous process has finished. Set the interrupt option to true to terminate the previous process and spawn a new one upon later changes.
+
+    Example:
+
+    watch: {
+    scripts: {
+        files: '**/*.js',
+        tasks: ['jshint'],
+        options: {
+        interrupt: true,
+        },
+    },
+    },
+
+    options.event
+    Type: String|Array
+    Default: 'all'
+
+    Specify the type of watch events that triggers the specified task. This option can be one or many of: 'all', 'changed', 'added' and 'deleted'.
+
+    Example:
+
+    watch: {
+    scripts: {
+        files: '**/*.js',
+        tasks: ['generateFileManifest'],
+        options: {
+        event: ['added', 'deleted'],
+        },
+    },
+    },
+
+    options.reload
+    Type: Boolean
+    Default: false
+
+    By default, if Gruntfile.js is being watched, then changes to it will trigger the watch task to restart, and reload the Gruntfile.js changes. When reload is set to true, changes to any of the watched files will trigger the watch task to restart. This is especially useful if your Gruntfile.js is dependent on other files.
+
+    watch: {
+    configFiles: {
+        files: [ 'Gruntfile.js', 'config/*.js' ],
+        options: {
+        reload: true
+        }
+    }
+    }
+
+    options.livereload
+    Type: Boolean|Number|Object
+    Default: false
+
+    Set to true or set livereload: 1337 to a port number to enable live reloading. Default and recommended port is 35729.
+
+    If enabled a live reload server will be started with the watch task per target. Then after the indicated tasks have run, the live reload server will be triggered with the modified files.
+
+    See also how to enable livereload on your HTML.
+
+    Example:
+
+    watch: {
+    css: {
+        files: '**/*.sass',
+        tasks: ['sass'],
+        options: {
+        livereload: true,
+        },
+    },
+    },
+    Passing an object to livereload allows listening on a specific port and hostname/IP or over https connections (by specifying key and cert paths).
+
+    Example:
+
+    watch: {
+    css: {
+        files: '**/*.sass',
+        tasks: ['sass'],
+        options: {
+        livereload: {
+            host: 'localhost',
+            port: 9000,
+            key: grunt.file.read('path/to/ssl.key'),
+            cert: grunt.file.read('path/to/ssl.crt')
+            // you can pass in any other options you'd like to the https server, as listed here: http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
+        }
+        },
+    },
+    },
+}
+
+
+When working with core javascript functions functions like get element by id and get elements by classname , etc. are bound to find children on the element on which it is called.
+So for example when we do something like document.forms[0].email.getElementsByTagName('input') this will find all the input elements inside the element with name email. 
+
+We can also bind elevents like document.forms[0].onmouseover = function(event) {
+    console.log(e.target)
+}
+
+We can do the same with document.forms[0].addEventListener("click", function(e){console.log('inside clicked')})
+
+If we use submit or any event as name of the element in form then that event will not work because form.<Event Name> is going to give the element and not the event so for example if my submit button's name is submit then form.submit() will not work because form.submit is now an element's name not a function.
+
+
+Html5 has formenctype attribute to override the enctype given in form 
+
+application/x-www-form-urlencoded ----	Default. All characters are encoded before sent (spaces are converted to "+" symbols, and special characters are converted to ASCII HEX values). Example -- MyVariableOne=ValueOne&MyVariableTwo=ValueTwo
+
+multipart/form-data ----	No characters are encoded. This value is required when you are using forms that have a file upload control
+
+text/plain ----  Spaces are converted to "+" symbols, but no special characters are encoded
+
+
+During Html5 Validation we get following properties on element getting validated inside javascript 
+console.log(elem.validationMessage);
+elem.setCustomValidity("custom validation message");
+console.log(elem.checkValidity());
+console.log(elem.validity);
+console.log(elem.validationMessage);
+console.log(elem.willValidate);
+
+in addition to this we can have an event oninvalid on the element by which we can trap the invalidation event of an element if we dont want to do it on submit or press of any other button
+
+elem.oninvalid = function(e) {
+	console.log("%c On Invalid Event ", "background: black; color: darkgreen", e.target.validity)
+}
+
+There are two psuedo elements that we get with html 5 validation they are :valid and :invalid
+
+If we want to insert html using css then we can use before and after psuedo elements to do that.
+Remember property is necessary for these psuedo elements to work.
+
+var elem               = document.createElement('div');
+    elem.id            = 'notify';
+    elem.style.display = 'none';
+    form.appendChild(elem);
+
+Filter method in jquery
+Reduce the set of matched elements to those that match the selector or pass the function's test.
+
+<ul>
+  <li>list item 1</li>
+  <li>list item 2</li>
+  <li>list item 3</li>
+  <li>list item 4</li>
+  <li>list item 5</li>
+  <li>list item 6</li>
+</ul>
+We can apply this method to the set of list items:
+
+1
+$( "li" ).filter( ":even" ).css( "background-color", "red" );
+<ul>
+  <li><strong>list</strong> item 1 - one strong tag</li>
+  <li><strong>list</strong> item <strong>2</strong> -
+    two <span>strong tags</span></li>
+  <li>list item 3</li>
+  <li>list item 4</li>
+  <li>list item 5</li>
+  <li>list item 6</li>
+</ul>
+We can select the list items, then filter them based on their contents:
+
+$( "li" )
+  .filter(function( index ) {
+    return $( "strong", this ).length === 1;
+  })
+    .css( "background-color", "red" );
+
+Css3 sibling selectors
+ADJACENT SIBLING SELECTORS
+p + p { font-size: smaller; } /* Selects all paragraphs that follow another paragraph */
+#title + ul { margin-top: 0; } /* Selects an unordered list that directly follows the element with ID title */
+GENERAL SIBLING SELECTORS
+The general sibling combinator selector is very similar to the adjacent sibling combinator selector we just looked at. The difference is that that the element being selected doesn't need to immediately succeed the first element, but can appear anywhere after it.
+If we use the same example structure as above, the last <p> element will be selected by p ~ p as well, because it is preceded by another <p> element, even though not directly.
+
+oninput vs onchange event
+oninput event occurs when the text content of an element is changed through the user interface.
+onchange occurs when the selection, the checked state or the contents of an element have changed. In some cases, it only occurs when the element loses the focus. The onchange attribute can be used with: <input>, <select>, and <textarea>.
+
+
+The DOM input event is fired synchronously when the value of an <input>, <select>, or <textarea> element is changed. For input elements with type=checkbox or type=radio, the input event should fire when a user toggles the control (via touch, mouse or keyboard) per the HTML5 specification, but historically, this has not been the case. Check compatibility, or attach to the change event instead for elements of these types.
+
+Additionally, the input event fires on a contenteditable editor when its contents are changed. In this case, the event target is the editing host element. If there are two or more elements which have contenteditable as true, “editing host” is the nearest ancestor element whose parent isn’t editable. Similarly, it’s also fired on root element of designMode editors.
+
+
+<input type="text" class="test"/>
+<textarea></textarea>
+<select>
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+</select>
+<pre></pre>
+
+$(".test").on("input", function() {
+	$("pre").prepend("\nOn Input.");
+}).on("change", function () {
+    $("pre").prepend("\nOn change.");
+}).on("focus", function () {
+    $("pre").prepend("\nOn focus.");
+}).on("blur", function () {
+    $("pre").prepend("\nOn blur.");
+});
+
+$("textarea").change(function() {
+	$('pre').prepend("\n On change text area")
+}).on("input", function() {
+	$("pre").prepend("\nOn Input textarea.");
+})
+
+$("select").change(function() {
+	$('pre').prepend("\n On change select")
+}).on("input", function() {
+	$("pre").prepend("\nOn Input Select.");
+})
+
+So for html5 custom validations we can check for elements validation as user types using input event.
+But still following process is available.
+
+There are two events we need to deal with. First, the invalid event which calls when the value of the input does not match the pattern. We’ll run the following within the invalid event:
+
+input.addEventListener('invalid', function(event){
+    event.preventDefault(); ----<<<<<<<---->>>>>>> ------<<<<<< This thing here prevents html5 error message popup from showing. So that we can show our own error messages.
+    if ( ! event.target.validity.valid ) {
+        elem.textContent   = 'Username should only contain lowercase letters e.g. john';
+        elem.className     = 'error';
+        elem.style.display = 'block';
+ 
+        input.className    = 'invalid animated shake';
+    }
+});
+Herein, with event.preventDefault();, we prevent the default behavior so that the default browser popup message does not appear. Instead, we are going to show our own through the new div element. We add the text message within the content, add a new class, error and show the message by setting the display to block.
+
+For event bubbling 
+A handler on a parent element can always get the details about where it actually happened.
+The most deeply nested element that caused the event is called a target element, accessible as event.target.
+Note the differences from this (=event.currentTarget):
+
+event.target – is the “target” element that initiated the event, it doesn’t change through the bubbling process.
+this – is the “current” element, the one that has a currently running handler on it.
+
+event.stopImmediatePropagation()
+If an element has multiple event handlers on a single event, then even if one of them stops the bubbling, the other ones still execute.
+
+In other words, event.stopPropagation() stops the move upwards, but on the current element all other handlers will run.
+
+To stop the bubbling and prevent handlers on the current element from running, there’s a method event.stopImmediatePropagation(). After it no other handlers execute.
+
+To catch an event on the capturing phase, we need to set the 3rd argument of addEventListener to true.
+
+There are two possible values for that optional last argument:
+
+If it’s false (default), then the handler is set on the bubbling phase.
+If it’s true, then the handler is set on the capturing phase.
+Note that while formally there are 3 phases, the 2nd phase (“target phase”: the event reached the element) is not handled separately: handlers on both capturing and bubbling phases trigger at that phase.
+
+<style>
+  body * {
+    margin: 10px;
+    border: 1px solid blue;
+  }
+</style>
+
+<form>FORM
+  <div>DIV
+    <p>P</p>
+  </div>
+</form>
+
+<script>
+  for(let elem of document.querySelectorAll('*')) {
+    elem.addEventListener("click", e => alert(`Capturing: ${elem.tagName}`), true);
+    elem.addEventListener("click", e => alert(`Bubbling: ${elem.tagName}`));
+  }
+</script>
+
+The code sets click handlers on every element in the document to see which ones are working.
+
+If you click on <p>, then the sequence is:
+
+HTML → BODY → FORM → DIV → P (capturing phase, the first listener), and then:
+P → DIV → FORM → BODY → HTML (bubbling phase, the second listener).
+Please note that P shows up two times: at the end of capturing and at the start of bubbling.
+
+There’s a property event.eventPhase that tells us the number of the phase on which the event was caught. But it’s rarely used, because we usually know it in the handler.
+
+
+Hoisting is a JavaScript mechanism where variables and function declarations are moved to the top of their scope before code execution.
+
+var a = 100;
+It is however important to remember that in the background, JavaScript is religiously declaring then initialising our variables.
+
+As we mentioned before, all variable and function declarations are hoisted to the top of their scope. I should also add that variable declarations are processed before any code is executed.
+
+However, in contrast, undeclared variables do not exist until code assigning them is executed. Therefore, assigning a value to an undeclared variable implicitly creates it as a global variable when the assignment is executed. This means that, all undeclared variables are global variables.
+
+
+global variables
+console.log(hoist); // Output: undefined
+
+var hoist = 'The variable has been hoisted.';
+
+We expected the result of the log to be: ReferenceError: hoist is not defined, but instead, its output is undefined.
+
+Why has this happened?
+
+This discovery brings us closer to wrangling our prey.
+
+JavaScript has hoisted the variable declaration. This is what the code above looks like to the interpreter:
+
+var hoist;
+
+console.log(hoist); // Output: undefined
+hoist = 'The variable has been hoisted.';
+
+Function scoped variables
+As we've seen above, variables within a global scope are hoisted to the top of the scope. Next, let's look at how function scoped variables are hoisted.
+
+function hoist() {
+  console.log(message);
+  var message='Hoisting is all the rage!'
+}
+
+hoist();
+Take an educated guess as to what our output might be.
+
+If you guessed, undefined you're right. If you didn't, worry not, we'll soon get to the bottom of this.
+
+This is how the interpreter views the above code:
+
+function hoist() {
+  var message;
+  console.log(message);
+  message='Hoisting is all the rage!'
+}
+
+hoist(); // Ouput: undefined
+
+Strict Mode
+Thanks to a utility of the es5 version of JavaScript known as strict-mode, we can be more careful about how we declare our variables. By enabling strict mode, we opt into a restricted variant of JavaScript that will not tolerate the usage of variables before they are declared.
+
+Running our code in strict mode:
+
+Eliminates some silent JavaScript errors by changing them to explicit throw errors which will be spit out by the interpreter.
+Fixes mistakes that make it difficult for JavaScript engines to perform optimisations.
+Prohibits some syntax likely to be defined in future versions of JavaScript.
+We enable strict mode by prefacing our file or function with
+
+'use strict';
+
+// OR
+"use strict";
+Let's test it out.
+
+'use strict';
+
+console.log(hoist); // Output: ReferenceError: hoist is not defined
+hoist = 'Hoisted'; 
+
+const PI;
+console.log(PI); // Ouput: SyntaxError: Missing initializer in const declaration
+PI=3.142;
+Therefore, a constant variable must be both declared and initialised before use.
+
+
+Function declarations
+These are of the following form and are hoisted completely to the top. Now, we can understand why JavaScript enable us to invoke a function seemingly before declaring it.
+
+hoisted(); // Output: "This function has been hoisted."
+
+function hoisted() {
+  console.log('This function has been hoisted.');
+};
+
+Function expressions
+Function expressions, however are not hoisted.
+
+expression(); //Output: "TypeError: expression is not a function
+
+var expression = function() {
+  console.log('Will this work?');
+};
+
+
+function a()                                                
+{
+    var x = 10;
+
+    function x() {
+        return 20;
+    }
+
+    return x;
+}
+
+above will be hoisted like
+function a() {
+  var x;
+  function x() { // this function is assigned to variable indicator "x"
+    return 20;
+  }
+  x = 10; // this overrides the variable indicator "x"
+  return x;
+}
+
+so variable declaration goes first then function declaration then variable assignment.
+
+
+javascript ajax for ie 6 or lesser versions
+if (window.XMLHttpRequest) {
+    //Firefox, Opera, IE7, and other browsers will use the native object
+    var request = new XMLHttpRequest();
+} else {
+    //IE 5 and 6 will use the ActiveX control
+    var request = new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+
+req.open( "GET", 'boo.txt', false );
+the third parameter is for making the request to synchronous or asynchronous.
+
+req.onreadystatechange = function()
+{
+    if( req.readyState == 4 && req.status == 200 )
+    {
+        document.write( req.responseText );
+    }
+}
+
+0 – The default value when the XMLHttpRequest object is created.
+1 – The open() method has been called.
+2 – The send() method has been called.
+3 – Some data has been retrieved, but the request isn’t finished.
+4 – All data has been retrieved and the request is finished.
+
+false in open makes it synchronous default value is true which is asynchronous.
+
+XMLHttpRequest {onreadystatechange: null, readyState: 0, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+onabort : null
+onerror : null 
+onload : null
+onloadend : null
+onloadstart : null
+onprogress : null
+onreadystatechange : null
+ontimeout : null
+readyState : 0
+response : ""
+responseText : ""
+responseType : ""
+responseURL : ""
+responseXML : null
+status : 0
+statusText : ""
+timeout : 0
+upload :
+XMLHttpRequestUpload {onloadstart: null, onprogress: null, onabort: null, onerror: null, onload: null, …}
+withCredentials : false
+__proto__ : XMLHttpRequest
+
+
+// not all the events will work in synchronous calls but for asynchronous calls all the events will work.
+
+for synchronous calls progress events was received only in onloadend event onloadstart evet didnot fire at all in synchronous call.
+Timeout is zero in synchronous call and cannot be changed.
+
+First on progress event for asynchronous calls is received in onLoadStart with lengthComputable: false and loaded:0 and readyState is 2
+Second on progress event for asynchronous calls is received in onProgress with lengthComputable: true and loaded:<full length of the object received> and readyState is 3
+Third on progress event for asynchronous calls is received in onLoadEnd with lengthComputable: true and loaded:<full length of the object received> and readyState is 4
+
+So xhr.onProgress event gets fired only when complete object is received
+
+for aborting the ajax request 
+var xhr = new XMLHttpRequest(),
+    method = "GET",
+    url = "https://developer.mozilla.org/";
+xhr.open(method,url,true);
+
+xhr.send();
+
+xhr.abort();
+
+.ajaxStop() ->>> Register a handler to be called when all Ajax requests have completed. This is an Ajax Event.
+
+Aborting jquery ajax request.
+var calculationRequest = null;
+
+function PerformAbortableCalculation()
+{
+        if(calculationRequest != null)
+                calculationRequest.abort();
+        calculationRequest = $.get("/tests/calc.php", function(data, textStatus)
+        {
+                alert(data);
+        });
+}
+
+
+req.responseType is supposed to allow only the response type set in this variable as a response from server if response is different the this value is null.
+responseText is based on responseType value if responseType is somthing other than text or '' then the responseText is empty.
+responseText is string representation of response.
+so if responseType is json then responseText is empty.
+
+In jquery ajax responseType id dataType. dataType is you telling jQuery what kind of response to expect.
+
+Accept header tells the server about the type of content it is expecting 
+Content-type tells the server about the type of request it is sending.
+
+dataType and accpets must mapped together.
+
+in order to get the response header we need to use getResponseHeader('header name') method.
+in order to get all the response headers we need to use getAllResponseHeaders() method.
+
+To set request headers in ajax we can use two approaches by setting headers: {} property on ajax call or by xhr.setRequestHeader in beforeSend
+
+
+The same-origin policy controls interactions between two different origins, such as when you use XMLHttpRequest or an <img> element. These interactions are typically placed in three categories:
+
+Cross-origin writes are typically allowed. Examples are links, redirects and form submissions. Certain rarely used HTTP requests require preflight.
+Cross-origin embedding is typically allowed. Examples are listed below.
+Cross-origin reads are typically not allowed, but read access is often leaked by embedding. For example you can read the width and height of an embedded image, the actions of an embedded script, or the availability of an embedded resource.
+Here are some examples of resources which may be embedded cross-origin:
+
+JavaScript with <script src="..."></script>. Error messages for syntax errors are only available for same-origin scripts.
+CSS with <link rel="stylesheet" href="...">. Due to the relaxed syntax rules of CSS, cross-origin CSS requires a correct Content-Type header. [...]
+
+JSONP is nothing but json with padding. In order to accomplish this we make use of the fact that script tags are not a part of cross-origin restrictions .
+So we can call any urls to read stuff using a callback query parameter in request url. The service endpoint responsding to this must give back the output as passing the json argument to that callback in url.
+Example
+function response(resposne) {
+  return response;
+}
+http://www.abc.com/?callback=callMe
+service enpoint should respond with 
+callMe({json object values})
+
+datatype:script or .getScript() method work the same they are used to read the resonse as javascript and return it as string.
+$.ajax({
+  url: url,
+  dataType: "script",
+  success: success
+}); this is equivalent to 
+$.getScript( "ajax/test.js", function( data, textStatus, jqxhr ) {
+  console.log( data ); // Data returned
+  console.log( textStatus ); // Success
+  console.log( jqxhr.status ); // 200
+  console.log( "Load was performed." );
+});
+
+when datatype is jsonp the default callback is supplie in the url if you want to overrite it then we can give an option like 
+datatype: jsonp,
+jsonp:function(){}
+
+defining jquery function 
+$.fn.myfunction = function() {
+      alert('hello world');
+      return this;
+};
+
+when calling function this will give the object on which it is called
+so if we cann myfunction() then this will be window because its called on window.myfunction 
+
+global (default: true)
+Type: Boolean
+Whether to trigger global Ajax event handlers for this request. The default is true. Set to false to prevent the global handlers like ajaxStart or ajaxStop from being triggered. This can be used to control various Ajax Events.
+
+So if we call .json file in ajax jquery we dont get success method executed. The error in this case is unknow but if we use the same request for local server having same origin then it works fine.
+
+Setting xhr.withCredentials = true inside beforeSend doesent work 
+instead we need to use xhrFields key 
+xhrFields: {
+  withCredentials: true
+}
+withCredentials field need to be set on both server and ui side in order to start setting cookies from server on UI.
+Cookies get set if requests are between same domains.
+
+document.cookie are sent to the servers in ajax request when the requests are in same domain but local cookies dont get send to server unless they are set using Set-Cookie header.
+
+Although CORS allows cross-origin requests, the cookies are still subject to the browser's same-origin policy, which means only pages from the same origin can read/write the cookie. withCredentials only means that any cookies set by the remote host are sent to that remote host. You will have to set the cookie from the remote server by using the Set-Cookie header.
+
+
+upload: XMLHttpRequestUpload
+onabort: null
+onerror: null
+onload: null
+onloadend: null
+onloadstart: null
+onprogress: null
+ontimeout: null
+
+when events on upload are bound then events on core chr object wont work or we can say if both core xhr events and upload events are bound then upload events will take precedence over core events exmaple if xhr.onloadstart and xhr.upload.onloadstart are bound at the same time the xhr.upload.onloadstart will be executed.
+On readystate change will be executed on xhr object only.
+onload gets executed after the ajax call is completed sucessfully but before onloadEnd is called its available on both xhr and xhr.upload
+
+ProgressEvent {isTrusted: true, lengthComputable: true, loaded: 699, total: 699, type: "load", …}
+bubbles:false
+cancelBubble:false
+cancelable:false
+composed:false
+currentTarget:XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 4294967295, withCredentials: false, upload: XMLHttpRequestUpload, …}
+defaultPrevented:false
+eventPhase:0
+isTrusted:true
+lengthComputable:true
+loaded:699
+path:[]
+returnValue:true
+srcElement:XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 4294967295, withCredentials: false, upload: XMLHttpRequestUpload, …}
+target:XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 4294967295, withCredentials: false, upload: XMLHttpRequestUpload, …}
+timeStamp:2793.985
+total:699
+type:"load"
+
+we get this object in 4 places onloadstart, onprogress, onload, onloadend.
+We need to consider 3 things in this object
+lengthComputable: true or false
+loaded
+total
+
+lengthComputable - a read-only (Boolean) property indicating if the resource concerned by the ProgressEvent has a length that can be calculated
+total - a read-only (Unsigned Long) property representing the total amount of work that the underlying process is in the progress of performing
+loaded - a read-only (Unsigned Long) property representing the amount of work already performed by the underlying process
+
+'responseXML' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'document'
+
+There are two progress events in a XmlHttpRequest object:
+
+The response progress (XmlHttpRequest.onprogress)
+This is when the browser is downloading the data from the server.
+
+The request progress (XmlHttpRequest.upload.onprogress)
+This is when the browser is sending the data to the server (including POST parameters, cookies, and files)
+
+In your code you are using the response progress event, but what you need is the request progress event. This is how you do it:
+
+$.ajax({
+    async: true,
+    contentType: file.type,
+    data: file,
+    dataType: 'xml',
+    processData: false,
+    success: function(xml){
+        // Do stuff with the returned xml
+    },
+    type: 'post',
+    url: '/fileuploader/' + file.name,
+    xhr: function(){
+        // get the native XmlHttpRequest object
+        var xhr = $.ajaxSettings.xhr() ;
+        // set the onprogress event handler
+        xhr.upload.onprogress = function(evt){ console.log('progress', evt.loaded/evt.total*100) } ;
+        // set the onload event handler
+        xhr.upload.onload = function(){ console.log('DONE!') } ;
+        // return the customized object
+        return xhr ;
+    }
+});
+
+onload event can be used as combination of onreadystate change and readystate = 4
+
+.ajaxStart(): Register a handler to be called when the first Ajax request begins. This is an Ajax Event.
+
+Note: Global callback functions should be set with their respective global Ajax event handler methods—.ajaxStart(), .ajaxStop(), .ajaxComplete(), .ajaxError(), .ajaxSuccess(), .ajaxSend()—rather than within the options object for $.ajaxSetup().
+
+URL provides methods to generate url for blobs. So that we can directly show it in UI and also pass it to the api that accepts it.
+
+
+WorkerGlobalScope interface is an interface representing scope of any worker.
+Workers have no browsing context. This scope contains information usually conveyed by window object.
+in this case event handlers, the console or the associated WorkerNavigator object.
+WindowNavigator is just representation of window.navigator object.
+
+This interface is usually specialized by each worker type:
+DedicatedWorkerGlobalScope for dedicated workers, 
+SharedWorkerGlobalScope for shared workers, and 
+ServiceWorkerGlobalScope for ServiceWorker. 
+The self property returns the specialized scope for each context.
+
+
+Web workers are of three types 
+Dedicated
+Shared
+Service
+
+When main js starts a worker it spawns a new thread which runs in background without affecting other things.
+It can use ajax calls aswell.
+But workers don't have any browsing context so inorder to use the global context object window we use self.
+	
+Web Workers don't have a window object.
+To access global state, use self instead, code that will work on both the main thread and the worker thread.
+But note that you still won't be able to access or manipulate the parent DOM (e.g. get window.jQuery via self.jQuery).
+While the main thread window self points to the Window object, in worker threads self points to a separate WorkerGlobalScope object.
+
+window object is not equal to self object its just a reference to window object and provides the few methods available on window object such as navigator, location, etc. But setting a value in window object and then trying to access it in self is not going to work.
+
+Shared workers can be accessed by multiple scripts and not just one script as in case of dedicated workers.
+These scripts can be anywhere inside a different window or frame or script.
+
+Inorder to comunicate in shared workers we need to use port object.
+The port connection needs to be started either implicitly by use of the onmessage event handler or explicitly with the start() method before any messages can be posted
+
+When using the start() method to open the port connection, it needs to be called from both the parent thread and the worker thread if two-way communication is needed.
+
+myWorker.port.start();  // called in parent thread
+port.start();  // called in worker thread, assuming the port variable references a port
+
+myWorker.port.postMessage([squareNumber.value,squareNumber.value]);
+
+onconnect = function(e) {
+  var port = e.ports[0];
+
+  port.onmessage = function(e) {
+    var workerResult = 'Result: ' + (e.data[0] * e.data[1]);
+    port.postMessage(workerResult);
+  }
+}
+
+we use an onconnect handler to fire code when a connection to the port happens (i.e. when the onmessage event handler in the parent thread is setup, or when the start() method is explicitly called in the parent thread).
+
+self is equivalent to window in worker file but gives WorkerGlobalScope object and not actual global scope object which in case of Dedicated worker is DedicatedWorkerGlobalScope and in case of shared SharedWorkerGlobalScope.
+
+Service workers work only with https requests and async requests so localstorage and synchronous XHR are not allow.
