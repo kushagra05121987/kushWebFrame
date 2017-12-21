@@ -15,3 +15,9 @@ sworker.port.postMessage("Hello shared worker. I am main script.");
 
 
 // worker.terminate(); // terminate the worker thread without closing or doing any cleanup work.
+
+navigator.serviceWorker.register("src/serviceworker.js", {scope: '/'}).then(function(registration) {
+    console.log('Service worker registration succeeded:', registration);
+}).catch(function(error) {
+    console.log('Service worker registration failed:', error);
+});
