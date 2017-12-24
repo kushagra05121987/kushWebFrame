@@ -754,3 +754,417 @@ we use an onconnect handler to fire code when a connection to the port happens (
 self is equivalent to window in worker file but gives WorkerGlobalScope object and not actual global scope object which in case of Dedicated worker is DedicatedWorkerGlobalScope and in case of shared SharedWorkerGlobalScope.
 
 Service workers work only with https requests and async requests so localstorage and synchronous XHR are not allow.
+
+Service worker scopes are restricted to both the location of service worker file and the current url.
+If service worker file is inside a directory such as src then it will be restricted to track the fetching of
+files inside that directory.
+
+If the current page url or request url is different than the directory of service worker and we use scope like {scope: './'} then error is thown that the request we are trying to make is out of scope of service worker and then inorder to resolve this we need to move the service worker script to another location to match the request url or we need to add Service-Worker-Allowed: true or we can omit the scope argument.
+
+Install event allows to registers specific resources for worker such as caches.
+while install is happening we get one more event
+event.waitUntill to wait untill the installation process is completed and install stage in resolved.
+if install event is taking too long the we can even skip it by self.skipWaiting()
+
+After the install is finished and is waiting for the clients using other service workers to be closed.
+
+Activate state begins when there are no workers left on which clients are working. This stage can be used to clean up anything that was being used by other clients and workers and now after they have stopped they are no more requied.
+
+Activate events can also be extended and be waited for to be finished using same methods as above in install phase
+event.waitUntill
+and self.clients.claim() --- start handling and controlling all open clients without reloading them. 
+
+So while serving script files from servers that have htaccess support we can set the response headers in htaccess file like 
+Header add Custom-Header "parameter=value"
+request will be 
+GET / HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+DNT: 1
+Connection: keep-alive
+Cache-Control: max-age=0
+
+.to which the server responded with the following headers:
+
+HTTP/1.1 200 OK
+Server: nginx
+Date: Mon, 01 Aug 2016 17:58:14 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Powered-By: PHP/5.6.24, PleskLin
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+Custom-Header: parameter=value
+Content-Language: en
+
+there i can also check if file requested is a js file or not
+
+Fetch API
+There are new objects like Request, response and fetch().
+Fetch is used to fetch any resource like a normal ajax call . It takes as an argument the request object or url string and returns back a promise object which can be clubbed with then and catch methods.
+Then method receives Response object.
+
+Request object is for preparing and creating a request object which can be passed to fetch.
+It takes input and init as arguments.
+Input can be url or another request object.
+Init can be an options object with method, headers, body which can be Blob, BufferSource, FormData, URLSearchParams, USVString, or ReadableStream object, mode which can be cors, no-cors, same-origin, or navigate, credentials, etc
+
+Response is the object for preparing and creating a response along with body and headers. which can then be passed to other calling methods.
+
+It takes two arguments body and init as options.
+BOdy can be one of the following
+Blob
+BufferSource
+FormData
+ReadableStream
+URLSearchParams
+USVString
+
+init takes following options
+status,
+statusText,
+headers
+
+headers in both request and response are an object of Headers which has some methods like get getall append delete has etc
+
+File Blob and Filereader
+
+File is an extension on Blob object. Its specific use is to create a reference object for a file which will give some meta properties of file such as size, last modified, name , type , etc.
+
+File does not define any methods of its own. It inherits them from blob.
+
+File constructor takes three arguments 
+An Array of ArrayBuffer, ArrayBufferView, Blob, or DOMString objects — or a mix of any such objects. This is the file content encoded as UTF-8.
+name of file,
+options which include 
+type and lastModified
+var file = new File(["foo"], "foo.txt", {
+  type: "text/plain",
+});
+
+
+Blob is the representation of file like objects in raw immutable form.
+We can construct blob object from other non blob objects using Blob() constructor
+Blob constructor takes two arguments
+An Array of ArrayBuffer, ArrayBufferView, Blob, or DOMString objects — or a mix of any such objects. This is the file content encoded as UTF-8.
+options which contains type -> the mine type of the file 
+endings: which defines how the line breaks in the given data are supposed to be treated in new raw file. The values are native which converts all breaks into os specific breaks. Transparent which keeps the breaks as it is.
+
+var aFileParts = ['<a id="a"><b id="b">hey!</b></a>']; // an array consisting of a single DOMString
+var oMyBlob = new Blob(aFileParts, {type : 'text/html'}); // the blob
+
+New blob can be constructed from another blob object using slice method
+Slice is browser specific method which means for different browsers we have different variants of slice.
+
+var blob = instanceOfBlob.slice([start [, end [, contentType]]]);
+
+To obtain a Blob object for a file on the user's file system we use File object.
+
+
+The FileReader object lets web applications asynchronously read the contents of files (or raw data buffers) stored on the user's computer, using File or Blob objects to specify the file or data to read.
+
+Properties
+FileReader.error Read only
+A DOMException representing the error that occurred while reading the file.
+FileReader.readyState Read only
+A number indicating the state of the FileReader. This is one of the following:
+EMPTY	0	No data has been loaded yet.
+LOADING	1	Data is currently being loaded.
+DONE	2	The entire read request has been completed.
+FileReader.result Read only
+The file's contents. This property is only valid after the read operation is complete, and the format of the data depends on which of the methods was used to initiate the read operation.
+
+Event handlers
+FileReader.onabort
+A handler for the abort event. This event is triggered each time the reading operation is aborted.
+FileReader.onerror
+A handler for the error event. This event is triggered each time the reading operation encounter an error.
+FileReader.onload
+A handler for the load event. This event is triggered each time the reading operation is successfully completed.
+FileReader.onloadstart
+A handler for the loadstart event. This event is triggered each time the reading is starting.
+FileReader.onloadend
+A handler for the loadend event. This event is triggered each time the reading operation is completed (either in success or failure).
+FileReader.onprogress
+A handler for the progress event. This event is triggered while reading a Blob content.
+
+
+Methods
+FileReader.abort()
+Aborts the read operation. Upon return, the readyState will be DONE.
+FileReader.readAsArrayBuffer()
+Starts reading the contents of the specified Blob, once finished, the result attribute contains an ArrayBuffer representing the file's data.
+FileReader.readAsBinaryString() 
+Starts reading the contents of the specified Blob, once finished, the result attribute contains the raw binary data from the file as a string.
+FileReader.readAsDataURL()
+Starts reading the contents of the specified Blob, once finished, the result attribute contains a data: URL representing the file's data.
+FileReader.readAsText()
+Starts reading the contents of the specified Blob, once finished, the result attribute contains the contents of the file as a text string.
+
+FileReader object and File can be used with File , blob or even with FileList object from input elements.
+
+FileList ->>> FileList is the object which represents the list of files in given file input element.
+var inputFile = document.getElementsByName("file").item(0);
+so inputFile.files will give FileList
+
+createDocumentFragment doesnot modify the actual untill its added to html . It creates a virtual dom or fragment and we keep on doing modification to that but not to actual dom.
+createElement transparently in the backend keep manipulating the DOM though we not see it in the page but it actually modifies the dom.
+
+File and Blobs cannot read file on local machine unless they are uploaded.
+
+Script type
+module: HTML5 For HTML5-compliant browsers the code is treated as a JavaScript module. The processing of the script contents is not affected by the charset and defer attributes.
+
+Module types js are automatically 'use-strict'
+Module types can use import and exports.
+Module types behave like defer by default.
+Defer by default
+<!-- This script will execute after… -->
+<script type="module" src="1.js"></script>
+
+<!-- …this script… -->
+<script src="2.js"></script>
+
+<!-- …but before this script. -->
+<script defer src="3.js"></script>
+
+nomodule 
+This Boolean attribute is set to indicate that the script should not be executed in browsers that support ES6 modules — in effect, this can be used to serve fallback scripts to older browsers that do not support modular JavaScript code.
+
+Async works on external & inline modules
+<!-- This executes as soon as its imports have fetched -->
+<script async type="module">
+  import {addTextToBody} from './utils.js';
+
+  addTextToBody('Inline module executed.');
+</script>
+
+<!-- This executes as soon as it & its imports have fetched -->
+<script async type="module" src="1.js"></script>
+
+
+<!-- 1.js only executes once -->
+Modules only execute once
+<script type="module" src="1.js"></script>
+<script type="module" src="1.js"></script>
+<script type="module">
+  import "./1.js";
+</script>
+
+<!-- Whereas normal scripts execute multiple times -->
+<script src="2.js"></script>
+<script src="2.js"></script>
+
+Always CORS
+<!-- This will not execute, as it fails a CORS check -->
+<script type="module" src="https://….now.sh/no-cors"></script>
+
+<!-- This will not execute, as one of its imports fails a CORS check -->
+<script type="module">
+  import 'https://….now.sh/no-cors';
+
+  addTextToBody("This will not execute.");
+</script>
+
+<!-- This will execute as it passes CORS checks -->
+<script type="module" src="https://….now.sh/cors"></script>
+
+No credentials
+<!-- Fetched with credentials (cookies etc) -->
+<script src="1.js"></script>
+
+<!-- Fetched without credentials -->
+<script type="module" src="1.js"></script>
+
+<!-- Fetched with credentials -->
+<script type="module" crossorigin src="1.js?"></script>
+
+<!-- Fetched without credentials -->
+<script type="module" crossorigin src="https://other-origin/1.js"></script>
+
+<!-- Fetched with credentials-->
+<script type="module" crossorigin="use-credentials" src="https://other-origin/1.js?"></script>
+
+In HTML5, some HTML elements which provide support for CORS, such as <img>, <video> or <script>, have a crossorigin attribute (crossOrigin property), which lets you configure the CORS requests for the element's fetched data. These attributes are enumerated, and have the following possible values:
+
+Keyword	Description
+anonymous	CORS requests for this element will not have the credentials flag set.
+use-credentials	CORS requests for this element will have the credentials flag set; this means the request will provide credentials.
+By default (that is, when the attribute is not specified), CORS is not used at all. The "anonymous" keyword means that there will be no exchange of user credentials via cookies, client-side SSL certificates or HTTP authentication
+
+When you use the crossorigin attribute it sets the "use-URL-credentials" flag and maps anonymous to "same-origin" and use-credentails to "include" for the crendentials mode. If you omit the crossorigin attribute, "use-URL-credentials" is unset and, the default for credentials mode is assumed, which is omit.
+
+You can add credentials to a same-origin module by including the crossorigin attribute (which seems a bit weird to me, and I've questioned this in the spec). If you want to send credentials to other origins too, use crossorigin="use-credentials".
+
+
+
+using module we can use import and export but for other features we dont need to use module. Normal text/javascript will work.
+
+nomodule works only with text/javascript. If given with tyep module its omitted and script still executes.
+
+Error: Failed to load http://sysblog.local:8080/index.php: Response for preflight is invalid (redirect)
+indicates that the page requested is redirecting the user somewhere.
+
+jqXHR is superset of xhr which is actual representation of XMLHttpRequest object.
+
+Access-Control-Allow-Origin
+Access-Control-Allow-Credentials
+these are headers which are required to be present in both OPTIONS request and GET request.
+
+it is contentType in ajax call that defines enctype of form
+using application/x-www-form-urlencoded, multipart/form-data, or text/plain values with contentType will mimic the behaviour of actual form submission with enctype as these values.
+
+crossDomain jquery option -> If you wish to force a crossDomain request (such as JSONP) on the same domain, set the value of crossDomain to true 
+
+converters (default: {"* text": window.String, "text html": true, "text json": jQuery.parseJSON, "text xml": jQuery.parseXML})
+Type: PlainObject
+An object containing dataType-to-dataType converters. Each converter's value is a function that returns the transformed value of the response. 
+
+Default value of content-type header (in ajax or form) or enctype (in form) is application/x-www-form-urlencoded.
+
+if data is sent as application/x-www-form-urlencoded it is received in both $_POST and php://input stream ( as name=kushagra&age=38).
+
+processData By default, data passed in to the data option as an object (technically, anything other than a string) will be processed and transformed into a query string, fitting to the default content-type "application/x-www-form-urlencoded".  If you want to send a DOMDocument, or other non-processed data, set this option to false.
+
+Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding:gzip, deflate
+Accept-Language:en-US,en;q=0.9,fr;q=0.8
+Cache-Control:max-age=0
+Connection:keep-alive
+Content-Length:365
+Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryrosnbEUsHNClsQYZ
+Cookie:PHPSESSID=m9tpj4fnn5n7uh48s939n7ri32
+DNT:1
+Host:sysblog.local:8080
+Origin:http://localhost:9000
+Referer:http://localhost:9000/
+Upgrade-Insecure-Requests:1
+User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36
+
+------WebKitFormBoundary76JWxVOm9dQTKlbs
+Content-Disposition: form-data; name="email"
+
+karizmatic.kay@gmail.com
+------WebKitFormBoundary76JWxVOm9dQTKlbs
+Content-Disposition: form-data; name="firstname"
+
+Kushagra
+------WebKitFormBoundary76JWxVOm9dQTKlbs
+Content-Disposition: form-data; name="lastname"
+
+Mishra
+------WebKitFormBoundary76JWxVOm9dQTKlbs
+Content-Disposition: form-data; name="ufile"; filename="adhaar.png"
+Content-Type: image/png
+
+
+------WebKitFormBoundary76JWxVOm9dQTKlbs--
+
+multipart/formdata 
+With this method of transmitting name/value pairs, each pair is represented as a "part" in a MIME message (as described by other answers). Parts are separated by a particular string boundary (chosen specifically so that this boundary string does not occur in any of the "value" payloads). Each part has its own set of MIME headers like Content-Type, and particularly Content-Disposition, which can give each part its "name." The value piece of each name/value pair is the payload of each part of the MIME message. The MIME spec gives us more options when representing the value payload -- we can choose a more efficient encoding of binary data to save bandwidth (e.g. base 64 or even raw binary).
+
+So as we can see the multipart/formdata request uses boundries for every key/value pair which creates its own mime-type . So very mime has its own set of headers such as content type and content Disposition
+
+This type of behaviour cannot be mimiced with normal ajax flow hence we need Formdata otherwise it prepares a query string similar to application/x-www-form-urlencoded with & and %20.
+
+Content-Type can be anything event application/kushagra and whatever we pass as a data for post method 
+it will be converted to application/x-www-form-urlencoded format with & and %20 or whatever encoding is required.
+
+If enctype is unsupported (even if it is application/json) then it will automatically convert to application/x-www-form-urlencoded such as in case of application/kushagra.
+
+text/plain enctype sends request payload and not form data like in normal application/x-www-form-urlencoded request. Hence it can only be retrieved from php://input.In this case only filename will go with the post request and not actual file object.
+email=karizmatic.kay@gmail.com
+firstname=Kushagra
+lastname=Mishra
+ufile=adhaar.png
+
+but if used with ajax calls then the request payload goes as in application/x-www-form-urlencoded.
+name=kushagra&age=38
+
+Whatever w3school says about text/plain enctype is wrong no encryption is performed even + is not used
+
+In XMLHttpRequest content type with value application/x-www-form-urlencoded, multipart/formdata, text/plain if the actual content is not in required format the value gets converted to application/x-www-form-urlencoded format that is with & and %20 etc.
+So if json value or anyother value other than normal text is supplied with text/plain or json value, anyother value which is not multipart request with boundary is supplied with multipart/formdata or any other content-type then the payload is converted to application/x-www-form-urlencoded.
+
+Blob can set its content-type and hence we can see the use of other property Content-Type in multipart request which belongs to only a specific mime subpart.
+
+"------WebKitFormBoundaryXlk8RvQzJKAhmGr4
+Content-Disposition: form-data; name="username"
+
+Groucho
+------WebKitFormBoundaryXlk8RvQzJKAhmGr4
+Content-Disposition: form-data; name="accountnum"
+
+123456
+------WebKitFormBoundaryXlk8RvQzJKAhmGr4
+Content-Disposition: form-data; name="ufile"
+
+undefined
+------WebKitFormBoundaryXlk8RvQzJKAhmGr4
+Content-Disposition: form-data; name="webmasterfile"; filename="blob"
+Content-Type: text/xml
+
+<a id="a"><b id="b">hey!</b></a>
+------WebKitFormBoundaryXlk8RvQzJKAhmGr4--
+"
+
+when sending formdata with file through ajax we need to skip setting content-type header because for multipart requests we need to set boundary value also with multipart/formdata which when setting manually can't be set so we need to just let it set automatically which will add boundary value. Content-Type:multipart/form-data; boundary=----WebKitFormBoundarybkqwsY2nEFys9wg5
+
+If no content-type is set and json or anyother unsupported format like text is passed then in core XmlHttpRequest it is passed as raw data with text/plain as content-type.
+
+Which in case of jquery ajax would have been set to application/x-www-form-urlencoded and data converted accordingly.
+
+.hover() is jquery event it binds tagNameo events mouseenter and mouseleave.
+
+For upload both xhr.progressEvent and xhr.upload.progressEvent work in which xhr.progressEvent does not give the total amount to be uploaded, it only gives the amount upload till now but xhr.upload.progressEvent will give both the uploaded aswell as total to be uploaded.
+Upload process is not completed untill xhr.progressEvent is finished and xhr.onload event is fired or xhr.readyState is 4. 
+
+for downloading using jquery ajax we need to setup responseType to blob , dataType: blob doesnot work.
+
+The response progress (XmlHttpRequest.onprogress)
+This is when the browser is downloading the data from the server.
+
+The request progress (XmlHttpRequest.upload.onprogress)
+This is when the browser is sending the data to the server (including POST parameters, cookies, and files)
+
+progressevent on ajax should be bound using xhrFiles anyother way will not work
+xhrFields: {
+    withCredentials: true,
+    responseType: 'blob',
+    onprogress: function(e) {console.log("%c On Progress ", "background: darkgreen; color: #ffffff", e);}
+},
+
+We can het XmlHttpRequest object in jquery ajax using $.ajaxSettings.xhr();
+Where as $.ajaxSettings gives the json object of settings done by $.ajaxSetup
+
+accepts:{*: "*/*", text: "text/plain", html: "text/html", xml: "application/xml, text/xml", json: "application/json, text/javascript", …}
+async:true
+contentType:"application/x-www-form-urlencoded; charset=UTF-8"
+contents:{xml: /\bxml\b/, html: /\bhtml/, json: /\bjson\b/, script: /\b(?:java|ecma)script\b/}
+converters:{* text: ƒ, text html: true, text json: ƒ, text xml: ƒ, text script: ƒ}
+flatOptions:{url: true, context: true}
+global:true
+isLocal:false
+jsonp:"callback"
+jsonpCallback:ƒ ()
+processData:true
+responseFields:{xml: "responseXML", text: "responseText", json: "responseJSON"}
+type:"GET"
+url:"http://localhost:9000/"
+xhr:ƒ ()
+
+
+xhr: function() {} is the callback used to prepare XmlHttpRequest object and hence here we can bind upload progress event 
+xhr: function() {
+    var myXhr = $.ajaxSettings.xhr();
+    myXhr.upload.onprogress = function(e) {console.log("%c On Progress Upload ", "background: orange; color: #ffffff", e);}
+    return myXhr;
+},
+
+delete operator removes property from object.

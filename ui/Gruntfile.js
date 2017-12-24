@@ -1,6 +1,13 @@
 /*global module:true*/
 
 var serveStatic = require('serve-static');
+var enableREST = function(req, res, next){
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  return next();
+};
 //var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 module.exports = function (grunt) {
 
@@ -88,6 +95,10 @@ module.exports = function (grunt) {
           keepalive: true,
           livereload: 9001,
           // open: true,
+          middleware: function(connect, options, middlewares) {
+            // middlewares.unshift(connect.use(enableREST));
+            return middlewares;
+          }
         },
         proxies: [
           // {
@@ -119,7 +130,12 @@ module.exports = function (grunt) {
             }
 
             // Setup the proxy
-            middlewares = [require('grunt-connect-proxy/lib/utils').proxyRequest];
+            // middlewares = [require('grunt-connect-proxy/lib/utils').proxyRequest];
+
+            middlewares.unshift(function(req, res, next) {
+                res.setHeader('Service-Worker-Allowed', './');
+                next();
+            });
 
             // Serve static files.
             options.base.forEach(function (base) {
