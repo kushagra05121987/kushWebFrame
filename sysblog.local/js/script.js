@@ -8,11 +8,12 @@
                     var elem = $(this)[0];
                     // wont work with $ jquery selectors
                     // console.log($("input[type='text']").validity);
-                    // elem.setCustomValidity("custom validation message");
-                    // console.log(elem.checkValidity());
-                    // console.log(elem.validity);
-                    // console.log(elem.validationMessage);
-                    // console.log(elem.willValidate);
+                    console.log(elem.validationMessage);
+                    // elem.setCustomValidity("custom validation message"); // if we set this then form wont submit
+                    console.log(elem.checkValidity());
+                    console.log(elem.validity);
+                    console.log(elem.validationMessage);
+                    console.log(elem.willValidate);
                     // document.forms[0].submit = true;
                     // var form = document.getElementsByTagName('form');
                     // form = form[0];

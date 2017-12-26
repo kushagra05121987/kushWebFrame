@@ -53,7 +53,6 @@ $app->bindInstallPaths(require __DIR__.'/paths.php');
 */
 
 
-
 $framework = $app['path.base'].
                  '/vendor/laravel/framework/src';
 

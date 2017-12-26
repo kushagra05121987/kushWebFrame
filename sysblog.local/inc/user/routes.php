@@ -10,6 +10,7 @@ namespace Core;
 use Core\Router as Router;
 use \Core\Constants as c;
 
+
 Router::setPrefix("admin");
 Router::registerRoute("GET", "/", null,"index", "index");
 Router::registerRoute("GET", "/index/index", null,"index", "index");
@@ -41,3 +42,19 @@ Router::registerRoute("POST", "/register", null, "register", "create");
 
 // home for user
 Router::registerRoute("GET", "/home", null, "home", "index");
+
+// Route for UI ajax Check
+Router::clearPrefix();
+Router::setPrefix("cortex");
+use Core\Response as Response;
+Router::registerRoute("OPTIONS", "/nameGet", function() {
+	header("Access-Control-Allow-Headers: *");
+	header("Access-Control-Allow-Origin: *");
+	header("Access-Control-Allow-Method: *");
+});
+Router::registerRoute("GET", "/nameGet", function() {
+	Response::setStatusCode(200);
+	echo json_encode(["name" => "Kushagra Mishra"]);
+});
+
+Router::clearPrefix();
