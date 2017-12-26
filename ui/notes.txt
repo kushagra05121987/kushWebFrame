@@ -810,10 +810,52 @@ There are new objects like Request, response and fetch().
 Fetch is used to fetch any resource like a normal ajax call . It takes as an argument the request object or url string and returns back a promise object which can be clubbed with then and catch methods.
 Then method receives Response object.
 
+Promise<Response> fetch(input[, init]);
+Parameters
+input
+This defines the resource that you wish to fetch. This can either be:
+A USVString containing the direct URL of the resource you want to fetch. Some browsers accept blob: and data: as schemes.
+A Request object.
+init Optional
+An options object containing any custom settings that you want to apply to the request. The possible options are:
+method: The request method, e.g., GET, POST.
+headers: Any headers you want to add to your request, contained within a Headers object or an object literal with ByteString values.
+body: Any body that you want to add to your request: this can be a Blob, BufferSource, FormData, URLSearchParams, or USVString object. Note that a request using the GET or HEAD method cannot have a body.
+mode: The mode you want to use for the request, e.g., cors, no-cors, or same-origin.
+credentials: The request credentials you want to use for the request: omit, same-origin, or include. To automatically send cookies for the current domain, this option must be provided. Starting with Chrome 50, this property also takes a FederatedCredential instance or a PasswordCredential instance.
+cache: The cache mode you want to use for the request: default, no-store, reload, no-cache, force-cache, or only-if-cached.
+redirect: The redirect mode to use: follow (automatically follow redirects), error (abort with an error if a redirect occurs), or manual (handle redirects manually). In Chrome the default was follow before Chrome 47 and manual starting with Chrome 47.
+referrer: A USVString specifying no-referrer, client, or a URL. The default is client.
+referrerPolicy: Specifies the value of the referer HTTP header. May be one of no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, unsafe-url.
+integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=).
+keepalive: The keepalive option can be used to allow the request to outlive the page. Fetch with the keepalive flag is a replacement for the Navigator.sendBeacon() API. 
+signal: An AbortSignal object instance; allows you to communicate with a fetch request and abort it if desired via an AbortController.
+
 Request object is for preparing and creating a request object which can be passed to fetch.
 It takes input and init as arguments.
 Input can be url or another request object.
 Init can be an options object with method, headers, body which can be Blob, BufferSource, FormData, URLSearchParams, USVString, or ReadableStream object, mode which can be cors, no-cors, same-origin, or navigate, credentials, etc
+
+var myRequest = new Request(input, init);
+Parameters
+input
+Defines the resource that you wish to fetch. This can either be:
+A USVString containing the direct URL of the resource you want to fetch.
+A Request object, effectively creating a copy. Note the following behavioural updates to retain security while making the constructor less likely to throw exceptions:
+If this object exists on another origin to the constructor call, the Request.referrer is stripped out.
+If this object has a Request.mode of navigate, the mode value is converted to same-origin.
+init Optional
+An options object containing any custom settings that you want to apply to the request. The possible options are:
+method: The request method, e.g., GET, POST.
+headers: Any headers you want to add to your request, contained within a Headers object or an object literal with ByteString values.
+body: Any body that you want to add to your request: this can be a Blob, BufferSource, FormData, URLSearchParams, USVString, or ReadableStream object. Note that a request using the GET or HEAD method cannot have a body.
+mode: The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate. The default is cors. In Chrome the default is no-cors before Chrome 47 and same-origin starting with Chrome 47.
+credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit. In Chrome the default is same-origin before Chrome 47 and include starting with Chrome 47.
+cache: The cache mode you want to use for the request.
+redirect: The redirect mode to use: follow, error, or manual. In Chrome the default is manual before Chrome 47 and follow starting with Chrome 47.
+referrer: A USVString specifying no-referrer, client, or a URL. The default is client.
+integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=).
+
 
 Response is the object for preparing and creating a response along with body and headers. which can then be passed to other calling methods.
 
@@ -1168,3 +1210,246 @@ xhr: function() {
 },
 
 delete operator removes property from object.
+
+
+Web applications can allow or disallow other webapplication to incude their pages in an iframe by using following header
+X-Frame-Options: DENY
+X-Frame-Options: SAMEORIGIN
+X-Frame-Options: ALLOW-FROM https://example.com/
+
+inorder to add headers in htaccess request we need to enable mod_headers directive in apache.
+
+Chrome and Safari don't support X-Frame-Options
+so for that we need to use Content-Security-Policy
+Syntax
+Content-Security-Policy: <policy-directive>; <policy-directive>
+
+This response header tell the browser that load different sections according to the given value in the header such as
+default-src
+Serves as a fallback for the other fetch directives.
+font-src
+Specifies valid sources for fonts loaded using @font-face.
+frame-src
+Specifies valid sources for nested browsing contexts loading using elements such as <frame> and <iframe>.
+img-src
+Specifies valid sources of images and favicons.
+manifest-src
+Specifies valid sources of application manifest files.
+media-src
+Specifies valid sources for loading media using the <audio> , <video> and <track> elements.
+object-src
+Specifies valid sources for the <object>, <embed>, and <applet> elements.
+script-src
+Specifies valid sources for JavaScript.
+style-src
+Specifies valid sources for stylesheets.
+worker-src
+Specifies valid sources for Worker, SharedWorker, or ServiceWorker scripts.
+
+It can be used as response header as well as a meta tag 
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+with unsafe inline we can allow the use of inline <script> tags , javascript: and also inline event handlers which otherwise wont be allowed.
+
+Content-Security-Policy actually gives a white list of src to browser to load resources from these src's only.
+
+From the DOM iframe element, scripts can get access to the window object of the included HTML page via the contentWindow property. The contentDocument property refers to the document element inside the iframe (this is equivalent to contentWindow.document), but is not supported by Internet Explorer versions before IE8.
+
+We cannot access the content of another window such as iframe window(iframe.contentWindow) or new window from window.open or anyother window from different domain using javascript. Hence in order to communicate between different windows from different origins we make use of Message event and postMessage method on window object.
+
+
+window.history.back();
+window.history.forward();
+window.history.go(-1);
+window.history.go(1);
+var numberOfEntries = window.history.length;
+
+onpopstate is an event handler for the popstate event on the window.
+
+A popstate event is dispatched to the window each time the active history entry changes between two history entries for the same document. If the activated history entry was created by a call to history.pushState(), or was affected by a call to history.replaceState(), the popstate event's state property contains a copy of the history entry's state object.
+
+Note: calling history.pushState() or history.replaceState() won't trigger a popstate event. The popstate event is only triggered by performing a browser action, such as clicking on the back button (or calling history.back() in JavaScript), when navigating between two history entries for the same document.
+
+window.onpopstate = function(event) {
+  alert("location: " + document.location + ", state: " + JSON.stringify(event.state));
+};
+
+history.pushState({page: 1}, "title 1", "?page=1");
+history.pushState({page: 2}, "title 2", "?page=2");
+history.replaceState({page: 3}, "title 3", "?page=3");
+history.back(); // alerts "location: http://example.com/example.html?page=1, state: {"page":1}"
+history.back(); // alerts "location: http://example.com/example.html, state: null
+history.go(2);  // alerts "location: http://example.com/example.html?page=3, state: {"page":3}
+
+Popstate event 
+PopStateEvent {isTrusted: true, state: {…}, type: "popstate", target: Window, currentTarget: Window, …}
+bubbles:false
+cancelBubble:false
+cancelable:true
+composed:false
+currentTarget:Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}
+defaultPrevented:false
+eventPhase:0
+isTrusted:true
+path:[Window]
+returnValue:true
+srcElement:Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}
+state:{foo: "bar"}
+target:Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}
+timeStamp:16264.45
+type:"popstate" 
+
+
+Example of pushState() method
+Suppose http://mozilla.org/foo.html executes the following JavaScript:
+
+var stateObj = { foo: "bar" };
+history.pushState(stateObj, "page 2", "bar.html");
+
+The pushState() method
+pushState() takes three parameters: a state object, a title (which is currently ignored), and (optionally) a URL. Let's examine each of these three parameters in more detail:
+
+state object — The state object is a JavaScript object which is associated with the new history entry created by pushState(). Whenever the user navigates to the new state, a popstate event is fired, and the state property of the event contains a copy of the history entry's state object.
+
+The state object can be anything that can be serialized. Because Firefox saves state objects to the user's disk so they can be restored after the user restarts the browser, we impose a size limit of 640k characters on the serialized representation of a state object. If you pass a state object whose serialized representation is larger than this to pushState(), the method will throw an exception. If you need more space than this, you're encouraged to use sessionStorage and/or localStorage.
+
+title — Firefox currently ignores this parameter, although it may use it in the future. Passing the empty string here should be safe against future changes to the method. Alternatively, you could pass a short title for the state to which you're moving.
+
+URL — The new history entry's URL is given by this parameter. Note that the browser won't attempt to load this URL after a call to pushState(), but it might attempt to load the URL later, for instance after the user restarts the browser. The new URL does not need to be absolute; if it's relative, it's resolved relative to the current URL. The new URL must be of the same origin as the current URL; otherwise, pushState() will throw an exception. This parameter is optional; if it isn't specified, it's set to the document's current URL.
+
+hashchange event is fired when location's href changes.
+
+pushstate changes the current url and creates a new state and pushes it to the history so that the url of the page containing the pushstate script is still in history. and hence when we click back button we can get to that url but in case of replaceState the url of the page that included replaceState script will be removed from the history and replaced the new state defined by replaceState.
+
+Jquery's `on` method helps to bind events based on when they bubble or when event occurs directly to the objects that are present at time of event attaching.
+so 
+When doing something like 
+$(window).on('load', function(e) {
+    console.log("Body Load Done", e)
+})
+load event is directly bound to window object which is present at all times.
+
+but when doing something like 
+$(window).on('load','body', function(e) {
+    console.log("Body Load Done", e)
+})
+load event callback doesnot gets called because above is delegated way of binding events when they bubble up to the element to which the event is actully bound, in this case window.
+
+Delegation helps us to bind events with elements which are of present at time time of binding but will be available sometime later.
+
+So above call is trying to bind an event on body inside a window element , because body is not available in start or at the time when this event will be bound hence we are using window to bind the event so that when body is avaiable, any event that occurs on body will propogate up till window and there we catch the event on window binding.
+
+But in this case load event is not caught because load / on load events dont bubble up.
+
+Promise 
+The Promise object represents the eventual completion (or failure) of an asynchronous operation, and its resulting value.
+A Promise is a proxy for a value not necessarily known when the promise is created. It allows you to associate handlers with an asynchronous action's eventual success value or failure reason. This lets asynchronous methods return values like synchronous methods: instead of immediately returning the final value, the asynchronous method returns a promise to supply the value at some point in the future.
+
+In short promise gives a guarantee that the method which is returning promise will return something either success or error.
+While chaining .then calls whatever is returned from then method if it is Promise then the next .then method will be chained with the returned promise and the message passed in the callback of current .then will be from the resolve of the promise that was returned from the previous .then callback but if something else is returned say a number or integer then .then chaining will still work but on the main promise in the same sequence as it was registered and it will take that returned integer as its argument in the .then callback.
+.catch method call is similar to catch in try catch.
+We even have finally method which will be executed no matter if error happened or success happened.
+
+A Promise is in one of these states:
+
+pending: initial state, neither fulfilled nor rejected.
+fulfilled: meaning that the operation completed successfully.
+rejected: meaning that the operation failed 
+
+The callback passed to new Promise constructor is called executor.
+
+Nested then clause reject cannot be handled by the parent catch. There has to be a chained catch with every .then chain.
+
+In order to remove event listener on an element in javascript we have removeEventListener('eventname', "callback");
+In order to remove all the event listeners on an element we need to do a copy and then replace that node with the copy
+
+var new_el = el.cloneNode(true); //true means a deep copy
+el.parentNode.replaceChild(new_el,el);
+.on was previously called bind()
+.off was previously called unbind()
+
+If a simple event name such as "click" is provided, all events of that type (both direct and delegated) are removed from the elements in the jQuery set.
+
+The .off() method removes event handlers that were attached with .on(). See the discussion of delegated and directly bound events on that page for more information. Calling .off() with no arguments removes all handlers attached to the elements. Specific event handlers can be removed on elements by providing combinations of event names, namespaces, selectors, or handler function names. 
+
+Remove all event handlers from all paragraphs:
+$( "p" ).off();
+
+Remove all delegated click handlers from all paragraphs:
+$( "p" ).off( "click", "**" );
+
+We can even pass two callbacks inside promise object success and failed which can be used to proceed with the .then chain based on the message received in the .then callback. So that if success then we can do something otherwise if error then we can do something else.
+
+promiseReject().then(function() {
+    console.log('Success');
+    return 1;
+}, function() {
+    console.log('Error');
+    return 2;
+}).then(function(message) {
+    console.log("Error chain", message);
+});
+
+if promise returns an event handler binding then calling that same promise inside .then wont work because all the root calls to promise registered the event handlers initially and so when the event occurred they got called but in case of promise inside .then it registered a new event handler and after it got registered no new events occured hence it was not called.
+
+setTimeout(callback, 2000, params);
+params get passed to the callback.
+
+Promise.all is used to watch all the promises inside an array if all resolve then only .then method of .all is called which receives an object with resolve messages of all the resolved promises. but if either one of the promises passed to the .all array rejected then complelete .all is rejected and catch method of .all is called.
+
+all the resolved promises
+Promise {<resolved>: 3}__proto__: Promise[[PromiseStatus]]: "resolved"[[PromiseValue]]: 3 Promise {<pending>} 12345 Promise {<resolved>: 40}
+
+resolved promise 
+Promise {<resolved>: 3}
+__proto__:Promise
+[[PromiseStatus]]:"resolved"
+[[PromiseValue]]:3
+
+async function is another way of returning the promise without manualy creating a new object. If async function returns anything then proomise is resolved else if error occurs in async function then promise is rejected.
+
+the return value of an async function is implicitly wrapped in Promise.resolve.
+
+Example
+async function returnPromise() {
+  return 12;
+}
+returnPromise().then(function() {});
+
+The await operator is used to wait for a Promise. It can only be used inside an async function.
+The await expression causes async function execution to pause until  a Promise is fulfilled or rejected, and to resume execution of the async function after fulfillment. When resumed, the value of the await expression is that of the fulfilled Promise.
+
+If the Promise is rejected, the await expression throws the rejected value.
+
+If the value of the expression following the await operator is not a Promise, it's converted to a resolved Promise.
+
+Using setTimeout with async function will not work correctly 
+
+async function returnPromise() {
+    setTimeout(function() {
+        return "Success";
+    }, 500);
+}
+
+if returned value from the expression after await returns Promise then await will wait untill promise is resolved or rejected.
+if the returned value is not a promise then it will be treated as the resolved promise value.
+
+setTimeout pushes the code in timeout event queue which gets executed in a context other that the holding block and hence aync method returns empty promise.
+
+setTimeout is an async call code doesnot wait for it to get executed. So following method
+function test() {
+	setTimeout(function() {console.log("Hello")}, 5000);
+	console.log("After setTimeout");
+}
+prints After setTimeout first and exists the function and then after 5 seconds hello is printed.
+
+Await method returns the message passed by resolve or reject methods of Promise.
+function waiting() {
+    return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+            console.log("resolved");
+            resolve(30);
+        }, 5000);
+    });
+}
+var cld = await waiting(); // cld gets 30
+console.log(cld);
