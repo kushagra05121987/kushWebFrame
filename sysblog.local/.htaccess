@@ -1,0 +1,20 @@
+Options -Indexes
+Options +FollowSymLinks
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+#    RewriteBase /learning/
+#    RewriteCond %{REQUEST_URI} !\.(html)$
+#    RewriteRule (\/[a-zA-z0-9]+\.) $1php [L]
+#    RewriteCond %{REQUEST_URI} !\.(html)$
+#    RewriteRule ([a-zA-z0-9]+\.) $1php [L]
+#    RewriteCond %{REQUEST_URI} !\.(html)$
+#    RewriteRule (\/[a-zA-Z0-9]+$) $1.php [L]
+#    RewriteCond %{REQUEST_URI} !\.(html)$
+#    RewriteRule ([a-zA-Z0-9]+$) $1.php [L]
+#    RewriteCond %{REQUEST_URI} !\.(png|jpg|jpeg|ico|css|js)
+#    RewriteRule (.*) index.php [L]
+</IfModule>
+#Header add X-Frame-Options "DENY"
+#Header add X-Frame-Options "SAMEORIGIN"
+#Header add X-Frame-Options "ALLOW-FROM http://localhost:9000/"
+Header add Content-Security-Policy "default-src self; script-src self http://localhost:9000/ http://sysblog.local:8080/; frame-src self http://localhost:9000/ http://sysblog.local:8080/"

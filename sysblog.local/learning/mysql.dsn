@@ -1,0 +1,1 @@
+mysql:host=localhost;dbname=sys_blog;charset=utf8mb4;UID=root;PWD=12345
