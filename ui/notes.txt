@@ -1453,3 +1453,12 @@ function waiting() {
 }
 var cld = await waiting(); // cld gets 30
 console.log(cld);
+
+In order to get various information about function like the number of arguments and the caller we can use 'arguments' keyword.
+callee:ƒ Hello()
+length:0
+Symbol(Symbol.iterator):ƒ values()
+__proto__:Object
+
+callee gives the calling method.
+length gives the number of arguments received by the function.
