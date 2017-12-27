@@ -1441,6 +1441,7 @@ function test() {
 	console.log("After setTimeout");
 }
 prints After setTimeout first and exists the function and then after 5 seconds hello is printed.
+setInterval is also asynchronous operation as setTimeout.
 
 Await method returns the message passed by resolve or reject methods of Promise.
 function waiting() {
@@ -1462,3 +1463,38 @@ __proto__:Object
 
 callee gives the calling method.
 length gives the number of arguments received by the function.
+
+Jquery.Deffered() returns a factory Deffered object which is similar to javascript Promise and hence we can bind .then(), .done(), .always(), .fail() and the method receiving deferred object can call .resolve or .resolveWith and .reject or .rejectWith().
+
+Deferred object has same states as javascript Promise object that is initial Pending, then Resolved or Rejected (known as fulfilled) and then finished.
+
+$.Deferred() takes a callback which is optional, it run just before the actual deferred object is returned. This object is the actual new deferred object and is passed as first argument.
+
+$.Deferred(function(deferred) {
+	console.log("Before ",deferred)
+});
+
+Both in javascript Promise and $.Deffered once state is resolved or rejected it cannot be changed to other.
+
+function returnVal() {
+	return new Promise(function(resolve, reject) {
+		setTimeout(reject, 5000, "failed");
+		setTimeout(resolve, 5000, "success");
+    });
+}
+Promise {<pending>}
+api.jquery.com/:1 Uncaught (in promise) failed
+
+once the state is resolved or rejected any .then or .done() methods attached to the chain will get immediately executed.
+
+If state is resolved or rejected then any .then methods attached to it are immediately executed.
+
+Once the reject is handled in one .catch it will not get passed to another subsequent catch calls.
+
+The callbacks attached to done() will be fired when the deferred is resolved. The callbacks attached to fail() will be fired when the deferred is rejected.
+
+Prior to jQuery 1.8, then() was just syntactic sugar:
+
+promise.then( doneCallback, failCallback )
+// was equivalent to
+promise.done( doneCallback ).fail( failCallback )
