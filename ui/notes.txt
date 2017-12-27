@@ -1528,4 +1528,4 @@ The .promise() method returns a dynamically generated Promise that is resolved o
 
 By default, type is "fx", which means the returned Promise is resolved when all animations of the selected elements have completed.
 
-.promise() works same as $.when.
+.promise() works same as $.when
