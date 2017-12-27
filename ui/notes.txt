@@ -1441,6 +1441,7 @@ function test() {
 	console.log("After setTimeout");
 }
 prints After setTimeout first and exists the function and then after 5 seconds hello is printed.
+setInterval is also asynchronous operation as setTimeout.
 
 Await method returns the message passed by resolve or reject methods of Promise.
 function waiting() {
@@ -1453,3 +1454,78 @@ function waiting() {
 }
 var cld = await waiting(); // cld gets 30
 console.log(cld);
+
+In order to get various information about function like the number of arguments and the caller we can use 'arguments' keyword.
+callee:ƒ Hello()
+length:0
+Symbol(Symbol.iterator):ƒ values()
+__proto__:Object
+
+callee gives the calling method.
+length gives the number of arguments received by the function.
+
+Jquery.Deffered() returns a factory Deffered object which is similar to javascript Promise and hence we can bind .then(), .done(), .always(), .fail() and the method receiving deferred object can call .resolve or .resolveWith and .reject or .rejectWith().
+
+.always() is executed when either of resolve or reject is executed. Its similar to finally.
+
+Deferred object has same states as javascript Promise object that is initial Pending, then Resolved or Rejected (known as fulfilled) and then finished.
+
+$.Deferred() takes a callback which is optional, it run just before the actual deferred object is returned. This object is the actual new deferred object and is passed as first argument.
+
+$.Deferred(function(deferred) {
+	console.log("Before ",deferred)
+});
+
+Both in javascript Promise and $.Deffered once state is resolved or rejected it cannot be changed to other.
+
+function returnVal() {
+	return new Promise(function(resolve, reject) {
+		setTimeout(reject, 5000, "failed");
+		setTimeout(resolve, 5000, "success");
+    });
+}
+Promise {<pending>}
+api.jquery.com/:1 Uncaught (in promise) failed
+
+once the state is resolved or rejected any .then or .done() methods attached to the chain will get immediately executed.
+
+If state is resolved or rejected then any .then methods attached to it are immediately executed.
+
+Once the reject is handled in one .catch it will not get passed to another subsequent catch calls.
+
+The callbacks attached to done() will be fired when the deferred is resolved. The callbacks attached to fail() will be fired when the deferred is rejected.
+
+Prior to jQuery 1.8, then() was just syntactic sugar:
+
+promise.then( doneCallback, failCallback )
+// was equivalent to
+promise.done( doneCallback ).fail( failCallback )
+
+$.Deferred gives a complete object with handler methods as well as state changing methods thats why we use the same object to return as a promise to the calling function and also to bind the state changer methods such as resolve, reject, resolveWith, rejectWith in the called method. And thats why its not secure to share $.Deffered to other methods because they can modify the promise state there, hence $.Deffered.promise() is used which gives only binding methods such as .then, .done, .always, .progress, etc.
+
+Description: Return a Deferred's Promise object.
+deferred.promise( [target ] )
+target
+Type: Object
+Object onto which the promise methods have to be attached.
+
+.progress is used to bind live notification from the promise object before it is resolved or rejected. .notify is used to in conjunction with .progress to keep sending information from promise object to calling method.
+
+In $.Deferred we can pass any number of arguments in the .then, .done, .fail method callback but in case of javascript Promise only one argument can be passed.
+
+$.when is similar to Promise.all. .all method takes array but $.when takes any number of Thenable arguments without array.
+
+If $.when is passed single thenable argument then it will bind all the subsequent then, done, fail, etc to the deferred or promise object returned from that argument.
+
+If $.when is passed a single argument that is not a promise or deferred then it will be immediately resolved and any then , etc callbacks attached will be called.
+
+If $.when is passed with a number of Thenable arguments then a master Deferred object will be created which will watch all the Deffered objects passed into the $.when method and when all of them have resolved or if a single one fails then its resolved or rejected.
+
+If $.when is passed nothing then immediatelya resolved promise is returned.
+
+.promise() Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished.
+The .promise() method returns a dynamically generated Promise that is resolved once all actions of a certain type bound to the collection, queued or not, have ended.
+
+By default, type is "fx", which means the returned Promise is resolved when all animations of the selected elements have completed.
+
+.promise() works same as $.when.
