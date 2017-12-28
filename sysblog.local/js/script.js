@@ -39,3 +39,5 @@
         }, 1000);
     });
 })(jQuery);
+
+window.testf = function() {console.log("OK")}

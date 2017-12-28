@@ -135,8 +135,76 @@ var divs = $('div');
 //     console.log("%c Fails ", "background: #cccccc; color: #333333", message); 
 // });
 
-$.when(divs).then(function(message) { // runs after 5 secs when animation on div ends and works same as .promise()
-    console.log("%c success ", "background: #cccccc; color: #333333", message); 
-}, function(message) {
-    console.log("%c Fails ", "background: #cccccc; color: #333333", message); 
-});
+// $.when(divs).then(function(message) { // runs after 5 secs when animation on div ends and works same as .promise()
+//     console.log("%c success ", "background: #cccccc; color: #333333", message); 
+// }, function(message) {
+//     console.log("%c Fails ", "background: #cccccc; color: #333333", message); 
+// });
+
+// resollveIt().promise().then(function(message) {
+//     console.log("Resollve It Promise ", message);
+// });
+
+// getting deferred object from $.get and $.post
+
+// $.ajaxSetup({
+//     headers: {
+//         // "Access-Control-Allow-Origin": "http://localhost:9000"
+//     }
+// });
+
+// var ajax = $.ajax({
+//     url:"http://sysblog.local:8080/download.php",
+//     type: "GET",
+//     async: true,
+//     success: function() {
+
+//     }
+// })
+// var ajax = $.get("http://sysblog.local:8080/download.php", "name=kushagra&gender=male").then(function(data, statusText, jqXHR) {
+//     console.log("Then", data, statusText, jqXHR);
+// }).fail(function(data, statusText, jqXHR) {
+//     console.log("Fail", data, statusText, jqXHR);    
+// });
+
+// function returnAjax() {
+//     var ajax = $.get("http://sysblog.local:8080/download.php", "name=kushagra&gender=male");
+//     console.log(ajax);
+//     return ajax;
+// }
+
+// returnAjax().then(function(data, statusText, jqXHR) {
+//     console.log("Then", data, statusText, jqXHR);
+// }, function(data, statusText, jqXHR) {
+//     console.log("Fail", data, statusText, jqXHR);
+
+// }, function(data, statusText, jqXHR) {
+//     console.log("Progress", data, statusText, jqXHR);
+
+// });
+
+function returnTimedPromise() {
+    var deferred = $.Deferred();
+    setTimeout(function(){
+        var count = 0;
+        while(count < 10) {
+            deferred.notify(count);
+            count++;
+        }
+        deferred.resolve('Complete');
+    }, 5000);
+    return deferred;
+}
+
+// returnTimedPromise().progress(function(message) {
+//     console.log("Inside Progress ", message);
+// }).then(function(message) {
+//     console.log("Inside then ", message);    
+// });
+
+// returnTimedPromise().then(function(message) {
+//     console.log("Inside then ", message);    
+// }, function() {}, function(message) {
+//     console.log("Inside Progress ", message);
+// });
+

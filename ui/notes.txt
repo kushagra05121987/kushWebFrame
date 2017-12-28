@@ -1529,3 +1529,170 @@ The .promise() method returns a dynamically generated Promise that is resolved o
 By default, type is "fx", which means the returned Promise is resolved when all animations of the selected elements have completed.
 
 .promise() works same as $.when
+
+Jquery $.get and $.post both give jqXHR object which implements $.Deffered Promise interface ( not exactly $.Deffered ) and hence methods like .then(), .done() etc are available to bind with this object.
+
+
+When we serialize a form it prepares a query string like get "email=&firstname=&lastname="
+
+$.get, $.post and $.ajax all return jqXHR which also implements promise interface from $.deferred and hence only the methods such as .then and .done are available in addition to a success callback.
+
+jquery .then method takes three callbacks ƒ ( onFulfilled, onRejected, onProgress )
+
+Same origin policy
+Allows or defines how a resource on one origin can interact with the resource on other origin.
+SOP restricts two origins to talk to each other if they are on different domain, port or schemes(http or https).
+There are still some exceptions such as 
+Embedding of img, script and link are allowed. 
+Post or write requests are allowed.
+Read requests are not allowed but can be tricked using embbeding.
+
+Application can change their domain using document.domain with some limitations.
+document.domain can change the current domain to the superdomain such as in case of ltl.binarybulb.com document.domain can be changed to binarybulb.com but not to xyz.com.
+The change is supposed to be done on both the sides on the pages that can include javascript which can run document.domain.
+
+When doing document.domain port are also replaced with null.
+
+While working with localstorage and cookies they will work only on same origins because they are origin dependent and for every origin they are different.
+
+Things like iframe are allowed to be embedded but with X-Frame-Options or Content-Security-Policy. They are still not allowed to be accessed from a frame from different domain using contentDocument or contentWindow.document. But scripts execution is allowed.
+Other things like
+Media files with <video> and <audio>.
+Plug-ins with <object>, <embed> and <applet>.
+Fonts with @font-face. Some browsers allow cross-origin fonts, others require same-origin fonts.
+are also allowed.
+
+Ajax calls are subjected to same origin policy.
+So even if we include or embed things like js and all from different origins without any issues if those files make cross domain ajax requests then they wont be allowed because now the requests originates from our server and pings other remote server.
+
+For security reasons, browsers restrict cross-origin HTTP requests initiated from within scripts. 
+ XMLHttpRequest and the Fetch API follow the same-origin policy.
+
+ During cross domain requests even it is a simple request which does not trigger options request Cors header Access-Control-Allow-Origin is required because the request is from different origin and hence it needs to be allowed.
+
+Requests are treated as CORS request and a preflight request is sent when either the method or headers are not one out of the following 
+The only allowed methods are:
+GET
+HEAD
+POST
+Apart from the headers set automatically by the user agent (for example, Connection, User-Agent, or any of the other headers with names defined in the Fetch spec as a “forbidden header name”), the only headers which are allowed to be manually set are those which the Fetch spec defines as being a “CORS-safelisted request-header”, which are:
+Accept
+Accept-Language
+Content-Language
+Content-Type (but note the additional requirements below)
+Last-Event-ID
+DPR
+Save-Data
+Viewport-Width
+Width
+The only allowed values for the Content-Type header are:
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+
+Unlike “simple requests” (discussed above), "preflighted" requests first send an HTTP request by the OPTIONS method to the resource on the other domain, in order to determine whether the actual request is safe to send. Cross-site requests are preflighted like this since they may have implications to user data.
+
+In particular, a request is preflighted if any of the following conditions is true:
+
+If the request uses any of the following methods:
+PUT
+DELETE
+CONNECT
+OPTIONS
+TRACE
+PATCH
+Or if, apart from the headers set automatically by the user agent (for example, Connection, User-Agent, or any of the other header with a name defined in the Fetch spec as a “forbidden header name”), the request includes any headers other than those which the Fetch spec defines as being a “CORS-safelisted request-header”, which are the following:
+Accept
+Accept-Language
+Content-Language
+Content-Type (but note the additional requirements below)
+Last-Event-ID
+DPR
+Save-Data
+Viewport-Width
+Width
+Or if the Content-Type header has a value other than the following:
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+Or if one or more event listeners are registered on an XMLHttpRequestUpload object used in the request.
+Or if a ReadableStream object is used in the request.
+
+The cors request sends Access-Control-Request-<Any type that is sent extra or other than the ones allowed>: requested types. In response we get Access-control-Allow-<Any type that is sent extra or other than the ones allowed>: the allowed types.
+
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: X-PINGOTHER, Content-Type
+Access-Control-Allow-Origin: http://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER, Content-Type
+Access-Control-Max-Age: 86400
+
+Access-Control-Allow-Methods, Access-Control-Allow-Headers,  Access-Control-Allow-Origin, Access-Control-Max-Age,  Access-Control-Allow-Credentials, Access-Control-Expose-Headers
+
+Access-Control-Max-Age tells for how much time should the results or response headers from preflight request  are supposed to be cached and once the time ends a new prflight request is supposed to be made.
+
+Redirects in normal ajax requests are allowed but not in preflight requests. If there is a redirection in preflight requests then error is generated.
+
+In order to by pass them we can do following things
+
+change the server-side behavior to avoid the preflight and/or to avoid the redirect—if you have control over the server the request is being made to
+change the request such that it is a simple request that doesn’t cause a preflight
+But if it’s not possible to make those changes, then another way that may be possible is to this:
+
+Make a simple request to determine (using Response.url for the Fetch API, or XHR.responseURL to determine what URL the real preflighted request would end up at).
+Make another request (the “real” request) using the URL you obtained from Response.url or XMLHttpRequest.responseURL in the first step.
+
+When doing CORS requests the request will actually execute without issues but client side libraries will not allow to capture the response if the headers are not correct. The response can still be seen in inspect window or browser.
+
+So in case of with credentials request client will try to send the request along with the credentials set by responsding server but will generate error if it does not contain correct response headers from server.
+
+Using withCredentials from client doesn't make a preflight request, the request will still be the simple request but will expect correct response headers to be set.
+
+When using withCredentials, the server response header Access-Control-Allow-Origin should not be * because then it will allow all the hosts and doamins to send the credentials to the server. So when using withCredentials Access-Control-Allow-Origin should be set to specific host values.
+
+The Access-Control-Expose-Headers header lets a server whitelist headers that browsers are allowed to access. For example:
+
+Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+This allows the X-My-Custom-Header and X-Another-Custom-Header headers to be exposed to the browser.
+
+Jquery No Conflict
+While initialising jquery all the old references of $ are recorded $.noConflict() just restores them back. This is incase we are using any other libraries that use jquery like $ variable. For Jquery $ is just a alias to jQuery.
+<script src="other_lib.js"></script>
+<script src="jquery.js"></script>
+<script>
+$.noConflict();
+// Code that uses other library's $ can follow here.
+</script>
+
+Once noConflict has been made we will not be able to use $ from jQuery direcly in the script because now in the script $ will refer to other library's $.
+
+but still we can do few things like using the $ vairable inside the .ready(function($) {}) which can be registered as 
+<script src="other_lib.js"></script>
+<script src="jquery.js"></script>
+<script>
+$.noConflict();
+jQuery( document ).ready(function( $ ) {
+  // Code that uses jQuery's $ can follow here.
+});
+// Code that uses other library's $ can follow here.
+</script>
+jQuery.noConflict(); // restores $ back to previously using library. 
+// Do something with jQuery
+jQuery( "div p" ).hide();
+// Do something with another library's $()
+$( "content" ).style.display = "none";
+
+or 
+jQuery.noConflict();
+(function( $ ) {
+  $(function() {
+    // More code using $ as alias to jQuery
+  });
+})(jQuery);
+ 
+// Other code using $ as an alias to the other library
+
+
+
+Bind method in javascript is used to change the reference of this ina method. It defines what will this keyword refer to in a method. Which can be used later.
+Bind method also is ussed in currying it can take first argument as the object to which this is bound to and rest can be the arguments supplied to the function.
