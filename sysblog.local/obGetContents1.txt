@@ -1,0 +1,6 @@
+<html hereismyattribute>
+<cripple></cripple>
+<bodyNS>
+<p>It's like comparing apples to oranges.</p>
+</bodyNS>
+</html>
