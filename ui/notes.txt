@@ -622,7 +622,7 @@ onloadstart: null
 onprogress: null
 ontimeout: null
 
-when events on upload are bound then events on core chr object wont work or we can say if both core xhr events and upload events are bound then upload events will take precedence over core events exmaple if xhr.onloadstart and xhr.upload.onloadstart are bound at the same time the xhr.upload.onloadstart will be executed.
+when events on upload are bound then events on core xhr object wont work or we can say if both core xhr events and upload events are bound then upload events will take precedence over core events exmaple if xhr.onloadstart and xhr.upload.onloadstart are bound at the same time the xhr.upload.onloadstart will be executed.
 On readystate change will be executed on xhr object only.
 onload gets executed after the ajax call is completed sucessfully but before onloadEnd is called its available on both xhr and xhr.upload
 
@@ -1786,3 +1786,72 @@ must-revalidate: will tell the browser to validate the cache to check if its ok 
 Expire also works same as cache-control max-age directive but in this we can give excat data and time for the cache to expire.
 
 If there is a Cache-Control header with the "max-age" or "s-maxage" directive in the response, the Expires header is ignored.
+
+If there are no conditional headers in 200 ok response headers then there will be no conditional headers in the requests also.
+
+Chrome behaves differently for cache-control headers, hitting a url in address bar or ctrl+R or ctrl+shift+R doesnot honor cache-control headers its sends a request to server. Chrome will honor cache-control headers only when coming by clicking a link or hitting back button.
+
+But if the response is 304 then chrome will pull data from cache only and not from server as in case of 200 ok.
+Cache-Control header works perfectly in firefox.
+
+If etag or lastModified header were not present then soon after the cache timed out it would have done a 200 ok request which would have given fresh copy and more time taking .
+
+inorder to open new window and not a tab we need to give height and with of the window 
+ window.open("https://www.w3schools.com", "_blank", "location=no,height=300,width=400");
+
+Except for the ranges request for all the other requests if conditions specified in conditional request headers is ok then 304 not modified response is sent back and the ccontent is picked from the cache otherwise is conditions fail then for safe requests like GET and HEAD a direct 200 ok response is sent back and for unsafe requests like PUT and POST if condition matches then 304 Not Modified else if condition doesn't match then 412 precondition fail response is sent back. After getting 412 response we can reload the page or fetch the new content.
+
+If-unmodified-since and IF-Match and If-Not-Match when used for unsafe requests like post and put they are generally used for updating a form field by editing inside a textarea or an editor. They cannot be used for uploading and replaceing or updating the documents because we will not be able to know the Last Modified date or a=original ETag for such documents where as for the post and put requests for updating an editorial for example we can use ajax requests and while we open the editor we can record the etag or Last Modifed given by the server Or when we click on edit button at that time we can generate these conditional header values.
+
+$.fn gives a prototype object for jquery 
+$.fn.check creates a method on jquery object which can be invoked later as $(document).check()
+$.extend merges two or more objects into one.
+$.fn.extend extends $.fn prototype object of jquery so that we can add new methods to it 
+<script>
+jQuery.fn.extend({
+  check: function() {
+    return this.each(function() {
+      this.checked = true;
+    });
+  },
+  uncheck: function() {
+    return this.each(function() {
+      this.checked = false;
+    });
+  }
+});
+ 
+// Use the newly created .check() method
+$( "input[type='checkbox']" ).check();
+
+During the partial download 
+First the request goes to server to download the file
+Then server response by broadcasting that it supports partial downloads by sending Accept-Ranges: bytes header. So that browser now knows that request can be partially downloaded and resumed in sometime future. Along with other headers such as Last Modified and ETag.
+
+File starts downloading but if something goes wrong in between the download and download couldn't complete then browser can resume the download anytime by sennding Ranges request which will have the next set of bytes or range of bytes to be fetched from server which were not downloaded.
+
+But In all this if file file on server gets changed then we will two different copies of files for the given byte ranges and hence we use conditional reqest headers here ETag and Last Modified .
+The client sends along with the ranges request If-Match Or If-Not-Match or If-Modified-Since or If-Unmodified-Since which can be used on server to decide if the resource being downloaded is still same or has changed. If resource has changed then server responds with 416 precondition fails error and clients then start a totally new request with 200 OK status.
+
+This above process of determining if r esource is intact is having extra round trips and headers to check and hence another header If-Range which also takes ETag like If-Match but in case of range allows servers to respond with directly with 200 OK as in case of GET requests when If-Match or other conditional headers fail. 
+Otherwise if everything is ok then server responds with 206 partial content request.
+
+The Range HTTP request header indicates the part of a document that the server should return. Several parts can be requested with one Range header at once, and the server may send back these ranges in a multipart document. If the server sends back ranges, it uses the 206 Partial Content for the response. If the ranges are invalid, the server returns the 416 Range Not Satisfiable error. The server can also ignore the Range header and return the whole document with a 200 status code.
+
+Directives
+<unit>
+The unit in which ranges are specified. This is usually bytes.
+<range-start>
+An integer in the given unit indicating the beginning of the request range.
+<range-end>
+An integer in the given unit indicating the end of the requested range. This value is optional and, if omitted, the end of the document is taken as the end of the range.
+
+
+Syntax
+Range: <unit>=<range-start>- // from given start till end.
+Range: <unit>=<range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start>-<range-end>
+
+Examples
+Range: bytes=200-1000, 2000-6576, 19000-

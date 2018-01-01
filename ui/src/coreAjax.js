@@ -2,8 +2,9 @@ import {upload} from "./upload.js";
 import {download} from "./download.js";
 export function callXA($) {
     $(document).ready(function() {
+        console.log('inside')
         upload($);
-        download($);
+        // download($);
     });
 };
 
