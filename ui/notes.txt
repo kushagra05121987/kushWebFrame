@@ -622,7 +622,7 @@ onloadstart: null
 onprogress: null
 ontimeout: null
 
-when events on upload are bound then events on core chr object wont work or we can say if both core xhr events and upload events are bound then upload events will take precedence over core events exmaple if xhr.onloadstart and xhr.upload.onloadstart are bound at the same time the xhr.upload.onloadstart will be executed.
+when events on upload are bound then events on core xhr object wont work or we can say if both core xhr events and upload events are bound then upload events will take precedence over core events exmaple if xhr.onloadstart and xhr.upload.onloadstart are bound at the same time the xhr.upload.onloadstart will be executed.
 On readystate change will be executed on xhr object only.
 onload gets executed after the ajax call is completed sucessfully but before onloadEnd is called its available on both xhr and xhr.upload
 
@@ -1466,6 +1466,8 @@ length gives the number of arguments received by the function.
 
 Jquery.Deffered() returns a factory Deffered object which is similar to javascript Promise and hence we can bind .then(), .done(), .always(), .fail() and the method receiving deferred object can call .resolve or .resolveWith and .reject or .rejectWith().
 
+.always() is executed when either of resolve or reject is executed. Its similar to finally.
+
 Deferred object has same states as javascript Promise object that is initial Pending, then Resolved or Rejected (known as fulfilled) and then finished.
 
 $.Deferred() takes a callback which is optional, it run just before the actual deferred object is returned. This object is the actual new deferred object and is passed as first argument.
@@ -1498,3 +1500,371 @@ Prior to jQuery 1.8, then() was just syntactic sugar:
 promise.then( doneCallback, failCallback )
 // was equivalent to
 promise.done( doneCallback ).fail( failCallback )
+
+$.Deferred gives a complete object with handler methods as well as state changing methods thats why we use the same object to return as a promise to the calling function and also to bind the state changer methods such as resolve, reject, resolveWith, rejectWith in the called method. And thats why its not secure to share $.Deffered to other methods because they can modify the promise state there, hence $.Deffered.promise() is used which gives only binding methods such as .then, .done, .always, .progress, etc.
+
+Description: Return a Deferred's Promise object.
+deferred.promise( [target ] )
+target
+Type: Object
+Object onto which the promise methods have to be attached.
+
+.progress is used to bind live notification from the promise object before it is resolved or rejected. .notify is used to in conjunction with .progress to keep sending information from promise object to calling method.
+
+In $.Deferred we can pass any number of arguments in the .then, .done, .fail method callback but in case of javascript Promise only one argument can be passed.
+
+$.when is similar to Promise.all. .all method takes array but $.when takes any number of Thenable arguments without array.
+
+If $.when is passed single thenable argument then it will bind all the subsequent then, done, fail, etc to the deferred or promise object returned from that argument.
+
+If $.when is passed a single argument that is not a promise or deferred then it will be immediately resolved and any then , etc callbacks attached will be called.
+
+If $.when is passed with a number of Thenable arguments then a master Deferred object will be created which will watch all the Deffered objects passed into the $.when method and when all of them have resolved or if a single one fails then its resolved or rejected.
+
+If $.when is passed nothing then immediatelya resolved promise is returned.
+
+.promise() Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished.
+The .promise() method returns a dynamically generated Promise that is resolved once all actions of a certain type bound to the collection, queued or not, have ended.
+
+By default, type is "fx", which means the returned Promise is resolved when all animations of the selected elements have completed.
+
+.promise() works same as $.when
+
+Jquery $.get and $.post both give jqXHR object which implements $.Deffered Promise interface ( not exactly $.Deffered ) and hence methods like .then(), .done() etc are available to bind with this object.
+
+
+When we serialize a form it prepares a query string like get "email=&firstname=&lastname="
+
+$.get, $.post and $.ajax all return jqXHR which also implements promise interface from $.deferred and hence only the methods such as .then and .done are available in addition to a success callback.
+
+jquery .then method takes three callbacks ƒ ( onFulfilled, onRejected, onProgress )
+
+Same origin policy
+Allows or defines how a resource on one origin can interact with the resource on other origin.
+SOP restricts two origins to talk to each other if they are on different domain, port or schemes(http or https).
+There are still some exceptions such as 
+Embedding of img, script and link are allowed. 
+Post or write requests are allowed.
+Read requests are not allowed but can be tricked using embbeding.
+
+Application can change their domain using document.domain with some limitations.
+document.domain can change the current domain to the superdomain such as in case of ltl.binarybulb.com document.domain can be changed to binarybulb.com but not to xyz.com.
+The change is supposed to be done on both the sides on the pages that can include javascript which can run document.domain.
+
+When doing document.domain port are also replaced with null.
+
+While working with localstorage and cookies they will work only on same origins because they are origin dependent and for every origin they are different.
+
+Things like iframe are allowed to be embedded but with X-Frame-Options or Content-Security-Policy. They are still not allowed to be accessed from a frame from different domain using contentDocument or contentWindow.document. But scripts execution is allowed.
+Other things like
+Media files with <video> and <audio>.
+Plug-ins with <object>, <embed> and <applet>.
+Fonts with @font-face. Some browsers allow cross-origin fonts, others require same-origin fonts.
+are also allowed.
+
+Ajax calls are subjected to same origin policy.
+So even if we include or embed things like js and all from different origins without any issues if those files make cross domain ajax requests then they wont be allowed because now the requests originates from our server and pings other remote server.
+
+For security reasons, browsers restrict cross-origin HTTP requests initiated from within scripts. 
+ XMLHttpRequest and the Fetch API follow the same-origin policy.
+
+ During cross domain requests even it is a simple request which does not trigger options request Cors header Access-Control-Allow-Origin is required because the request is from different origin and hence it needs to be allowed.
+
+Requests are treated as CORS request and a preflight request is sent when either the method or headers are not one out of the following 
+The only allowed methods are:
+GET
+HEAD
+POST
+Apart from the headers set automatically by the user agent (for example, Connection, User-Agent, or any of the other headers with names defined in the Fetch spec as a “forbidden header name”), the only headers which are allowed to be manually set are those which the Fetch spec defines as being a “CORS-safelisted request-header”, which are:
+Accept
+Accept-Language
+Content-Language
+Content-Type (but note the additional requirements below)
+Last-Event-ID
+DPR
+Save-Data
+Viewport-Width
+Width
+The only allowed values for the Content-Type header are:
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+
+Unlike “simple requests” (discussed above), "preflighted" requests first send an HTTP request by the OPTIONS method to the resource on the other domain, in order to determine whether the actual request is safe to send. Cross-site requests are preflighted like this since they may have implications to user data.
+
+In particular, a request is preflighted if any of the following conditions is true:
+
+If the request uses any of the following methods:
+PUT
+DELETE
+CONNECT
+OPTIONS
+TRACE
+PATCH
+Or if, apart from the headers set automatically by the user agent (for example, Connection, User-Agent, or any of the other header with a name defined in the Fetch spec as a “forbidden header name”), the request includes any headers other than those which the Fetch spec defines as being a “CORS-safelisted request-header”, which are the following:
+Accept
+Accept-Language
+Content-Language
+Content-Type (but note the additional requirements below)
+Last-Event-ID
+DPR
+Save-Data
+Viewport-Width
+Width
+Or if the Content-Type header has a value other than the following:
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+Or if one or more event listeners are registered on an XMLHttpRequestUpload object used in the request.
+Or if a ReadableStream object is used in the request.
+
+The cors request sends Access-Control-Request-<Any type that is sent extra or other than the ones allowed>: requested types. In response we get Access-control-Allow-<Any type that is sent extra or other than the ones allowed>: the allowed types.
+
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: X-PINGOTHER, Content-Type
+Access-Control-Allow-Origin: http://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER, Content-Type
+Access-Control-Max-Age: 86400
+
+Access-Control-Allow-Methods, Access-Control-Allow-Headers,  Access-Control-Allow-Origin, Access-Control-Max-Age,  Access-Control-Allow-Credentials, Access-Control-Expose-Headers
+
+Access-Control-Max-Age tells for how much time should the results or response headers from preflight request  are supposed to be cached and once the time ends a new prflight request is supposed to be made.
+
+Redirects in normal ajax requests are allowed but not in preflight requests. If there is a redirection in preflight requests then error is generated.
+
+In order to by pass them we can do following things
+
+change the server-side behavior to avoid the preflight and/or to avoid the redirect—if you have control over the server the request is being made to
+change the request such that it is a simple request that doesn’t cause a preflight
+But if it’s not possible to make those changes, then another way that may be possible is to this:
+
+Make a simple request to determine (using Response.url for the Fetch API, or XHR.responseURL to determine what URL the real preflighted request would end up at).
+Make another request (the “real” request) using the URL you obtained from Response.url or XMLHttpRequest.responseURL in the first step.
+
+When doing CORS requests the request will actually execute without issues but client side libraries will not allow to capture the response if the headers are not correct. The response can still be seen in inspect window or browser.
+
+So in case of with credentials request client will try to send the request along with the credentials set by responsding server but will generate error if it does not contain correct response headers from server.
+
+Using withCredentials from client doesn't make a preflight request, the request will still be the simple request but will expect correct response headers to be set.
+
+When using withCredentials, the server response header Access-Control-Allow-Origin should not be * because then it will allow all the hosts and doamins to send the credentials to the server. So when using withCredentials Access-Control-Allow-Origin should be set to specific host values.
+
+The Access-Control-Expose-Headers header lets a server whitelist headers that browsers are allowed to access. For example:
+
+Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+This allows the X-My-Custom-Header and X-Another-Custom-Header headers to be exposed to the browser.
+
+Jquery No Conflict
+While initialising jquery all the old references of $ are recorded $.noConflict() just restores them back. This is incase we are using any other libraries that use jquery like $ variable. For Jquery $ is just a alias to jQuery.
+<script src="other_lib.js"></script>
+<script src="jquery.js"></script>
+<script>
+$.noConflict();
+// Code that uses other library's $ can follow here.
+</script>
+
+Once noConflict has been made we will not be able to use $ from jQuery direcly in the script because now in the script $ will refer to other library's $.
+
+but still we can do few things like using the $ vairable inside the .ready(function($) {}) which can be registered as 
+<script src="other_lib.js"></script>
+<script src="jquery.js"></script>
+<script>
+$.noConflict();
+jQuery( document ).ready(function( $ ) {
+  // Code that uses jQuery's $ can follow here.
+});
+// Code that uses other library's $ can follow here.
+</script>
+jQuery.noConflict(); // restores $ back to previously using library. 
+// Do something with jQuery
+jQuery( "div p" ).hide();
+// Do something with another library's $()
+$( "content" ).style.display = "none";
+
+or 
+jQuery.noConflict();
+(function( $ ) {
+  $(function() {
+    // More code using $ as alias to jQuery
+  });
+})(jQuery);
+ 
+// Other code using $ as an alias to the other library
+
+
+
+Bind method in javascript is used to change the reference of this ina method. It defines what will this keyword refer to in a method. Which can be used later.
+Bind method also is ussed in currying it can take first argument as the object to which this is bound to and rest can be the arguments supplied to the function.
+
+When http form method is not supported it converts it to GET. So in case of put or other requests the request finally gets converted to get so thats why wee need to send a post request witha a hidden field that defines the http method. 
+
+Apache automatically adds conditional request headers in responnse such as E-Tag and Last MModified if the pages are served by apache but incases such as php fpm where pages are not served by apache or in case of pretty urls these headers are not added hence at that time we might need to add such headers manually.
+
+Apache for adding these headers makes use of three things 
+Inode -  i-node is the number generated by OS to keep track of the file, it includes things like access level, creation time,... You can configure apache to use only INode by adding this line to httpd.conf
+file Mtime
+file size.
+
+Inode is different for different os even for same file and hence in case of load balancer these file will always result in complete download making etags useless.
+
+Hence we might now at all use etags and only use cache control headers or we can change the FileEtag information to include only mtime and size.
+
+This is already fixed in apache version 2.4 or higher and inode is removed.
+
+
+Http has a concept of conditional requests which means that the result or even the success of the request can be changed based on the result that we get after comparing the resource which we are trying to access with the value of validator.
+
+These validators are some special headers sent in the request or sent back in response which make a precondition to check based on which the resource is either returned or not.
+
+HTTP conditional requests are requests that are executed differently, depending on the value of specific headers. These headers define a precondition, and the result of the request will be different if the precondition is matched or not.
+
+The different behaviors are defined by the method of the request used, and by the set of headers used for a precondition:
+
+for safe methods, like GET, which usually tries to fetch a document, the conditional request can be used to send back the document, if relevant only. Therefore, this spares bandwidth.
+for unsafe methods, like PUT, which usually uploads a document, the conditional request can be used to upload the document, only if the original it is based on is the same as that stored on the server.
+
+Validators check a specific version of a resource on the server and hence they need to send a version tex or number in the header because its not always possible and efficient to match the document byte by byte and the headers or tyoe of headers that contain such values ( version identifiers ) are called validators.
+
+Validators are of two types 
+last modified date.
+etag or entity tag which contains a unique identifier for the resource.
+
+Compairing versions is done in two ways
+Weak Validation and Strong Validation.
+
+Strong Vaildation compairs complete byte to byte value of the resource and guarantees that resourbce is exactly same.
+Weak validation does not match the resource byte by byte . The two resource must be equivalent but not necessarily equal. The two resrouces are considered equal even if they are slightly different for example having a different date in footer.
+
+The kind of validation is independent of the validator used. Both Last-Modified and ETag allow both types of validation, though the complexity to implement it on the server side may vary. HTTP uses strong validation by default, and it specifies when weak validation can be used.
+
+Header adding enabling removing and editing in htaccess is possible only because of mod_headers.
+
+RequestHeader append MirrorID "mirror 12"
+RequestHeader unset MirrorID
+
+#Header add X-Frame-Options "DENY"
+
+
+RequestHeader  edit "If-None-Match" "^(.*)-gzip$" "$1"
+Header  edit "ETag" "-gzip" ""
+
+Above is similar to DeflateAlterETag which allows to handle how etags are generated per response
+AddSuffix
+Append the compression method onto the end of the ETag, causing compressed and uncompressed representations to have unique ETags. This has been the default since 2.4.0, but prevents serving "HTTP Not Modified" (304) responses to conditional requests for compressed content.
+
+NoChange
+Don't change the ETag on a compressed response. This was the default prior to 2.4.0, but does not satisfy the HTTP/1.1 property that all representations of the same resource have unique ETags.
+
+Remove
+Remove the ETag header from compressed responses. This prevents some conditional requests from being possible, but avoids the shortcomings of the preceding options.
+
+So All these headers need to be implemented on server side these are just some standard and there no specific implementations for them. Browsers only obey the data sent from server . They will only add conditional headers when there is specific response from server. So if we are sending 304 all the time then conditional heders will not be sent they will only be sent when response is 200 OK.
+
+So for weak etag validation a prefix of W/ is used which is also the responsibility of server to implement . Client browser has nothing to do with it. Browser sends back whatever server sent to it initially.
+
+All the conditional requests are supposed to be handeled manually ( sending correct response headers from server or client if not already sent )
+
+If-Unmodified-Since: <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
+If-Modified-Since: <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
+
+If-Modified-Since can/should only be used with GET and HEAD requests.
+If-Unmodified-Since can/should only be used with POST requests.
+
+The If-Unmodified-Since request HTTP header makes the request conditional: the server will send back the requested resource, or accept it in the case of a POST or another non-safe method, only if it has not been last modified after the given date. If the request has been modified after the given date, the response will be a 412 (Precondition Failed) error.
+
+Etag form server response has If-Match and If-None-Match 
+
+Etag and If-Match and If-None-Match can take multiple Etags which will be the responsibility of the server and developer to match against a valid set of etags and there nothing that will happen automatically so we can use this technique to manage version of files on different servers like in case of load balancer.
+
+Cache-Control header is used to tell the browser what to do with the cache
+max-age:  tells the browser the time in seconds till which the cache will be considered fresh.
+no-cache: tells the browser to cache the content but before using it must revalidate all the times using conditional requests.
+no-store: The no-store directive is more strict, it means the response cannot be written to the cache at all. Ex. If you send no-store for a response then cache wont store it at all and next time when it gets request for that resource it will send that request to the originating server, which will send the full response with HTTP 200 status 
+must-revalidate: will tell the browser to validate the cache to check if its ok or stale otherwise reject the cache.
+
+Expire also works same as cache-control max-age directive but in this we can give excat data and time for the cache to expire.
+
+If there is a Cache-Control header with the "max-age" or "s-maxage" directive in the response, the Expires header is ignored.
+
+If there are no conditional headers in 200 ok response headers then there will be no conditional headers in the requests also.
+
+Chrome behaves differently for cache-control headers, hitting a url in address bar or ctrl+R or ctrl+shift+R doesnot honor cache-control headers its sends a request to server. Chrome will honor cache-control headers only when coming by clicking a link or hitting back button.
+
+But if the response is 304 then chrome will pull data from cache only and not from server as in case of 200 ok.
+Cache-Control header works perfectly in firefox.
+
+If etag or lastModified header were not present then soon after the cache timed out it would have done a 200 ok request which would have given fresh copy and more time taking .
+
+inorder to open new window and not a tab we need to give height and with of the window 
+ window.open("https://www.w3schools.com", "_blank", "location=no,height=300,width=400");
+
+Except for the ranges request for all the other requests if conditions specified in conditional request headers is ok then 304 not modified response is sent back and the ccontent is picked from the cache otherwise is conditions fail then for safe requests like GET and HEAD a direct 200 ok response is sent back and for unsafe requests like PUT and POST if condition matches then 304 Not Modified else if condition doesn't match then 412 precondition fail response is sent back. After getting 412 response we can reload the page or fetch the new content.
+
+If-unmodified-since and IF-Match and If-Not-Match when used for unsafe requests like post and put they are generally used for updating a form field by editing inside a textarea or an editor. They cannot be used for uploading and replaceing or updating the documents because we will not be able to know the Last Modified date or a=original ETag for such documents where as for the post and put requests for updating an editorial for example we can use ajax requests and while we open the editor we can record the etag or Last Modifed given by the server Or when we click on edit button at that time we can generate these conditional header values.
+
+$.fn gives a prototype object for jquery 
+$.fn.check creates a method on jquery object which can be invoked later as $(document).check()
+$.extend merges two or more objects into one.
+$.fn.extend extends $.fn prototype object of jquery so that we can add new methods to it 
+<script>
+jQuery.fn.extend({
+  check: function() {
+    return this.each(function() {
+      this.checked = true;
+    });
+  },
+  uncheck: function() {
+    return this.each(function() {
+      this.checked = false;
+    });
+  }
+});
+ 
+// Use the newly created .check() method
+$( "input[type='checkbox']" ).check();
+
+During the partial download 
+First the request goes to server to download the file
+Then server response by broadcasting that it supports partial downloads by sending Accept-Ranges: bytes header. So that browser now knows that request can be partially downloaded and resumed in sometime future. Along with other headers such as Last Modified and ETag.
+
+File starts downloading but if something goes wrong in between the download and download couldn't complete then browser can resume the download anytime by sennding Ranges request which will have the next set of bytes or range of bytes to be fetched from server which were not downloaded.
+
+But In all this if file on server gets changed then we will two different copies of files for the given byte ranges and hence we use conditional reqest headers here ETag and Last Modified .
+The client sends along with the ranges request If-Match Or If-Not-Match or If-Modified-Since or If-Unmodified-Since which can be used on server to decide if the resource being downloaded is still same or has changed. If resource has changed then server responds with 416 precondition fails error and clients then start a totally new request with 200 OK status.
+
+This above process of determining if r esource is intact is having extra round trips and headers to check and hence another header If-Range which also takes ETag like If-Match but in case of range allows servers to respond with directly with 200 OK as in case of GET requests when If-Match or other conditional headers fail. 
+Otherwise if everything is ok then server responds with 206 partial content request.
+
+The Range HTTP request header indicates the part of a document that the server should return. Several parts can be requested with one Range header at once, and the server may send back these ranges in a multipart document. If the server sends back ranges, it uses the 206 Partial Content for the response. If the ranges are invalid, the server returns the 416 Range Not Satisfiable error. The server can also ignore the Range header and return the whole document with a 200 status code.
+
+Directives
+<unit>
+The unit in which ranges are specified. This is usually bytes.
+<range-start>
+An integer in the given unit indicating the beginning of the request range.
+<range-end>
+An integer in the given unit indicating the end of the requested range. This value is optional and, if omitted, the end of the document is taken as the end of the range.
+
+
+Syntax
+Range: <unit>=<range-start>- // from given start till end.
+Range: <unit>=<range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start>-<range-end>
+
+Examples
+Range: bytes=200-1000, 2000-6576, 19000-
+
+To distinguish between XHR requests and fetch api requests we dont have any specific mechanism because fetch api requests don't send x-forwarded for request header. Hence we need to send some extra header in order to notify that request is and fetch api request.
+$.getJson and $.getScript both are similar to having dataType value json and script.
+$.get and $.post both have dataType as last parameter.
+
+$( "#b" ).load( "article.html #target" );
+
+using xhr: inside ajaxSetup doesn't work but using xhr: field inside $.ajax works fine.
+
+Using flush technique in ajax also works so ajax can keep receiving response from server as in case of normal web request but for it the ready state is 3 which means some data is received but not all.
+
+Hence in XmlHttprequest we can use onreadystatechange without checking onreadystate value and keep receiving the output or also in on progress event or xmlhttp. In jquery ajax we need to use $.ajax to receive such outputs $.get won't work and in this case we also need to use it directly inside $.ajax as a property and not inside $.ajaxSetup.
+

@@ -49,15 +49,15 @@ export function upload($) {
     // upload object
     console.log("%c ===================== Upload On Progress Check =================== ", "background: orange; color: #ffffff");
 
-    req.onabort = function(e) {console.log("%c On Abort Upload ", "background: darkgreen; color: #ffffff", e);}; 
-    req.error = function(e) {console.log("%c On Error Upload ", "background: darkgreen; color: #ffffff", e);};
-    req.onloadend = function(e) {console.log("%c On Load End Upload ", "background: darkgreen; color: #ffffff", e);};
-    req.onloadstart = function(e) {console.log("%c On Load Start Upload ", "background: darkgreen; color: #ffffff", e);};
-    req.onprogress = function(e) {console.log("%c On Progress Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.onabort = function(e) {console.log("%c On Abort Upload ", "background: darkgreen; color: #ffffff", e);}; 
+    req.upload.error = function(e) {console.log("%c On Error Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.onloadend = function(e) {console.log("%c On Load End Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.onloadstart = function(e) {console.log("%c On Load Start Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.onprogress = function(e) {console.log("%c On Progress Upload ", "background: darkgreen; color: #ffffff", e);};
 
-    req.onload = function(e) {console.log("%c On Load Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.onload = function(e) {console.log("%c On Load Upload ", "background: darkgreen; color: #ffffff", e);};
 
-     req.ontimeout = function(e) {console.log("%c On Timeout Upload ", "background: darkgreen; color: #ffffff", e);};
+    req.upload.ontimeout = function(e) {console.log("%c On Timeout Upload ", "background: darkgreen; color: #ffffff", e);};
 
     // req.send();
     req.timeout = -1;
