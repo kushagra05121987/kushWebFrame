@@ -1855,3 +1855,26 @@ Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start
 
 Examples
 Range: bytes=200-1000, 2000-6576, 19000-
+
+To distinguish between XHR requests and fetch api requests we dont have any specific mechanism because fetch api requests don't send x-forwarded for request header. Hence we need to send some extra header in order to notify that request is and fetch api request.
+$.getJson and $.getScript both are similar to having dataType value json and script.
+$.get and $.post both have dataType as last parameter.
+
+$( "#b" ).load( "article.html #target" );
+
+using xhr: inside ajaxSetup doesn't work but using xhr: field inside $.ajax works fine.
+
+Using flush technique in ajax also works so ajax can keep receiving response from server as in case of normal web request but for it the ready state is 3 which means some data is received but not all.
+
+Hence in XmlHttprequest we can use onreadystatechange without checking onreadystate value and keep receiving the output or also in on progress event or xmlhttp. In jquery ajax we need to use $.ajax to receive such outputs $.get won't work and in this case we also need to use it directly inside $.ajax as a property and not inside $.ajaxSetup.
+
+
+If a client makes a request of your service with a Range header, return a 206 Partial Content response containing a Content-Range header and the requested range of bytes for the resource in the body. The Content-Length value should be the length of what is actually returned and not the full length of the resource.
+
+If the client makes a range request that is out of bounds—that is, none of the range values overlap the extent of the resource—the service should respond with a 416 Requested Range Not Satisfiable status.
+
+Range requests can also be used to read data from the file on server in chunks or bytes or unit specified in Accept-Range header.
+
+Range requests are supposed to be made by clients explicitly they are never fired implicitly.
+
+Somtimes in ajax requests we might not get all response headers and hence we may need to use Access-Control-Expose-Headers
