@@ -768,7 +768,7 @@ if install event is taking too long the we can even skip it by self.skipWaiting(
 
 After the install is finished and is waiting for the clients using other service workers to be closed.
 
-Activate state begins when there are no workers left on which clients are working. This stage can be used to clean up anything that was being used by other clients and workers and now after they have stopped they are no more requied.
+Activate state begins when there are no workers left on which clients are working. This stage can be used to clean up anything that was being used by other clients and workers and now after they have stopped they are no more required.
 
 Activate events can also be extended and be waited for to be finished using same methods as above in install phase
 event.waitUntill
@@ -956,6 +956,24 @@ var inputFile = document.getElementsByName("file").item(0);
 so inputFile.files will give FileList
 
 createDocumentFragment doesnot modify the actual untill its added to html . It creates a virtual dom or fragment and we keep on doing modification to that but not to actual dom.
+
+The difference is that a document fragment effectively disappears when you add it to the DOM. What happens is that all the child nodes of the document fragment are inserted at the location in the DOM where you insert the document fragment and the document fragment itself is not inserted. The fragment itself continues to exist but now has no children.
+
+This allows you to insert multiple nodes into the DOM at the same time:
+
+var frag = document.createDocumentFragment();
+var textNode = frag.appendChild(document.createTextNode("Some text"));
+var br = frag.appendChild(document.createElement("br"));
+var body = document.body;
+body.appendChild(frag);
+alert(body.lastChild.tagName); // "BR"
+alert(body.lastChild.previousSibling.data); // "Some text"
+alert(frag.hasChildNodes()); // false
+
+using document fragment we create an empty document fragment so anything like createDocumentFragment('div') has got no meaning. Once we create document-fragment we will need to append new elements to it. Then that is finally added to dom and fragment disappears and only child elements of fragment are left.
+
+inroder to append elements we will anyhow need to use createElement and hence fragments maybe used to group all attachment into one fragment and the append only once.
+
 createElement transparently in the backend keep manipulating the DOM though we not see it in the page but it actually modifies the dom.
 
 File and Blobs cannot read file on local machine unless they are uploaded.
@@ -1830,7 +1848,7 @@ Then server response by broadcasting that it supports partial downloads by sendi
 
 File starts downloading but if something goes wrong in between the download and download couldn't complete then browser can resume the download anytime by sennding Ranges request which will have the next set of bytes or range of bytes to be fetched from server which were not downloaded.
 
-But In all this if file on server gets changed then we will two different copies of files for the given byte ranges and hence we use conditional reqest headers here ETag and Last Modified .
+But In all this if file file on server gets changed then we will two different copies of files for the given byte ranges and hence we use conditional reqest headers here ETag and Last Modified .
 The client sends along with the ranges request If-Match Or If-Not-Match or If-Modified-Since or If-Unmodified-Since which can be used on server to decide if the resource being downloaded is still same or has changed. If resource has changed then server responds with 416 precondition fails error and clients then start a totally new request with 200 OK status.
 
 This above process of determining if r esource is intact is having extra round trips and headers to check and hence another header If-Range which also takes ETag like If-Match but in case of range allows servers to respond with directly with 200 OK as in case of GET requests when If-Match or other conditional headers fail. 
@@ -1868,3 +1886,964 @@ Using flush technique in ajax also works so ajax can keep receiving response fro
 
 Hence in XmlHttprequest we can use onreadystatechange without checking onreadystate value and keep receiving the output or also in on progress event or xmlhttp. In jquery ajax we need to use $.ajax to receive such outputs $.get won't work and in this case we also need to use it directly inside $.ajax as a property and not inside $.ajaxSetup.
 
+
+If a client makes a request of your service with a Range header, return a 206 Partial Content response containing a Content-Range header and the requested range of bytes for the resource in the body. The Content-Length value should be the length of what is actually returned and not the full length of the resource.
+
+If the client makes a range request that is out of bounds—that is, none of the range values overlap the extent of the resource—the service should respond with a 416 Requested Range Not Satisfiable status.
+
+Range requests can also be used to read data from the file on server in chunks or bytes or unit specified in Accept-Range header.
+
+Range requests are supposed to be made by clients explicitly they are never fired implicitly.
+
+Sometimes in ajax requests we might not get all response headers and hence we may need to use Access-Control-Expose-Headers
+
+Content-Length: 2000 header limits the amount of content tobe sent or shown and a page if content length more that the given value in Content-Length header is thrown to a page or sent in response then it will be stripped to the given value which is 2000 currently as per above.
+
+Content-Length header also affects the XMLHttprequest download process. Ajax request takes the progress event's loaded and lengthComputable values from this header only.
+If this is not set or contains wrong values then the download will not happen properly.
+
+If Content-Length is omitted then the actual length of document is sent.
+
+XHR onabort event also gives a promise event which has access to all the other methods and properties like in normal xhr request 
+ProgressEvent {isTrusted: true, lengthComputable: true, loaded: 5381088, total: 10762150, type: "abort", …}
+bubbles:false
+cancelBubble:false
+cancelable:false
+composed:false
+currentTarget:XMLHttpRequest {onreadystatechange: null, readyState: 0, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+defaultPrevented:false
+eventPhase:0
+isTrusted:true
+lengthComputable:true
+loaded:5381088
+path:[]
+returnValue:true
+srcElement:XMLHttpRequest {onreadystatechange: null, readyState: 0, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+target:XMLHttpRequest {onreadystatechange: null, readyState: 0, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+timeStamp:3283.86
+total:10762150
+type:"abort"
+__proto__:ProgressEvent
+
+No matter what type of request you send either ajax or normal http request browser will automatically append required conditional headers based on the last response headers.
+For browser that don't add it we need to do it manually on our own.
+
+Chrome is very strict regarding ajax requests and Content-Length so if the content-length is more that the data flushed to chrome it will generate error and the requests will fail. But if the content is request over a normal http request then its ok. Other browsers are ok with this limitiation its only chrome that is very strict.
+
+Range request is generally for media streaming. With ajax generally it is used as follows 
+var xmlhttp=new XMLHttpRequest();
+xmlhttp.open("GET","data.dat",false);
+xmlhttp.setRequestHeader("Range", "bytes=100-200");
+xmlhttp.send();
+console.info(xmlhttp)
+
+Chrome is very strict about everything and headers that we send in the request. So we need to be very careful regarding putting the headers in the request.
+So even if content-type is missing then also chorme will not allow to set status code to anything such as 206.
+
+We can pull only a part of data file by range request if server supports it.
+
+CustomElementRegistry is an interface that provides methods to register you custom elements, bind promise on those elements when they have finished registering and then get those elements or its constructor.
+
+It has 3 methods in it
+CustomElementRegistry.define()
+CustomElementRegistry.get()
+CustomElementRegistry.whenDefined()
+
+Though we have facilities like we can add new custom elements to dom and attach different events to them but we cannot monitor the adding or removing of those elements from dom.
+
+Using CustomElementRegistry we can track the addign and removing of those elements aswell.
+
+MutationObserver
+MutationObserver provides developers with a way to react to changes in a DOM. It is designed as a replacement for Mutation Events defined in the DOM3 Events specification.
+
+So using above we can track not only addition or removal of new elements but also modification or removal of attributes.
+Modifiction of child elements or change in the descendants of such elements.
+
+javascript acessing and modifying attribute values
+element.hasAttribute('foo');
+element.getAttribute('foo');
+element.setAttribute('foo', value);
+element.removeAttribute('foo');
+
+The contenteditable attribute specifies whether the content of an element is editable or not. Note: When the contenteditable attribute is not set on an element, the element will inherit it from its parent.
+
+TextNode comes in javascript elem.childNodes it wont show up in children.
+children will show only elem like divs , spans etc which are visibily present there
+
+And if mutators are attached to childText node then it will be caught on every key event. If contenteditable is not put on element then it will be referenced from its parent.
+
+Mutation Observers will not be bubbling up or delegated they will be caught only on the elems that they are attached to.
+
+Character data works if it is attached directly on elem's textContent node.
+
+MutationObserver is created by initializing it and it can take one argument which is a callback. Callback is passed two arguments MutationRecordList and MutationObserver. MutationRecordList gives the type of Mutation done on an element. As this is a list it contains an array of all the mutation done on an element. 
+
+After the Observer instance is created it we need to bind this instance with elements using .observe method. .observe method takes two arguments the target node and MutationObserverInit config . MutationObserverInit has following properties
+
+
+Property	                 Description
+childList	                 Set to true if additions and removals of the target node's child elements (including text nodes) are to be observed.
+attributes	               Set to true if mutations to target's attributes are to be observed.
+characterData	             Set to true if mutations to target's data are to be observed.
+subtree	                   Set to true if mutations to target and target's descendants are to be observed.
+attributeOldValue	         Set to true if attributes is set to true and target's attribute value before the mutation needs to be recorded.
+characterDataOldValue	     Set to true if characterData is set to true and target's data before the mutation needs to be recorded.
+attributeFilter	           Set to an array of attribute local names (without namespace) if not all attribute mutations need to be observed.
+
+out of which three should be atleast always used childList, characterData and attributes
+
+inorder to stop observing the we can call .disconnect() method on observer instance.
+
+.takeRecords returns whatever is there inside the MutationObserver instance's record queue and empties it.
+
+
+By using Obsevers we will not be able to bind element's addition or removal into/from DOM hence we need CustomElementRegistry.
+
+CustomElementRegistry interface provides methods to define new custom elements and query them. CustomElementRegistry doesn't work on elements added using tag notation they only work for the elements added using the .define() method.
+
+CustomElementRegistry offers three methods 
+.define() -> defines a new custom element and provides the constructor that will be called when this new element's instance is created otherwise HTMLUnknowELement constructor is used. 
+
+.get() -> get the defined element otherwise undefined.
+
+.whenDefined -> returns a promise to which we can chain .then and .catch methods after the element is successfully defined.
+
+window.customElements gives the custom elements registered using .define method of CustomElementRegistry but it will not give the elements deinfed using tag notiation.
+window.customElements returns a instance of CustomElementRegistry.
+
+javascript append takes any string to append to dom if something like <div></div> is passed then it will also be treated as string only and will not be parsed to html. Where as in case of appendChild we can append actual html node string.
+
+Object.defineProperty(obj, prop, descriptor)
+
+This is used to define properties and allows us to change the default behavior of such properties such as can it be enumerated or assigned using assignment operator.
+Normal property addition through assignment creates properties which show up during property enumeration (for...in loop or Object.keys method), whose values may be changed, and which may be deleted. This method allows these extra details to be changed from their defaults. By default, values added using Object.defineProperty() are immutable.
+
+There are two types of descriptors data descriptors and accessor descriptors. A property can have only one of these descriptors not both at a time.
+Both the type of descriptors use a cummon set of descriptor methods
+configurable
+true if and only if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
+Defaults to false.
+enumerable
+true if and only if this property shows up during enumeration of the properties on the corresponding object.
+Defaults to false.
+
+A data descriptor also has the following optional keys:
+value
+The value associated with the property. Can be any valid JavaScript value (number, object, function, etc).
+Defaults to undefined.
+writable
+true if and only if the value associated with the property may be changed with an assignment operator.
+Defaults to false.
+
+An accessor descriptor also has the following optional keys:
+get
+A function which serves as a getter for the property, or undefined if there is no getter. When the property is accessed, this function is called without arguments and with this set to the object through which the property is accessed (this may not be the object on which the property is defined due to inheritance). The return value will be used as the value of the property.
+Defaults to undefined.
+set
+A function which serves as a setter for the property, or undefined if there is no setter. When the property is assigned to, this function is called with one argument (the value being assigned to the property) and with this set to the object through which the property is assigned.
+Defaults to undefined.
+
+If a descriptor has neither of value, writable, get and set keys, it is treated as a data descriptor. If a descriptor has both value or writable and get or set keys, an exception is thrown.
+
+Using Object.defineProperties we can define multiple properties for an object which is not possible in Object.defineProperty.
+Object.defineProperties()
+const object1 = {};
+Object.defineProperties(object1, {
+  property1: {
+    value: 42,writable: true
+  },
+  property2: {}
+});
+console.log(JSON.stringify(object1.property1));
+// expected output: 42
+
+This also helps when using const because it is not allowed to change const using assignment after it is defined.
+
+We can determine if object is extensible (whether it can have new properties added to it) or not by Object.isExtensible() and can prevent it from being extended by Object.preventExtensions()
+const object1 = {};
+
+console.log(Object.isExtensible(object1));
+// expected output: true
+
+Object.preventExtensions(object1);
+
+console.log(Object.isExtensible(object1));
+// expected output: false
+
+The Object.preventExtensions() method prevents new properties from ever being added to an object (i.e. prevents future extensions to the object).
+const object1 = {};
+
+Object.preventExtensions(object1);
+
+try {
+  Object.defineProperty(object1, 'property1', {
+    value: 42
+  });
+} catch (e) {
+  console.log(e);
+  // Expected output: TypeError: Cannot define property property1, object is not extensible
+}
+
+The Object.seal() method seals an object, preventing new properties from being added to it and marking all existing properties as non-configurable. Values of present properties can still be changed as long as they are writable.
+
+const object1 = {
+  property1: 42
+};
+
+Object.seal(object1);
+object1.property1 = 33;
+console.log(object1.property1);
+// expected output: 33
+
+delete object1.property1; // cannot delete when sealed
+console.log(object1.property1);
+// expected output: 33
+
+The Object.freeze() method freezes an object: that is, prevents new properties from being added to it; prevents existing properties from being removed; and prevents existing properties, or their enumerability, configurability, or writability, from being changed, it also prevents the prototype from being changed.  The method returns the object in a frozen state.
+
+const object1 = {
+  property1: 42
+};
+
+const object2 = Object.freeze(object1);
+
+object2.property1 = 33;
+// Throws an error in strict mode
+
+console.log(object2.property1);
+// expected output: 42
+
+
+In ES5, if the argument to this method is not an object (a primitive), then it will cause a TypeError. In ES2015, a non-object argument will be treated as if it was a non-extensible ordinary object, simply return false.
+
+Object.isExtensible(1);
+// TypeError: 1 is not an object (ES5 code)
+
+Object.isExtensible(1);
+// false                     
+
+// New objects are extensible.
+var empty = {};
+Object.isExtensible(empty); // === true
+
+// ...but that can be changed.
+Object.preventExtensions(empty);
+Object.isExtensible(empty); // === false
+
+// Sealed objects are by definition non-extensible.
+var sealed = Object.seal({});
+Object.isExtensible(sealed); // === false
+
+// Frozen objects are also by definition non-extensible.
+var frozen = Object.freeze({});
+Object.isExtensible(frozen); // === false
+
+Throws a TypeError exception if the object whose [[Prototype]] is to be modified is non-extensible according to Object.isExtensible(). Does nothing if the prototype parameter isn't an object or null (i.e., number, string, boolean, or undefined). Otherwise, this method changes the [[Prototype]] of obj to the new value.
+
+Object.setPrototypeOf() is in the ECMAScript 2015 specification. It is generally considered the proper way to set the prototype of an object, vs. the more controversial Object.prototype.__proto__ property.
+
+// Object creates a wrapper of the type of the value passed around the value passed. Hence with json string or boolean it creates specific objects of the types. In case of function the type is Function which will be passed the function given to Object and hence the Function returns the actual function because Function doesnot create the object of the function it just defines it like we normally define a function.
+
+Object() is similar to new Object();
+
+Object.create use the argument's constructor to decide on its type.
+Object.create considers the first argument as the object from whose prototype the new object should be created. The newly created object is of type of its contructor hence when function is passed we get Function object with the all the contents inside the object/function passed.If we were to create an object using new the classes prototype would have been used to assign to the new objects proto but with Object.create everything inside the passed argument is considered as proto.
+
+
+When new function is done its prototype.constructor is used to create the object becuase prototype is used for sharing the properties and instance is something that is shared and not dedicated because we can have multiple instances of a function hence the constructor is shared thats why for objects the constructor is inside prototype.
+
+For core functions the constructor is directly attached to the function name like f1.constructor. This constructor can also be changed. When changed Object the create uses it to create a new object of type of this constructor.
+
+Object() when passed with a value takes its constructor as its type and then creates a wrapper of type of this constructor on the values passed . As this constructor cannot be changes manually when passing function as an argument to Object(), it always uses the builtin constructor which is Function in case of functions.
+
+The underlying, built in constructor property is something you can’t set manually. It can only be set for you, as part of construction with the new keyword.
+
+A function is just a special kind of object, and like any object a function can have properties. Functions automatically get a property called prototype, which is just an empty object. This object gets some special treatment.
+
+vehicle;                          // {}
+
+var FuzzyBear = function FuzzyBear() { };
+vehicle.constructor = FuzzyBear;
+
+vehicle;                          // { constructor: function FuzzyBear() }
+vehicle.constructor == FuzzyBear; // true
+vehicle instanceof FuzzyBear      // false
+vehicle instanceof Vehicle        // true
+
+Primitives are converted to their object counterparts and hence we can assign value in object style to even string types because as soon as js detects assignment of primitives it does following
+var primitive = "september";
+primitive.vowels = 3;
+//new object created to set property 
+(new String("september")).vowels = 3;
+ 
+primitive.vowels;
+//another new object created to retrieve property 
+(new String("september")).vowels; //undefined
+
+We can directly assign properties to objects even string and functions but they behave differently
+if we assign a property on string or boolean 
+var str = "kushagra"
+str.oo = [1,2,3,4];
+var bool = true;
+bool.oo = [1,2,4,5]
+this object if not stored somewhere then it will be destroyed immediately and it will not be accessible in future.
+but if we assign the same on function then that becomes a property and is accessible via Object.create and directly on function names() {
+	this.returnNames = function() {}
+}
+names.oo = [1,2,4,5]
+names.oo
+var ob = Object.create(names);
+ob.__proto__.oo
+ob.oo
+
+The Function constructor creates a new Function object. Calling the constructor directly can create functions dynamically, but suffers from security and performance issues similar to eval.
+
+var sum = new Function('a', 'b', 'return a + b');
+
+console.log(sum(2, 6));
+// expected output: 8
+
+Function prototype object
+Properties
+Function.arguments 
+An array corresponding to the arguments passed to a function. This is deprecated as property of Function. Use the arguments object available within the function instead.
+Function.arity 
+Used to specifiy the number of arguments expected by the function, but has been removed. Use the length property instead.
+Function.caller 
+Specifies the function that invoked the currently executing function.
+Function.length
+Specifies the number of arguments expected by the function.
+Function.name
+The name of the function.
+Function.displayName 
+The display name of the function.
+Function.prototype.constructor
+Specifies the function that creates an object's prototype. See Object.prototype.constructor for more details.
+Methods
+Function.prototype.apply()
+Calls a function and sets its this to the provided value, arguments can be passed as an Array object.
+Function.prototype.bind()
+Creates a new function which, when called, has its this set to the provided value, with a given sequence of arguments preceding any provided when the new function was called.
+Function.prototype.call()
+Calls (executes) a function and sets its this to the provided value, arguments can be passed as they are.
+Function.prototype.isGenerator() 
+Returns true if the function is a generator; otherwise returns false.
+Function.prototype.toSource() 
+Returns a string representing the source code of the function. Overrides the Object.prototype.toSource method.
+Function.prototype.toString()
+Returns a string representing the source code of the function. Overrides the Object.prototype.toString method.
+
+
+var x = 10;
+
+function createFunction1() {
+    var x = 20;
+    return new Function('return x;'); // this |x| refers global |x|
+}
+
+function createFunction2() {
+    var x = 20;
+    function f() {
+        return x; // this |x| refers local |x| above
+    }
+    return f;
+}
+
+var f1 = createFunction1();
+console.log(f1());          // 10
+var f2 = createFunction2();
+console.log(f2());          // 20
+
+using function keyword with Object is similar to doing 
+var x = new Function('return function named() {return function() {console.log("elo")}}')
+where x is 
+ƒ anonymous() {
+return function named() {return function() {console.log("elo")}}
+}
+and x() is 
+ƒ named() {return function() {console.log("elo")}} which is returned when doing Object(named)
+
+constructor property on Function which is Function() by default is just a way to tell that this is the type or the origin of this function so for every function Function is the origin and as we cannot change that property ( when we try to initialize constructor property ) we end up creating a new constructor property which is nothing but mearly a way to tell that this is my constructor and type so when we set it for a function we only change the type hint nothing more all the inheritance is already done. So nothing will be directly inherited.
+
+At most we can create a new object of the constructor or we can directly access the properties defined on that constructor.
+
+function kush() {
+	this.name = function() {};
+	this.age = function() {};
+	this.gender = function() {};
+	var deg = function() {console.log('hi')}
+ 	return this;
+}
+function ekta() {
+	this.name = function() {};
+	this.age = function() {};
+	this.gender = function() {};
+	var degi = function() {console.log('hi hello')}
+// 	return this;
+}
+Object.defineProperties(kush, {
+	"prop2": {enumerable: true, configurable: false},
+	"prop3": {enumerable: true, configurable: true, value: 300}
+})
+kush.prototype.sex = function() {}
+kush.dickSize = 12
+kush.peelDickSkin = function() {return true;}
+
+ekta.constructor = kush
+ƒ kush() {
+	this.name = function() {};
+	this.age = function() {};
+	this.gender = function() {};
+	var deg = function() {console.log('hi')}
+ 	return this;
+}
+
+now we can access it 
+ekta.constructor.peelDickSkin
+var ok = Object.create(ekta);
+kush {}
+__proto__:ƒ ekta()
+constructor:ƒ kush()
+  dickSize:12
+  peelDickSkin:ƒ ()
+  prop2:undefined
+  prop3:300
+  arguments:null
+  caller:null
+  length:0
+  name:"kush"
+  prototype:{sex: ƒ, constructor: ƒ}
+  __proto__:ƒ ()
+  [[FunctionLocation]]:VM15537:1
+  [[Scopes]]:Scopes[2]
+arguments:null
+caller:null
+length:0
+name:"ekta"
+prototype:{constructor: ƒ}
+__proto__:ƒ ()
+[[FunctionLocation]]:VM15537:8
+[[Scopes]]:Scopes[2]
+
+and then calling ok.constructor.prop2.
+When creating Objects from Object.create using function names directly it returns the actual object representation of that function . functions is not converted to object but all its hidden properties inherited and defined are directly exposed.
+
+When creating object of other types such as array, same methodology is used for example
+Object.setPrototypeOf([1,2,3,4],ekta);
+in this a new array object (taken from ([1,2,3,4]).constructor ƒ Array() { [native code] }) is created with its proto having value of ekta.
+
+When using setPrototypeOf with functions there is no __proto__ available in function directly, hence __proto__ property of .prototype.constructor.__proto__ is set.
+With normal objects __proto__ property is directly accessible so all the things of 2nd argument are put inside the __proto__ property of first argument.
+If we manually change the function.prototype.constructor property then it will not be able to setPrototypeOf.
+
+__proto__.constructor property of object is considered as the type of object created.
+
+Creating function Object using Object.create or assigning prototype of function to other object doesnt matter much because direct access to function methods and properties is not going to be available because the new object's body will be having every property of the function (which can only be directly accessed) such as constructor (if manually set) name, arguments , prototype etc.
+
+Object.getPrototypeOf return the __proto__ property.
+
+The isPrototypeOf() method checks if an object exists in another object's prototype chain.
+function object1() {}
+function object2() {}
+
+object1.prototype = Object.create(object2.prototype);
+
+const object3 = new object1();
+
+console.log(object1.prototype.isPrototypeOf(object3));
+// expected output: true
+
+console.log(object2.prototype.isPrototypeOf(object3));
+// expected output: true
+
+Syntax
+prototypeObj.isPrototypeOf(object)
+Parameters
+object
+The object whose prototype chain will be searched.
+
+If we need to check that if a variable is integer or if number is NaN then we can do that using Number.isInteger or Number.isNaN or isNaN from the Number class and also can get following methods 
+
+Object.create(Number);
+arguments:(...) 
+caller:(...) 
+__proto__:ƒ Number() 
+EPSILON:2.220446049250313e-16 
+MAX_SAFE_INTEGER:9007199254740991MAX_VALUE:1.7976931348623157e+308 
+MIN_SAFE_INTEGER:-9007199254740991MIN_VALUE:5e-324 
+NEGATIVE_INFINITY:-Infinity 
+NaN:NaN 
+POSITIVE_INFINITY:Infinity 
+arguments:(...) 
+caller:(...) 
+isFinite:ƒ isFinite() 
+isInteger:ƒ isInteger() 
+isNaN:ƒ isNaN() 
+isSafeInteger:ƒ isSafeInteger() 
+length:1name:"Number"parseFloat:ƒ parseFloat() 
+parseInt:ƒ parseInt() 
+prototype:Number{  
+   0,
+   constructor:ƒ,
+   toExponential:ƒ,
+   toFixed:ƒ,
+   toPrecision:ƒ,
+   toString:ƒ,
+   …
+}__proto__:ƒ ()[  
+   [  
+      Scopes
+   ]
+]:Scopes[  
+   0
+]
+
+ownProperty on an Object is the property which is defined on the object directly and not in any prototype chains.
+
+The Object.getOwnPropertyDescriptor() method returns a property descriptor for an own property (that is, one directly present on an object and not in the object's prototype chain) of a given object.
+
+Descriptors are same as used in Object.setProperty/ies. Object.getOwnPropertyDescriptor() method returns an object of all such properties defined on the given object.
+
+function g1() {
+	this.m = function() {}
+
+}
+g1.m2 = function() {}
+
+Object.getOwnPropertyDescriptor(g1, 'm1');
+undefined
+Object.getOwnPropertyDescriptor(g1, 'm2');
+{value: ƒ, writable: true, enumerable: true, configurable: true}
+
+.prototype.constructor also works like direct .constructor. It has no significance and is not used automatically, it just represents the function from which the object was instanciated.  Even if we overrite it and then create a new object it wont affect, the new object will still be from the original constructor.
+
+Thats why when we set constructor property on an object or method directly we get a new protperty created we dont actually change in core constructor property.
+
+var a = [1,2,3,3,4];
+undefined
+a.constructor
+ƒ Array() { [native code] }
+a.constructor = fa
+ƒ fa() {console.log("hello from fa")}
+
+a
+(5) [1, 2, 3, 3, 4, constructor: ƒ]
+a.constructor
+ƒ fa() {console.log("hello from fa")}
+a instanceof Array
+true
+a instanceof fa
+false
+
+In the above even the constructor is fa (which says that this object is instanciated from fa) the result from instanceof is false against fa and its still the object or Array.
+
+(Object.create(a)) instanceof Array
+true
+(Object.create(a)) instanceof fa
+false
+Object.getOwnPropertyNames
+Object.keys
+Object.values
+Object.has
+Object.deleteProperty
+Object.getOwnPropertySymbols
+
+d.prop1 = 300
+300
+d.method1 = function() {}
+
+ƒ () {}
+Object.getOwnPropertyNames(d)
+(7)[  
+   "length",
+   "name",
+   "arguments",
+   "caller",
+   "prototype",
+   "prop1",
+   "method1"
+]0:"length"1:"name"2:"arguments"3:"caller"4:"prototype"5:"prop1"6:"method1"length:7
+
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+function showPosition(position) {
+    x.innerHTML = "Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude; 
+}
+
+
+// Grab elements, create settings, etc.
+var video = document.getElementById('video');
+
+// Get access to the camera!
+if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Not adding `{ audio: true }` since we only want video now
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+        video.src = window.URL.createObjectURL(stream);
+        URL.revokeObjectURL(stream); // releases the object stream from bindings (The URL.revokeObjectURL() static method releases an existing object URL which was previously created by calling URL.createObjectURL().  Call this method when you've finished using an object URL to let the browser know not to keep the reference to the file any longer.)
+        video.play();
+    });
+}
+// Elements for taking the snapshot
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var video = document.getElementById('video');
+
+// Trigger photo take
+document.getElementById("snap").addEventListener("click", function() {
+	context.drawImage(video, 0, 0, 640, 480);
+});
+
+
+The Proxy.revocable() method is used to create a revocable Proxy object.
+Syntax
+Proxy.revocable(target, handler);
+Parameters
+target
+A target object (can be any sort of object, including a native array, a function or even another proxy) to wrap with Proxy.
+handler
+An object whose properties are functions which define the behavior of the proxy when an operation is performed on it.
+Return value
+A newly created revocable Proxy object is returned.
+A revocable Proxy is an object with following two properties {proxy: proxy, revoke: revoke}.
+
+proxy
+A Proxy object created with new Proxy(target, handler) call.
+revoke
+A function with no argument to invalidate (switch off) the proxy.
+If the revoke() function gets called, the proxy becomes unusable: Any trap to a handler will throw a TypeError. Once a proxy is revoked, it will remain revoked and can be garbage collected. Calling revoke() again has no effect.
+
+var revocable = Proxy.revocable({}, {
+  get: function(target, name) {
+    return "[[" + name + "]]";
+  }
+});
+var proxy = revocable.proxy;
+console.log(proxy.foo); // "[[foo]]"
+
+revocable.revoke();
+
+console.log(proxy.foo); // TypeError is thrown
+proxy.foo = 1           // TypeError again
+delete proxy.foo;       // still TypeError
+typeof proxy            // "object", typeof doesn't trigger any trap
+
+Revocable object doesn't give proxy object direcly it gives object with two things -> 1). the actual proxy object and 2). revoke method which will be used to revoke the proxy object and stop and further processing of traps.
+
+Function.prototype.apply()
+
+The new.target property lets you detect whether a function or constructor was called using the new operator. In constructors and functions instantiated with the new operator, new.target returns a reference to the constructor or function. In normal function calls, new.target is undefined.
+
+function meth() {
+	console.log(new.target)
+}
+
+meth()
+undefined
+
+new meth()
+meth {}
+
+VERY IMPORTANT FINDING
+when doing apply on a method and other object that object will get all the this. properties of the method attached to itself as object property.
+so 
+function meth2(a, b) {
+    console.log("Inside meth two", a, b);
+    this.m2 = function() {console.log("inside m2");}
+    this.p2 = 500;
+    console.log(this.p1);
+    // return [this.p2, this.m2]
+}
+
+var payload = {
+    x: this.p1+900,
+    p1: 700
+}
+
+// apply
+Reflect.apply(meth2, payload, []); // 700
+
+will result in 
+payload
+m2:ƒ ()
+p1:700
+p2:500
+x:NaN
+payload will have m2, p2 also attached to it.
+
+same is the case of function.
+
+function meth1(a, b) {
+    console.log("Inside meth one", a, b);
+    this.m1 = function() {console.log("inside m1");}
+    this.p1 = 300;
+}
+function meth2(a, b) {
+    console.log("Inside meth two", a, b);
+    this.m2 = function() {console.log("inside m2");}
+    this.p2 = 500;
+    console.log(this.p1);
+    // return [this.p2, this.m2]
+}
+
+Reflect.apply(meth2, meth1, []);
+this result in meth1 having m2, p2 attached to it like meth1.m2, meth1.p2
+
+Reflect.construct will assign the .prototype object of the method passed as last argument(to be used as new constructor) to the __proto__ for the method given as first argument.
+In short Reflect.construct will construct an object of method in first argument using the method or constructor in last argument as its constructor and hence using last argument's .prototype and assigning it to first argument's object's __proto__.
+
+newTarget in Proxy or Reflect in construct is the constructor on which this new object of first argument is created.
+receiver in Proxy or Reflect in get or set is the this object on which target is called or set.
+
+// Object
+var obj = { x: 1, y: 2 };
+Reflect.get(obj, 'x'); // 1
+
+// Array
+Reflect.get(['zero', 'one'], 1); // "one"
+
+// Proxy with a get handler
+var x = {p: 1};
+var obj = new Proxy(x, {
+  get(t, k, r) { return k + 'bar'; }
+});
+Reflect.get(obj, 'foo'); // "foobar"
+
+Inorder to trim strip array to a certain length we can set the lengtth property of that array and it will be trimmed to that length.
+
+var a = [1,2,3,3,4];
+a.length
+5
+a.length = 2
+a
+(2) [1, 2]
+
+Reflect.apply()
+Calls a target function with arguments as specified by the args parameter. See also Function.prototype.apply().
+Reflect.construct()
+ The new operator as a function. Equivalent to calling new target(...args).
+Reflect.defineProperty()
+Similar to Object.defineProperty(). Returns a Boolean.
+Reflect.deleteProperty()
+The delete operator as a function. Equivalent to calling delete target[name].
+Reflect.get()
+A function that returns the value of properties.
+Reflect.getOwnPropertyDescriptor()
+Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise.
+Reflect.getPrototypeOf()
+Same as Object.getPrototypeOf().
+Reflect.has()
+The in operator as function. Returns a boolean indicating whether an own or inherited property exists.
+Reflect.isExtensible()
+Same as Object.isExtensible().
+Reflect.ownKeys()
+Returns an array of the target object's own (not inherited) property keys.
+Reflect.preventExtensions()
+Similar to Object.preventExtensions(). Returns a Boolean.
+Reflect.set()
+A function that assigns values to properties. Returns a Boolean that is true if the update was successful.
+Reflect.setPrototypeOf()
+A function that sets the prototype of an object.
+
+CustomElementRegistry requires class as its constructor callback in define but we can still use it without classes with Reflect.connect
+var CEo = function ()
+{
+    console.log( "created" )
+    return Reflect.construct( HTMLElement, [], CEo )
+}
+
+CEo.prototype = Object.create( HTMLElement.prototype )
+
+CEo.prototype.connectedCallback = function ()
+{
+    console.log( "connected" )
+    this.innerHTML = "Hello v1"
+} 
+
+customElements.define( "object-v1", CEo )
+
+Template and slot elements are the elements used as placeholder for client side content which are not rendered when page is loaded. They are parsed to check if contents inside template do not have any errors but they will not be rendered.
+
+<template> element has content property on itself which gives a document-fragment which has the actual elements defined inside the <element> tag.
+Because its #document-fragment hence its not actually loaded in dom same way as it was in case of createDocumentFragment.
+Once we have the document fragment we can query it for elements and their attributes.
+#document-fragment also states that its not the actual document but a fragment of complete document.
+
+var arr = [3, 5, 7];
+arr.foo = 'hello';
+
+for (var i in arr) {
+   console.log(i); // logs "0", "1", "2", "foo"
+}
+
+for (var i of arr) {
+   console.log(i); // logs 3, 5, 7
+}
+
+So once template content is rendered anywhere in document directly it wont be usable any further and thats why we will need to use clone of content.
+
+Because template element has a document-fragment with itself as its content the things defined inside template tag will be scoped inside it only and wont affect outside template tag.
+
+Details element and summary element 
+Details element 
+The HTML Details Element (<details>) is used to create a disclosure widget in which information is visible only when the widget is toggled into an "open" state. A summary or label can be provided using the <summary> element.
+Details element is used to create a toggle element which can be opened and closed by click on black triangle next to the summary.
+Summary tag is used as a legend to details tag. This is supposed to be the first thing inside details element. Anything after that can be toggled to be open or close.
+If summary is not the first element in details tag the default Details label is used.
+
+Anything inside slot element is not hidden and slot element will be rendered and will be visible as soon as page is rendered. Its not like template element which itself along anything inside it will be not rendered.
+Slot elements are useful only when attached to shadow dom of element. They help in preparing the complete scaffolding of the component. The actual data to the slot elements in that scaffolding inside the shadowDom of the parent is supplied from the parent element's children having attribute values same as slot name inside shadow dom.
+The actual element will not be displayed and only the slot element with the data from actual child elements with slot attributes.
+
+Polymer js is completely based on CustomElementRegistry, MutationObserver, slot, template, html imports using <link rel="import" /> and shadown dom.
+
+onload works for script tags but not for link tags. On link element onload event fires on import rel when success or onerror when error.
+
+::selection element is used to change the color and background of selection made in browser for example selecting text or anyother thing.
+/* Make selected text gold on a red background */
+::-moz-selection {
+  color: gold;
+  background: red;
+}
+
+::selection {
+  color: gold;
+  background: red;
+} 
+
+/* Make selected text in a paragraph white on a blue background */
+p::-moz-selection {
+  color: white;
+  background: blue;
+}
+
+When we import somethings the html is not rendered from that file but script and styles are immediately rendered.
+The location of the script that is going to be imported is called import location and the document that is going to be imported is called import document.
+
+script tags without async or defer block parsing and hence block rendering of the page aswell. This is done in order to ensure that anything that is changed by the script is avaiable to the sections below it.
+Link tag doesnot stop parsing but blocks renderings.
+
+<head>
+</head>
+<body>
+  <!-- HTTP/2 push this resource, or inline it, whichever's faster -->
+  <link rel="stylesheet" href="/site-header.css">
+  <header>…</header>
+
+  <link rel="stylesheet" href="/article.css">
+  <main>…</main>
+
+  <link rel="stylesheet" href="/comment.css">
+  <section class="comments">…</section>
+
+  <link rel="stylesheet" href="/about-me.css">
+  <section class="about-me">…</section>
+
+  <link rel="stylesheet" href="/site-footer.css">
+  <footer>…</footer>
+</body>
+
+The plan is for each <link rel="stylesheet"> to block rendering of subsequent content while the stylesheet loads, but allow the rendering of content before it. The stylesheets load in parallel, but they apply in series. This makes <link rel="stylesheet"> behave similar to <script src="…"></script>.
+
+Let's say the site-header, article, and footer CSS have loaded, but the rest are still pending, here's how the page would look:
+
+Header: rendered
+Article: rendered
+Comments: not rendered, CSS before it hasn't loaded yet (/comment.css)
+About me: not rendered, CSS before it hasn't loaded yet (/comment.css)
+Footer: not rendered, CSS before it hasn't loaded yet (/comment.css), even though its own CSS has loaded.
+Link tags load the document parallely.
+
+link imports also block rendering because they can contain stylsheets.
+
+link import document's contents will be available using .import method on th link tag reference.
+imported document can refer to itself using document.currentScript.ownerDocument or to parent importing document using document.
+import tags will not block the parsing of the page but will block the rendering of the page.
+scripts inside the import document will be loaded in the given order but they will not block the importing document.
+scripts outside the import document will still block the page . Any script just after import will block the page because there are scripts inside the import documents also.
+
+The insertAdjacentElement() method inserts a given element node at a given position relative to the element it is invoked upon.
+
+Syntax
+targetElement.insertAdjacentElement(position, element);
+Parameters
+position
+A DOMString representing the position relative to the targetElement; must match (case-insensitively) one of the following strings:
+'beforebegin': Before the element itself.
+'afterbegin': Just inside the element, before its first child.
+'beforeend': Just inside the element, after its last child.
+'afterend': After the element itself.
+
+insertAdjacentHTML() parses the specified text as HTML or XML and inserts the resulting nodes into the DOM tree at a specified position. It does not reparse the element it is being used on and thus it does not corrupt the existing elements inside that element. This avoids the extra step of serialization, making it much faster than direct innerHTML manipulation.
+
+Syntax
+element.insertAdjacentHTML(position, text);
+position is the position relative to the element, and must be one of the following strings:
+
+'beforebegin'
+Before the element itself.
+'afterbegin'
+Just inside the element, before its first child.
+'beforeend'
+Just inside the element, after its last child.
+'afterend'
+After the element itself.
+text is the string to be parsed as HTML or XML and inserted into the tree.
+
+CustomElementRegistry works on elements attached in any DOM inside the parent DOM.
+
+When using CustomElementRegistry constructor will first work on every element and construct the element inside the import link then call its connect (as it normally did when using callbacks) then it will again call constructor on every element for parent dom just so that if its inserted in dom in future it can be directly sent to connect.
+
+So if there are two documents example parent document and import link document then customElements will be registered for both the documents. If constructor is registered then it will be called for all the occurances of the element in both the documents. If connectedCallback is registered then it will be called for both the documents first. 
+Then after child documents are done constructor will be called for the parent document.
+Once element is inserted in parent dom connectedCallback will again be called for parent dom.
+
+Imports block rendering
+Imports block rendering of the main page. This is similar to what <link rel="stylesheet"> do. The reason the browser blocks rendering on stylesheets in the first place is to minimize FOUC. Imports behave similarly because they can contain stylsheets.
+
+To be completely asynchronous and not block the parser or rendering, use the async attribute:
+
+<link rel="import" href="/path/to/import_that_takes_5secs.html" async>
+The reason async isn't the default for HTML Imports is because it requires developers to do more work. Synchronous by default means that HTML Imports that have custom element definitions inside of them are guaranteed to load and upgrade, in order. In a completely async world, developers would have to manage that dance and upgrade timings themselves.
+
+You can also create an async import, dynamically:
+
+var l = document.createElement('link');
+l.rel = 'import';
+l.href = 'elements.html';
+l.setAttribute('async', '');
+l.onload = function(e) { ... };
+Imports do not block parsing
+Imports don't block parsing of the main page. Scripts inside imports are processed in order but don't block the importing page. This means you get defer-like behavior while maintaining proper script order. One benefit of putting your imports in the <head> is that it lets the parser start working on the content as soon as possible. With that said, it's critical to remember <script> in the main document still continues to block the page. The first <script> after an import will block page rendering. That's because an import can have script inside that needs to be executed before the script in the main page.
+
+<head>
+  <link rel="import" href="/path/to/import_that_takes_5secs.html">
+  <script>console.log('I block page rendering');</script>
+</head>
+Depending on your app structure and use case, there are several ways to optimize async behavior. The techniques below mitigate blocking the main page rendering.
+
+
+With Shadow DOM, elements can get a new kind of node associated with them. This new kind of node is called a shadow root. An element that has a shadow root associated with it is called a shadow host. The content of a shadow host isn’t rendered; the content of the shadow root is rendered instead.
+
+s = null
+null
+typeof s
+"object"
+
+extends inside the define() method can be used to customise the builtin element by attaching custom event listeners to it and attaching custom shadow dom to it.
+Without extends we dont have any way to capture core builtin element's lifecycle chain. With extends we can capture core element's such as div, span, button etc.
+
+<content></content> tag or element inside shadow dom allow us to control what gets rendered inside shadow dom from containing parent.
+If we dont provide content tag that means we are telling shadow root to not render anything from shadow host.
+By using content tag we are telling shadow root to render everything inside shadow root where the content tag is.
+By using select clause with content tag <content select=".first"></content> to use identifier inside select attribute to search for the occurances of the element in shadow host and bring it to the place with content is used in shadow root.
+If more than one content tag match with the specified element identifier the first content tag matching will get the elements from shadow host.
+select can only select elements which are immediate children of the host node. That is, you cannot select descendants (e.g.select="table tr").
+If there are multiple elements matching the selector then all will be linked with shadow root.
+node.shadowRoot.host

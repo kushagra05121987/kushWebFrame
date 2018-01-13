@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,9 +8,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <script src="http://localhost:9000/livereload.js"></script> -->
 </head>
+
 <body>
-    Hello
-    dey
+    <table id="producttable">
+        <thead>
+            <tr>
+                <td>UPC_Code</td>
+                <td>Product_Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- existing data could optionally be included here -->
+        </tbody>
+    </table>
+
+    <template id="productrow">
+        <tr>
+            <td class="record"></td>
+            <td></td>
+        </tr>
+    </template>
+
+    Hello dey
     <!--<form name="frm" action="http://sysblog.local:8080/home.php" enctype="multipart/form-data" method="PUT">
         <input type="text" name="email" />
         <input type="text" name="firstname" />
@@ -28,17 +48,19 @@
     <!-- <img src="" name="promiseLoad" /> -->
     <!-- <div><div><div><div><div></div></div></div></div></div> -->
     <a href="http://localhost/learning/ui/index.html">Click</a>
-    <div class="include_json">
-        
+    <div class="include_json" data-type="selected">
+
     </div>
+    <div id='some-id' contenteditable='true'><span>Modify content</span></div>
+
 
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js" defer></script>
     <script type="text/javascript" src="bower_components/tether/dist/js/tether.js" defer></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js" defer></script>
     <!-- <script type="module" src="src/coreAjax.js" nomodule defer></script> -->
     <!-- <script type="module" src="src/jqueryAjax.js" nomodule defer></script>-->
-     <!-- <script type="module" src="src/ui.js" nomodule defer></script>  -->
-   <!-- <script type="text/javascript" src="src/wontrunines6.js" nomodule defer></script>
+    <!-- <script type="module" src="src/ui.js" nomodule defer></script>  -->
+    <!-- <script type="text/javascript" src="src/wontrunines6.js" nomodule defer></script>
     <script type="module" src="src/iframe.js" nomodule defer></script> -->
     <!-- <script type="module" src="src/promise.js" nomodule defer></script> -->
     <!-- <script type="text/javascript" src="src/worker.js" defer></script> -->
@@ -58,6 +80,21 @@
     <!-- <script src="http://ltl.binarybulb.com" type="text/javascript" defer></script> -->
     <!-- <script src="src/jqueryScript.js" type="text/javascript" defer></script> -->
     <!-- <script src="src/bindCallApply.js" type="text/javascript" defer></script> -->
-    <script src="src/conditional.js" type="text/javascript" defer></script>
+    <!-- <script src="src/conditional.js" type="text/javascript" defer></script> -->
+    <!-- <script src="src/206Media.js" type="text/javascript" defer></script> -->
+    <!-- <script type="text/javascript" src="src/mutationObserver.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/customElement.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/prependJSCORE.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/object.defineProperty.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/proxy.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/reflect.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/template.js" defer></script> -->
+    <!-- <script type="text/javascript" src="src/slot.js"></script> -->
+    <!-- <link rel="import" href="resources/shadow.html" /> -->
+    <script type="text/javascript" src="src/import.js" defer></script>
+    <!-- <script src="src/try.js" defer></script> -->
+    <!-- <link rel="import" href="resources/importtest.html" /> -->
+    <!-- <script type="text/javascript" src="src/slot.js" defer></script> -->
 </body>
+
 </html>

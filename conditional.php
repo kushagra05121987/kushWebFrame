@@ -9,11 +9,14 @@ if(! function_exists('getallheaders')) {
 		}
 	}
 	getallheaders($requestHeaders);
+} else {
+	$requestHeaders = getallheaders();
 }
+echo "inside";
 $count = 1;
 echo "<pre>";
-// print_r($requestHeaders);
-if(!empty($requestHeaders) && array_key_exists('HTTP_IF_NONE_MATCH', $requestHeaders)) {
+print_r($requestHeaders);
+if(!empty($requestHeaders) && array_key_exists('HTTP_IF_NONE_MATCH', $requestHeaders) || array_key_exists('If-None-Match', $requestHeaders)) {
 	$etagRequest = $requestHeaders['HTTP_IF_NONE_MATCH'];
 	if($count == 1) {
 		echo "block 3";
