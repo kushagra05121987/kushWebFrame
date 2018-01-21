@@ -2847,3 +2847,35 @@ If more than one content tag match with the specified element identifier the fir
 select can only select elements which are immediate children of the host node. That is, you cannot select descendants (e.g.select="table tr").
 If there are multiple elements matching the selector then all will be linked with shadow root.
 node.shadowRoot.host
+
+.preloader.addIPClass {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(256,256,256,0.4);
+    z-index: 9999;
+    display: none;
+}
+
+.preloader.addIPClass > img {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 60px;
+    height: 20px;
+    margin: auto;
+}
+
+document.write() will for the first occurance ,after the page is rendered, replace everything inside page and then not replace everything but will append 
+
+convert string to array buffers. Useful in cases where response received is string and need to be passed inside blob which expects arraybuffers.
+function s2ab(s) {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+    }
