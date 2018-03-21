@@ -31,8 +31,17 @@
 // });
 
 // above can be rectified using 
+console.log("inside worker");
 navigator.serviceWorker.register("src/serviceworker.js", {scope: "./src/"}).then(function(registration) {
     console.log('Service worker registration succeeded:', registration);
+    console.log('Service worker registered with scope: ', registration.scope);
 }).catch(function(error) {
     console.log('Service worker registration failed:', error);
 });
+
+// navigator.serviceWorker.register("serviceworker.js").then(function(registration) {
+//     console.log('Service worker registration succeeded:', registration);
+//     console.log('Service worker registered with scope: ', registration.scope);
+// }).catch(function(error) {
+//     console.log('Service worker registration failed:', error);
+// });

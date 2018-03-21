@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html ng-app="myapp">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/html5_angular.css" />
+
+</head>
+
+<body ng-cloak="" ng-controller="homeController">
+    <div id="repeat-div" ng-repeat="item in repeatItems track by $id(item)" class="animate">
+        ITEM ID: {{item.id}}
+        <br> ITEM NAME: {{item.name}}
+        <br> ITEM LOCATION: {{item.location}}
+        <br> ITEM DISTANCE: {{item.distance}}
+        <br> ID: {{$id}}
+        <br>
+        <button class="btn btn-sm btn-info" ng-click="changeName('steroids', $index)">
+            Click here to change the name
+        </button>
+    </div>
+    <button class="btn btn-sm btn-info" ng-click="changeitems()">
+        Click here to change the items
+    </button>
+    <button class="btn btn-sm btn-info" ng-click="replace()">
+        Click here to replace the items
+    </button>
+
+    <div ng-controller="repeatController">
+        <ol>
+            <li>When you click "Update Age", only the first list updates the age, because all others have a one-time binding
+                on the age property. If you then click "Copy", the current friend list is copied, and now the second list
+                updates the age, because the identity of the collection items has changed and the list must be re-rendered.
+                The 3rd and 4th list stay the same, because all the items are already known according to their tracking functions.
+            </li>
+            <li>When you click "Remove First", the 4th list has the wrong age on both remaining items. This is due to tracking
+                by $index: when the first collection item is removed, ngRepeat reuses the first DOM element for the new first
+                collection item, and so on. Since the age property is one-time bound, the value remains from the collection
+                item which was previously at this index.
+            </li>
+        </ol>
+
+        <button ng-click="removeFirst()">Remove First</button>
+        <button ng-click="updateAge()">Update Age</button>
+        <button ng-click="copy()">Copy</button>
+        <br>
+        <button ng-click="reset()">Reset List</button>
+        <br>
+        <code>track by $id(friend)</code> (default):
+        <ul class="example-animate-container">
+            <li class="animate-repeat" ng-repeat="friend in friends">
+                {{friend.name}} is {{friend.age}} years old.
+            </li>
+        </ul>
+        <code>track by $id(friend)</code> (default), with age one-time binding:
+        <ul class="example-animate-container">
+            <li class="animate-repeat" ng-repeat="friend in friends">
+                {{friend.name}} is {{::friend.age}} years old.
+            </li>
+        </ul>
+        <code>track by friend.name</code>, with age one-time binding:
+        <ul class="example-animate-container">
+            <li class="animate-repeat" ng-repeat="friend in friends track by friend.name">
+                {{friend.name}} is {{::friend.age}} years old.
+            </li>
+        </ul>
+        <code>track by $index</code>, with age one-time binding:
+        <ul class="example-animate-container">
+            <input ng-model="search" />
+            <li class="animate-repeat" ng-repeat="friend in friends | filter: {name: search} as results track by $index">
+                Results here {{results}}
+                {{friend.name}} is {{::friend.age}} years old.
+            </li>
+        </ul>
+        <div ng-init="repeat=['A', 'B']"></div>
+        <header ng-repeat-start="item in repeat">
+            Header {{ item }}
+        </header>
+        <div class="body">
+            Body {{ item }}
+        </div>
+        <footer ng-repeat-end>
+            Footer {{ item }}
+        </footer>
+
+        <input type="button" ng-click="selectFriend=friends[0]" value="Click me"/>
+        {{selectFriend}}
+        <select ng-options="friend.name disable when optionsDisabled for friend in friends" ng-model="selectFriend">
+            <option value="">Select</option>
+        </select>
+        {{optionsDisabled}}
+        <input type="button" ng-init="optionsDisabled = 0" ng-click="optionsDisabled = optionsDisabled ? 0:1" value="Click to disable/enable"/>
+
+        <select ng-options="friend.name as friend.name for friend in friends track by friend.age" ng-model="selectFriend">
+            <option value="">Select</option>
+        </select>
+        {{selectFriend}}
+
+        <select ng-model="yourSelect" ng-options="optionV as optionV group by optionK for (optionK, optionV) in options track by optionK" ng-init="yourSelect='var1'"></select>
+        <input type="hidden" name="yourSelect" ng-model="yourSelect" />
+        <p>yourSelect: {{yourSelect}}</p>
+
+        <br>
+
+        Another Array Select: 
+        <select ng-model="yourSelect" ng-options="optionK as optionV for (optionK, optionV) in options" ng-init="yourSelect='var1'"></select>
+        <input type="hidden" name="yourSelect" ng-model="yourSelect" />
+        <p>yourSelect: {{yourSelect}}</p>
+
+        <br />
+        Nested Select Item:
+        <select ng-options="itemN.id as itemN.label for itemN in itemsNested track by itemN.id" ng-model="selectNestedItem">
+        </select>
+        {{selectNestedItem}}
+        <input type="button" ng-click="selectNestedItem=itemsNested[1]" value="Click me"/>
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="src/angular/angular.js"></script>
+    <script type="text/javascript" src="src/angular/angular-animate.js"></script>
+    <script type="text/javascript" src="src/angular/ang-repeat.js"></script>
+</body>
+
+</html>

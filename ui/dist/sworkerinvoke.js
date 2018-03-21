@@ -1,3 +1,9 @@
+setTimeout(function() {
+    console.log("send test");
+    var req = new XMLHttpRequest();
+    req.open("GET", "http://localhost/learning/ui/src/try.html");
+    req.send();
+}, 3000);
 var sworker = new SharedWorker('src/sworker.js');
 
 sworker.port.onmessage = function(data) {

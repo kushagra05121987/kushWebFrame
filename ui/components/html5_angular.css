@@ -1,0 +1,175 @@
+.container {
+    background: #e6e6e6
+}
+
+/* This is the way to target attribute from css */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+scopetest {
+    display: block
+}
+
+.ng-scope {
+    border: 1px solid red;
+}
+
+
+.animate.ng-enter-stagger {
+    /* 200ms will be applied between each sucessive enter operation */
+    -webkit-transition-delay:0.2s;
+    transition-delay:0.2s;
+    
+    /* this is here to avoid accidental CSS inheritance */
+    -webkit-transition-duration:0;
+    transition-duration:0;
+
+    font-weight: bold;
+    background: chocolate;
+    padding: 20px;
+
+}
+
+.animate.ng-enter {
+    -webkit-transition:0.5s linear all;
+    transition:0.5s linear all;
+    opacity:0;
+    line-height:0;
+    font-size: 20px;
+    color: red;
+    /* opacity:0; */
+    /* margin-left: 100% */
+}
+
+.animate.ng-enter.ng-enter-active {
+    opacity:1;
+    line-height:20px;
+    color: yellow;
+    /* transition: 0.4s linear all */
+    /* margin-left: 100% */
+}
+
+.animate.ng-leave {
+    transition:0.5s linear all;
+    /* opacity:1; */
+    color: blue
+}
+.animate.ng-leave.ng-leave-active {
+    color: orange;
+    /* opacity:0; */
+}
+
+.animate.ng-move {
+    color: darkred;
+    /* display: none; */
+    transition: 0.9s linear;
+}
+
+.animate.ng-move.ng-move-active {
+    color: orangered;
+    /* display: none; */
+    transition: 0.9s linear;
+}
+.animate.newClass-add {
+    color: mediumvioletred;
+    transition: 0.5s linear all;
+}
+.animate.newClass-add-active {
+    color: rebeccapurple;
+    transition: 0.7s linear all;
+}
+.animate.newClass-remove {
+    color: pink;
+    transition: 0.9s linear all;
+}
+.animate.newClass-remove-active {
+    color: yellow;
+    transition: 0.5s linear all;
+}
+
+.animate-manual {
+    position: relative;
+    margin-top: 60px
+}
+.record {
+    display:block;
+    font-size:20px;
+  }
+  .profile {
+    background:black;
+    color:white;
+    font-size:100px;
+  }
+
+  .view.ng-animate {
+    /* position:absolute; */
+    top:0;
+    left:0;
+    width:100%;
+    min-height:500px;
+  }
+  .view.ng-enter, .view.ng-leave,
+  .record.ng-anchor {
+    transition:0.5s linear all;
+  }
+  .view.ng-enter {
+    transform:translateX(100%);
+  }
+  .view.ng-enter.ng-enter-active, .view.ng-leave {
+    transform:translateX(0%);
+  }
+  .view.ng-leave.ng-leave-active {
+    transform:translateX(-100%);
+  }
+  .record.ng-anchor-out {
+    background:red;
+  }
+  input {
+    border: 1px solid;            
+    display: block;
+    outline: none !important;
+  }
+  input.ng-invalid.ng-dirty {
+      border-bottom: 2px solid red;
+  }
+  input.ng-valid.ng-dirty {
+    border-bottom: 2px solid green;
+}
+
+.example-animate-container {
+    background:white;
+    border:1px solid black;
+    list-style:none;
+    margin:0;
+    padding:0 10px;
+  }
+  
+  .animate-repeat {
+    line-height:30px;
+    list-style:none;
+    box-sizing:border-box;
+  }
+  
+  .animate-repeat.ng-move,
+  .animate-repeat.ng-enter,
+  .animate-repeat.ng-leave {
+    transition:all linear 0.5s;
+  }
+  
+  .animate-repeat.ng-leave.ng-leave-active,
+  .animate-repeat.ng-move,
+  .animate-repeat.ng-enter {
+    opacity:0;
+    max-height:0;
+  }
+  
+  .animate-repeat.ng-leave,
+  .animate-repeat.ng-move.ng-move-active,
+  .animate-repeat.ng-enter.ng-enter-active {
+    opacity:1;
+    max-height:30px;
+  }
+  nav a {
+      border-bottom: 2px solid ;
+      padding: 5px
+  }

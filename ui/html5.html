@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HTML 5</title>
+    <link rel="stylesheet" href="styles/html5.css" />
+</head>
+
+<body>
+    <!-- Canvas -->
+    <!-- Default size of canvas is 300 px × 150 px (width × height). But custom sizes can be defined using the HTML height and width property. 
+    Indeed, the <canvas> element has only two attributes, width and height.
+    The element can be sized arbitrarily by CSS, but during rendering the image is scaled to fit its layout size: if the CSS sizing doesn't respect the ratio of the initial canvas, it will appear distorted.
+    -->
+    <div id="gradient-container">
+        <h4>Gradients</h4>
+        <!-- Default -->
+        <div id="default-gradient" class="gradient">
+            <span>Default</span>
+        </div>
+        <!-- Top to bottom -->
+        <div id="vertical-gradient" class="gradient">
+            <span>Vertical</span>
+        </div>
+        <!-- Left To right -->
+        <div id="horizontal-gradient" class="gradient">
+            <span>Horizontal</span>
+        </div>
+        <!-- Angeled -->
+        <div id="angled-gradient" class="gradient">
+            <span>Angled</span>
+        </div>
+
+        <!-- 0 deg -->
+        <div id="zero-deg-gradient" class="gradient">
+            <span>0 Deg</span>
+        </div>
+        <!-- 90 deg -->
+        <div id="ninety-deg-gradient" class="gradient">
+            <span>90 Deg</span>
+        </div>
+        <!-- 180 deg -->
+        <div id="one-eighty-deg-gradient" class="gradient">
+            <span>180 Deg</span>
+        </div>
+        <!-- -90 deg -->
+        <div id="neg-ninety-deg-gradient" class="gradient">
+            <span>-90 Deg</span>
+        </div>
+
+        <!-- Custom Color stops -->
+        <div id="color-stops-gradient" class="gradient">
+            <span>Custom Colour Stops</span>
+        </div>
+
+        <!-- Layered gradient -->
+        <div id="layered-gradient" class="gradient">
+            <span>Layered Gradient</span>
+        </div>
+        <!-- Layered gradient Image -->
+        <div id="layered-gradient-img" class="gradient">
+            <span>Layered Gradient Image</span>
+        </div>
+        <!-- Layered gradient Image -->
+        <div id="stacked-linear" class="gradient">
+            <span>Stacked Linear</span>
+        </div>
+
+        <!-- Radial Gradient -->
+        <div id="radial-gradient" class="gradient">
+            <span>Radial Gradient</span>
+        </div>
+        <!-- Radial Gradient With Positioning -->
+        <div id="radial-gradient-pos" class="gradient">
+            <span>Radial Gradient With Positioning</span>
+        </div>
+
+        <!-- Radial Gradient With Size -->
+        <div id="radial-gradient-size-closest" class="gradient" style="width: 300px;">
+            <span>Radial Gradient With Size Closest</span>
+        </div>
+
+        <!-- Radial Gradient With Size -->
+        <div id="radial-gradient-size-far" class="gradient" style="width: 300px;">
+            <span>Radial Gradient With Farthest</span>
+        </div>
+
+        <!-- Radial Gradient With Size -->
+        <div id="radial-gradient-size-closest-cir" class="gradient" style="width: 300px;">
+            <span>Radial Gradient With Size Closest Circle</span>
+        </div>
+
+        <!-- Radial Gradient With Size -->
+        <div id="radial-gradient-size-far-cir" class="gradient" style="width: 300px;">
+            <span>Radial Gradient With Farthest Circle</span>
+        </div>
+
+        <!-- Stacked Radial Gradient -->
+        <div id="radial-gradient-stacked" class="gradient">
+            <span>Radial Gradient Stacked</span>
+        </div>
+
+        <!-- Repeating Linear Gradient -->
+        <div id="linear-gradient-repeating" class="gradient">
+            <span>Repeating Linear Gradient</span>
+        </div>
+
+        <!-- Repeating Radial Gradient -->
+        <div id="radial-gradient-repeating" class="gradient">
+            <span>Repeating Radial Gradient</span>
+        </div>
+
+        <!-- Multiple Repeating Linear Gradient -->
+        <div id="multiple-repeating-linear-gradient" class="gradient">
+            <span>Multiple Repeating Linear Gradient</span>
+        </div>
+
+        <!-- Multiple Repeating Radial Gradient -->
+        <div id="multiple-repeating-radial-gradient" class="gradient">
+            <span>Multiple Repeating Radial Gradient</span>
+        </div>
+
+        <!-- Plaid Gradients -->
+        <div id="plaid-gradient" class="gradient">
+            <span>Plaid Gradients</span>
+        </div>
+    </div>
+
+    <hr/>
+    <div id="canvas-container">
+        <h4>Canvas</h4>
+        <canvas id="stockGraph" width="850" height="850">
+            current stock price: $3.15 + 0.15
+            <!-- This won't be rendered if canvas is supported and will only be rendered if canvas is not supported in browser -->
+        </canvas>
+        <canvas id="canvas"></canvas>
+        <canvas id="path" width="450" height="450"></canvas>
+        <canvas id="arcs" width="150" height="200"></canvas>
+        <canvas id="drawIfNeeded">
+            <input id="button" type="range" min="1" max="12">
+        </canvas>
+        <canvas id="clip" width="450" height="400"></canvas>
+        <canvas id="miterLimit" width="450" height="600"></canvas>
+        <canvas id="shadow"></canvas>
+        <canvas id="transform"></canvas>
+        <canvas id="destination" width="450" height="600"></canvas>
+        <div style="display:none;">
+            <img id="source" src="https://mdn.mozillademos.org/files/5397/rhino.jpg" width="300" height="227">
+        </div>
+        <canvas id="animation1" width="450" height="600"></canvas>
+
+        <!-- SVG -->
+        <svg width="450" height="600">
+            <text x="10" y="20" style="font-size:14px;" fill="green" stroke="blue">
+                Your browser support SVG.
+            </text>
+            <rect x="30" y="30" height="100" width="100" fill="yellow" />
+            <line x1="50" y1="50" x2="250" y2="150" style="stroke:red; stroke-width:10;" />
+            <circle cx="150" cy="100" r="70" style="fill:lime; stroke:black; stroke-width:3;" />
+            <text x="30" y="15" style="fill:purple; font-size:22px; transform:rotate(30deg);">
+                <tspan style="fill:purple; font-size:22px;">
+                    Welcome to Our Website!
+                </tspan>
+                <tspan dx="-230" dy="20" style="fill:navy; font-size:14px;">
+                    Here you will find lots of useful information.
+                </tspan>
+            </text>
+            <ellipse cx="120" cy="200" rx="50" ry="25" />
+            <polygon points="60,20 100,40 100,80 60,100 20,80 20,40" />
+            <image href="https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png" x="30" y="230" height="150" width="150" />
+            <iframe id="Example2" title="Example2" width="400" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=es-419&amp;geocode=&amp;q=buenos+aires&amp;sll=37.0625,-95.677068&amp;sspn=38.638819,80.859375&amp;t=h&amp;ie=UTF8&amp;hq=&amp;hnear=Buenos+Aires,+Argentina&amp;z=11&amp;ll=-34.603723,-58.381593&amp;output=embed">
+            </iframe>
+            <defs>
+                <clipPath id="myClip">
+                    <circle cx="30" cy="230" r="20" fill="green" />
+                    <circle cx="70" cy="270" r="20" fill="orange" />
+                </clipPath>
+            </defs>
+            <rect x="10" y="210" width="100" height="100" clip-path="url(#myClip)" fill="pink" />
+
+            <defs>
+                <clipPath id="circleView">
+                    <circle cx="250" cy="225" r="125" fill="#FFFFFF" />
+                </clipPath>
+            </defs>
+            <!-- <image x="100" y="100" width="150" height="150" xlink:href="https://www.amrita.edu/sites/default/files/news-images/new/news-events/images/l-nov/grass.jpg" clip-path="url(#circleView)" /> -->
+
+            <defs>
+                <pattern id="Triangle" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <polygon points="5,0 10,10 0,10" />
+                    <!-- <circle x="0" y="0" r="6" /> -->
+                    <!-- <line x1="50" y1="50" x2="250" y2="150" style="stroke:red; stroke-width:10;" /> -->
+                </pattern>
+            </defs>
+
+            <circle cx="260" cy="300" r="50" fill="url(#Triangle)" />
+
+
+            <defs>
+                <linearGradient id="Gradient01">
+                    <stop offset="20%" stop-color="#39F" />
+                    <stop offset="90%" stop-color="#F3F" />
+                </linearGradient>
+            </defs>
+
+            <rect x="320" y="300" width="60" height="10" fill="url(#Gradient01)" />
+
+            <defs>
+                <radialGradient id="exampleGradient">
+                    <stop offset="10%" stop-color="gold" />
+                    <stop offset="95%" stop-color="green" />
+                </radialGradient>
+            </defs>
+
+            <circle fill="url(#exampleGradient)" cx="20" cy="400" r="50" />
+
+            <!-- symbol definition  NEVER draw -->
+            <symbol id="sym01" viewBox="0 0 150 110">
+                <circle cx="50" cy="50" r="40" stroke-width="8" stroke="red" fill="red" />
+                <circle cx="90" cy="60" r="40" stroke-width="8" stroke="green" fill="white" />
+            </symbol>
+
+            <!-- actual drawing by "use" element -->
+            <use href="#sym01" x="0" y="0" width="100" height="50" />
+            <use href="#sym01" x="0" y="50" width="75" height="38" />
+            <use href="#sym01" x="0" y="100" width="50" height="25" /> 
+            <!-- The radius of the arc is set by the two first parameters set on the A command. The first parameter is rx (radius in x-direction) and the second is ry (radius in y-direction). Setting rx and ry to the same value will result in a circular arc. Setting rx and ry to different values will result in an elliptical arc. In the example above rx was set to 30 and ry to 50.
+
+The third parameter set on the A command is the x-axis-rotation. This sets the rotation of the arc's x-axis compared to the normal x-axis. In the above example the x-axis-rotation is set to 0. Most of the time you will not need to change this parameter.
+
+The fourth and fifth parameters are the large-arc-flag and sweep-flag parameters. The large-arc-flag determines whether to draw the smaller or bigger arc satisfying the start point, end point and rx and ry. 
+Long-arc flag 1 tells that an arc needs to drawn with the same distance and radius as Long-arc flag 0 but the arc circumference needs to be bigger. So in short create a bigger arc. Sweep-flag just creates an arc mirrored over x-axis. 
+-->
+            <path d="M40,340  A30,30 0 0,0 70,390" style="stroke: blue; stroke-width:10; fill:none;"/>
+
+            <path d="M40,340  A30,30 0 1,0 70,390" style="stroke: white; stroke-width:10; fill:none;"/>
+
+            <path d="M40,340  A30,30 0 1,1 70,390" style="stroke: red; stroke-width:10; fill:none;"/>
+
+            <path d="M40,340  A30,30 0 0,1 70,390" style="stroke: orange; stroke-width:10; fill:none;"/>
+            Sorry, your browser does not support SVG.
+        </svg>
+    </div>
+
+    <div id="canvas-webcam">
+        <div id="buttons-container">
+            <button id="check-cam" onclick="checkCam()">Check Cam</button>
+        </div>
+    </div>
+
+    <div id="draggable-content">
+        <div id="columns">
+            <div class="column" draggable="true"><header>A</header></div>
+            <div class="column" draggable="true"><header>B</header></div>
+            <div class="column" draggable="true"><header>C</header></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="src/html5.js"></script>
+</body>
+
+</html>
