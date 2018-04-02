@@ -4744,3 +4744,12 @@ But if we want to navigate to a nested route we need to pass all the routes like
 We can also pass additional optional parameters to routes, which get encoded into the URL and are again available to the $routerOnActivate(next, previous) hook.
 
 this.$router.navigate(['HeroList', {id: heroId}]);
+
+The Object.assign() method is used to copy the values of all enumerable own properties from one or more source objects to a target object. It will return the target object.
+Object.assign(target, ...sources)
+
+The Object.is() method determines whether two values are the same value
+Object.is(value1, value2);
+
+Object.is('foo', 'foo');     // true
+Object.is(window, window);   // true
