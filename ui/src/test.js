@@ -1,0 +1,1 @@
+console.log("%c", "background: orange; color: #fff", "inside worker include script");

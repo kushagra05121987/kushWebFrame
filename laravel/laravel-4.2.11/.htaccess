@@ -1,0 +1,10 @@
+Options -Indexes
+Options +FollowSymLinks
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+#    RewriteBase /public/
+    RewriteCond %{REQUEST_URI} !\.(png|jpg|jpeg|ico|css|js)
+#    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule (.*) server.php [L]
+</IfModule>
