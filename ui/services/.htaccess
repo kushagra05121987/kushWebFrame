@@ -1,4 +1,0 @@
-Options +FollowSymLinks
-RewriteEngine On
-RewriteRule ^(.*)$ /learning/ui/request.php/?params=$1
-Header add Custom-Header "parameter=value"
