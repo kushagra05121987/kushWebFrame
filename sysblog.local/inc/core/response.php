@@ -15,7 +15,7 @@ class Response extends View {
     // send response with status code
     public static function setStatusCode(string $code) {
         self::$http_status_code = $code;
-        header("HTTP/1.0 ".$code);
+        header("HTTP/1.1 ".$code);
     }
 
     // send response settings correct status code

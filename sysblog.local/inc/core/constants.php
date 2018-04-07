@@ -13,7 +13,7 @@ namespace Core;
 use Core\CoreException as cException;
 
 class Constants {
-    const CORE_CONSTANTS = array(
+    private const CORE_CONSTANTS = array(
         "PATH" => array(
             "CORE_INI_FILE_PATH" => "inc".DIRECTORY_SEPARATOR."core".DIRECTORY_SEPARATOR."ini".DIRECTORY_SEPARATOR,
             "USER_INI_FILE_PATH" => "inc".DIRECTORY_SEPARATOR."user".DIRECTORY_SEPARATOR."ini".DIRECTORY_SEPARATOR,

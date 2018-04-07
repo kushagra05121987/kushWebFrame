@@ -1,0 +1,19 @@
+fpassthru — Output all remaining data on a file pointer
+// open the file in a binary mode
+$name = './img/ok.png';
+$fp = fopen($name, 'rb');
+
+// send the right headers
+header("Content-Type: image/png");
+header("Content-Length: " . filesize($name));
+
+// dump the picture and stop the script
+fpassthru($fp);
+
+is_file — Tells whether the filename is a regular file
+is_dir — Tells whether the filename is a directory
+glob — Find path names matching a pattern -> returns array of files and folders matching the pattern with relative path.
+
+one alias can be used only once in mysql
+restore the include path changed by set_include_path
+restore_include_path 

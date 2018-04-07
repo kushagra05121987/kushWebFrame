@@ -68,7 +68,7 @@ class Autoloader {
             $constants = Constants::getConstants('USER');
             include_once(strtolower($constants['APP_CONFIG']['default']['AUTOLOADER']['root'].DIRECTORY_SEPARATOR.$classIncludePath));
         } catch(\Throwable $t) {
-            header("HTTP/1.0 500 Internal Server Error");
+            header("HTTP/1.1 500 Internal Server Error");
             echo $t -> getMessage();
         }
     }

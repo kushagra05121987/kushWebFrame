@@ -12,6 +12,9 @@ strict - strict mode has to explicitly hinted.
  * Type declarations allow functions to require that parameters are of a certain type at call time. If the given value is of the incorrect type, then an error is generated: in PHP 5, this will be a recoverable fatal error, while PHP 7 will throw a TypeError exception.
  * '...' can be used to pass multiple number of arguments
  * Scalar Declaration can be done in two modes Coercive and Strict as follows:
+ * Constant Visibility ¶
+As of PHP 7.1.0, class constants may be defined as public, private, or protected. Constants declared without any explicit visibility keyword are defined as public.
+ * When its a const, it should be handled as static internally by the PHP compiler I believe since its value cant be changed.
  */
 //declare(strict_types=1);
 // Scalar types as of php 5

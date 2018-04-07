@@ -146,6 +146,8 @@ $c = array_map(function(& $n) {
 }, $array1, $array2);
 print_r($c);
 
+// array_map and array_filter do not modify the actual array but return new array . Array_walk only modified original array.
+
 echo "Array Merge Recursive \n";
 // Takes in multiple arrays and merges them with keys. Doesn't remove duplicate values but if same key is found in more than one array then that key is assigned a new array with all the values of that key from other different arrays
 $ar1 = array("color" => array("favorite" => "red"), 5, 10, "key" => 20);
