@@ -11,10 +11,21 @@ echo "Hello World" | nc sysblog.local 41234
 $host = "sysblog.local";
 $port = "41234";
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); // Protocol : 0 [ or IPPROTO_IP This is IP protocol]
+$socket2 = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); // Protocol : 0 [ or IPPROTO_IP This is IP protocol]
 
-socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+// SO_REUSEADDR actual working in php is different than in actual . In actual SO_REUSEADDR is supposed to be used only before binding second socket and SO_REUSEPORT is supposed to used with every socket but here SO_REUSEADDR is supposed to be used with every socket and it then starts working same as SO_REUSEPORT in which is allows different sockets with same host and name to be used. Also it has added advantage with TIME_WAIT.
 
-$socket_bindTcp = socket_bind($socket, $host, $port);
+//socket_set_option($socket2, SOL_SOCKET, SO_REUSEADDR, 1);
+//$socket_bindTcp = socket_bind($socket2, '192.168.1.8', '41235');
+//$socket_bindTcp = socket_bind($socket2, '192.168.1.8', $port);
+//$socket_bindTcp = socket_bind($socket2, '127.0.0.1', $port); // already in use
+//$socket_bindTcp = socket_bind($socket2, $host, $port); // already in use
+$socket_bindTcp2 = socket_bind($socket2, '0.0.0.0', $port);
+//$socket_bindTcp2 = socket_bind($socket2, '0.0.0.0', '41235');
+
+//socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+//$socket_bindTcp = socket_bind($socket, $host, $port);
+$socket_bindTcp = socket_bind($socket, '127.0.0.1', $port);
 
 $socketListen = socket_listen($socket, 10); // returns socket resource
 

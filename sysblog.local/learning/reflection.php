@@ -41,17 +41,25 @@ class testClass extends b implements ain,bin{
 	}
 	private function methodCall() {
 		echo "<pre>";
-		echo ini_get('disable_functions');
+        /**
+         * This directive allows you to disable certain functions for security reasons. It takes on a comma-delimited list of function names. disable_functions is not affected by Safe Mode.
+
+        Only internal functions can be disabled using this directive. User-defined functions are unaffected.
+         */
+		echo "Disable Functions \n", "<div style='word-wrap: break-word'>".ini_get('disable_functions')."</div>";
 		self::hr();
 		print_r(get_defined_functions());
 		self::hr();
+		echo "\nClass methods this\n";
 		print_r(get_class_methods($this));
 		self::hr();
-		print_r(get_class_methods('self'));
+        echo "\nClass methods self\n";
+        print_r(get_class_methods(self)); // can't be used returns empty
 		self::hr();
-		print_r(get_class_methods('testClass'));
+        echo "\nClass methods class\n";
+        print_r(get_class_methods('testClass'));
 		self::hr();
-		print_r(get_object_vars($this)); // returns private variables aswell but no static
+		print_r(get_object_vars($this)); // returns private variables as well but no static
 		// self::$hr;
 		// print_r(get_class_vars($this)); // takes only string no object
 		self::hr();
@@ -68,6 +76,10 @@ class testClass extends b implements ain,bin{
 		self::br();
 		var_dump(is_a($this, "a"));
 		self::br();
+        var_dump(is_a($this, "ain"));
+        self::br();
+        var_dump(is_a($this, "bin"));
+        self::br();
 		echo " ===== INSTANCE OF ===== ";
 		self::br();
 		var_dump($this instanceof $this);
@@ -76,9 +88,9 @@ class testClass extends b implements ain,bin{
 		var_dump($this instanceof $className);
 		// instanceof wont work with interfaces but is_a does
 
-		// self::br();
-		// $interObj = new ain();
-		// var_dump($this instanceof $interObj);
+//		 self::br();
+//		 $interObj = new ain();
+//		 var_dump($this instanceof $interObj);
 
 		self::br();
 		$className = "b";
@@ -86,7 +98,14 @@ class testClass extends b implements ain,bin{
 		self::br();
 		$className = "a";
 		var_dump($this instanceof $className);
+        self::br();
+        $className = "ain";
+        var_dump($this instanceof $className);
+        self::br();
+        $className = "bin";
+        var_dump($this instanceof $className);
 		self::br();
+		// is_a can take only string as 2nd argument but instance of can even take another object as second argumennt
 		echo " ===== IS SUBCLASS ==== ";
 		self::br();
 		var_dump(is_subclass_of($this, "b"));
@@ -112,7 +131,11 @@ class testClass extends b implements ain,bin{
 		var_dump(spl_object_hash($this));
 		$id = spl_object_hash($this);
 		$storage[$id] = $this;
-		self::br();
+        self::br();
+//        $id = spl_object_id($this);
+//        $storage[$id] = $this;
+//        var_dump(spl_object_id($this));
+//		self::br();
 		echo " ===== IS OBJECT =====";
 		self::br();
 		var_dump(is_object($this)); // is_object has other forms for other data type example -> is_array, is_int, is_float, is_bool,
@@ -121,21 +144,56 @@ class testClass extends b implements ain,bin{
 		echo " ===== IS CALLABLE =====";
 		self::br();
 		var_dump(is_callable(array($this, "methodCall"), true, $callable));
+		echo self::br();
+		echo $callable;
 		self::br();
-		var_dump(is_callable("methodCall", true, $callable));
+		var_dump(is_callable("methodCallssss", true, $callable));
+        echo self::br();
+        echo $callable;
 		self::br();
 		var_dump(is_callable(array($this, "methodCall"), false, $callable));
 		self::br();
 		var_dump(is_callable("methodCall", false, $callable));
 		self::br();
+		var_dump(method_exists($this, 'methodCall'));
+		self::br();
+		var_dump(function_exists('methodCall'));
+        self::br();
+        var_dump(is_callable(array($this, "statMeth"), false, $callable));
+        self::br();
+        var_dump(is_callable(array($this, "statMethPri"), false, $callable));
+        self::br();
+        var_dump(is_callable(array($this, "methodPri"), false, $callable));
+        self::br();
+        echo __LINE__;
+        echo PHP_EOL;
+        var_dump(method_exists($this, 'somerandommethodname'));
+
 		echo "</pre>";
 	}
+
+	public function __call($method, $parameters) {
+        echo "inside call and calling $method";
+    }
 }
 
 $tc = new testClass;
 $br = function() {
 	echo "<br />";
 };
+$br();
+echo "OUtside Is callable check";
+$br();
+// is_callable will return false if the method is not visible to the object . So for private method it returns false. Where as method_exists will return true as it will only check if the method exists on the class.
+var_dump(is_callable(array($tc, "methodPri"), false, $callable));
+$br();
+var_dump(method_exists($tc, "methodPri"));
+$br();
+// this will not go inside __call if method is not defined.
+var_dump(method_exists($tc, "somerandommethod"));
+$br();
+// this will go inside the __call if defined and method does not esists. Which still means that it is callable thats why it returns true when __call is defined. Because that method can be reached.
+var_dump(is_callable(array($tc, "somerandommethod"), false, $callable));
 $br();
 echo " ====== IS A OUTSIDE ===== ";
 $br();
@@ -195,12 +253,17 @@ $br();
 var_dump(property_exists($tc, "noVarPri"));
 $br();
 var_dump(property_exists("testClass", "noVarPri"));
+$br();
+var_dump(property_exists("testClass", "statVar"));
+$br();
+var_dump(property_exists($tc, "statVar"));
 
 $br();
 /*
 *A tick is an event that occurs for every N low-level tickable statements executed by the parser within the declare block. The value for N is specified using ticks=N within the declare block's directive section.
 */
-// The declare construct is used to set execution directives for a block of code
+// The declare construct is used to set execution directives for a block of code.
+// Not all statements are tickable. Typically, condition expressions and argument expressions are not tickable.
 // declare(ticks=1);
 
 // A function called on each tick event
@@ -211,6 +274,17 @@ function tick_handler()
 }
 // Every statement below fires a new tick
 register_tick_function('tick_handler');
+// unregister_tick_function
+/**
+ * declare(ticks=2);
+
+function tick_handler()
+{
+unregister_tick_function('tick_handler');
+}
+
+register_tick_function('tick_handler');
+ */
 
 $a = 1;
 
@@ -348,3 +422,54 @@ $br();
 var_dump(new bar);
 class_alias('bar', 'c');
 var_dump(new c);
+
+// forward_static_call takes late static binding into consideration
+class Ap {
+    static function bar() { echo get_called_class(), "\n"; }
+}
+class Bp extends Ap {
+    static function foo() {
+        parent::bar(); //forwards static info, 'B'
+        call_user_func('parent::bar'); //forwarding, 'B'
+        call_user_func('static::bar'); //forwarding, 'B'
+        call_user_func('Ap::bar'); //non-forwarding, 'A'
+        forward_static_call('parent::bar'); //forwarding, 'B'
+        forward_static_call('Ap::bar'); //forwarding, 'B'
+    }
+}
+Bp::foo();
+
+class Ad {
+    static function foo() {
+        forward_static_call('Bs::bar'); //non-forwarding, 'B'
+    }
+}
+class Bs extends Ad {
+    static function bar() { echo get_called_class(), "\n"; }
+}
+Ad::foo();
+$br();
+echo "Method Exists With Parent check";
+$br();
+class ass {
+    public $s = 30;
+    public $d = 300;
+    public function retrieve() {
+        echo $this -> s;
+        echo $this -> x;
+        echo $this -> d;
+        var_dump(method_exists($this, 'passOn'));
+    }
+    public function __call($method, $arguments) {
+
+    }
+}
+class bss extends ass {
+    public $x = 40;
+    public $s = 60;
+    public function retrieve() {
+        parent::retrieve();
+    }
+}
+
+(new bss) -> retrieve();

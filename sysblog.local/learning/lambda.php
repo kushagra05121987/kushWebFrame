@@ -5,6 +5,8 @@
  * Date: 19/10/17
  * Time: 9:48 AM
  */
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 echo "<pre>";
 /*
  * We cannot create a static method outside class unless it is lambda.
@@ -91,7 +93,7 @@ globalVariableCheck();
 function globalVariableCheck() {
     echo $a; // cannot use variable $a defined outside because inside the function its used in local scope
     echo "\n";
-    global $a;
+    global $a;f
     echo $a;
 }
 echo "\n";
@@ -104,7 +106,9 @@ echo "\n Attempting to bind an object to a static anonymous function \n";
 $func = static function() {
     // function body
 };
-$func = $func->bindTo(new StdClass); // Generates waring Cannot bind an instance to a static closure
+// Closure::bind is the static version of bindTo
+// Closure::fromCallable will return an anonymous function from callable or normal php function. It can now be used with bindTo or ::bind to invoke it in a different scope and with different object.
+$func = $func->bindTo(new StdClass); // Generates warning Cannot bind an instance to a static closure
 //$func();
 
 echo "\n Closure::Bind \n";

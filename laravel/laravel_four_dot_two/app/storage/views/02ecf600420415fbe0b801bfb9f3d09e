@@ -1,0 +1,6 @@
+<?php foreach($errors->all('<b>:message<b>') as $error): ?>
+    <?php echo $error; ?>
+
+<?php endforeach; ?>
+
+<?php echo $errors -> first('email'); ?>

@@ -11,7 +11,7 @@ udp
 or unix, which connects to a Unix Socket, a special kind of network socket, which is internal to the operating system’s network stack. Slightly more efficient, because no network interface is involved.
 */
 $addr = gethostbyname("www.example.com");
-
+//var_dump(getprotobyname("tcp"));exit;
 $client = stream_socket_client("tcp://$addr:80", $errno, $errorMessage);
 
 if ($client === false) {
@@ -53,8 +53,13 @@ for (;;) {
         fclose($client);
     }
 }
+socket_getpeername($socket,$name,$port);
+echo "{$name}:{$port}\n"; // 127.0.0.1:1
+
 
 // fsockopen()
+//fsockopen — Open Internet or Unix domain socket connection
+//fsockopen() returns a file pointer which may be used together with the other file functions (such as fgets(), fgetss(), fwrite(), fclose(), and feof()). If the call fails, it will return FALSE
 $fp = fsockopen("www.example.com", 80, $errno, $errstr, 30);
 if (!$fp) {
     echo "$errstr ($errno)<br />\n";

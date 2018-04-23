@@ -105,9 +105,14 @@ fclose($f);
 echo "<br />";
 //print_r($contents);
 echo "<br />";
+echo "temp dir";
 echo sys_get_temp_dir();
-//tmpfile() - Creates a temporary file
-//tempnam() - Create file with unique file name
+//tmpfile(void) ;//- Creates a temporary file
+//tempnam() ;//- Create file with unique file name
+/**
+ * string tempnam ( string $dir , string $prefix )
+Creates a file with a unique filename, with access permission set to 0600, in the specified directory. If the directory does not exist or is not writable, tempnam() may generate a file in the system's temporary directory, and return the full path to that file, including its name.
+ */
 
 echo PHP_EOL;
 echo "--------------- CHECKing memory storage stream after closing file handle -----------------------";

@@ -1,0 +1,1491 @@
+when we start laravel application and we use apache so by using .htaccess we land up on server.php after checking if the requested file is not jpg, png, ico etc and also not a file.
+this can be omitted and direct redirect to public index.php can be made.
+server.php imitates .htaccess functionality by picking up request_uri from $_SERVER and doing parse_url to pick up path which is then urldecoded. then paths.php is included and public path is picked. Then public path is concatenated with url in previous operation and checked if its not / and file. then public index.php is included there.
+This also help when we are running standalone php server.
+
+Illuminate\Foundation\Application is the actual application and whatever config we have that returns arrays will be available in $app variable like $app['configfilename.configname'] such as $app['path.base']. This class extends container class which in turn extends ArrayAccess. This class also has register method which registers service providers.
+First it checks if the provider is already registered then it returns it
+if ($registered = $this->getRegistered($provider) && ! $force)
+                                     return $registered;
+else it will resolve the provider class and class its register method. Then set a key of all the options on its own instance and then mark the provider as registered in which it fires an event $this['events']->fire($class = get_class($provider), array($provider)); which means that we can catch this event and know if its registered but not booted. Then it pushes the provider into its array and marks it as loaded.
+After this it checks if the app is booted using $this->booted which is set when do $app->run() inside index.php and if its booted then it calls providers boot method.
+
+$this['events']->fire($class = get_class($provider), array($provider));
+
+		$this->serviceProviders[] = $provider;
+
+		$this->loadedProviders[$class] = true;
+
+$app -> instance just pushes the instance given to $app->instance variable defined in container. If its array then its key and values are separated and made values. Otherwise its checked if the key is already bound which returns $this -> bindings or $this - instances if found . If found its rebounded which means calling its rebound callbacks.
+
+so $app[path.*] will start working after bootstrap > start.php which call bindInstallPaths which in turn does the following
+public function bindInstallPaths(array $paths)
+	{
+		$this->instance('path', realpath($paths['app']));
+
+		// Here we will bind the install paths into the container as strings that can be
+		// accessed from any point in the system. Each path key is prefixed with path
+		// so that they have the consistent naming convention inside the container.
+		foreach (array_except($paths, array('app')) as $key => $value)
+		{
+			$this->instance("path.{$key}", realpath($value));
+		}
+	}
+
+
+	public function boot()
+    	{
+    		if ($this->booted) return;
+
+    		array_walk($this->serviceProviders, function($p) { $p->boot(); });
+
+    		$this->bootApplication();
+    	}
+
+    	/**
+    	 * Boot the application and fire app callbacks.
+    	 *
+    	 * @return void
+    	 */
+    	protected function bootApplication()
+    	{
+    		// Once the application has booted we will also fire some "booted" callbacks
+    		// for any listeners that need to do work after this initial booting gets
+    		// finished. This is useful when ordering the boot-up processes we run.
+    		$this->fireAppCallbacks($this->bootingCallbacks);
+
+    		$this->booted = true;
+
+    		$this->fireAppCallbacks($this->bootedCallbacks);
+    	}
+
+    	public function run(SymfonyRequest $request = null)
+        	{
+        		$request = $request ?: $this['request'];
+
+        		$response = with($stack = $this->getStackedClient())->handle($request);
+
+        		$response->send();
+
+        		$stack->terminate($request, $response);
+        	}
+
+        	public function handle(SymfonyRequest $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+            	{
+            		try
+            		{
+            			$this->refreshRequest($request = Request::createFromBase($request));
+
+            			$this->boot();
+
+            			return $this->dispatch($request);
+            		}
+            		catch (\Exception $e)
+            		{
+            			if ( ! $catch || $this->runningUnitTests()) throw $e;
+
+            			return $this['exception']->handleException($e);
+            		}
+            		catch (\Throwable $e)
+            		{
+            			if ( ! $catch || $this->runningUnitTests()) throw $e;
+
+            			return $this['exception']->handleException($e);
+            		}
+            	}
+As soon as we call $app -> run which in turn takes the app if passed to it otherwise takes the request which was registered in the start inside constructor $this['request']. Then it calls handle method which calls $this->boot() method which checks if $this -> booted then returns otherwise calls the boot method of all the registered service providers. Then it calls bootApplication which sets $this -> booted = true while also calling some booted and booting callbacks.
+
+public function loadManifest()
+	{
+		$path = $this->manifestPath.'/services.json';
+
+		// The service manifest is a file containing a JSON representation of every
+		// service provided by the application and whether its provider is using
+		// deferred loading or should be eagerly loaded on each request to us.
+		if ($this->files->exists($path))
+		{
+			$manifest = json_decode($this->files->get($path), true);
+
+			return array_merge($this->default, $manifest);
+		}
+	}
+
+	when we register providers given in app config then we use provider repository instance and its methods such as load. This method in turn checks if there is any services.json file inside manifest location it uses it otherwise it creates a new manifest in which it returns an array which has ['providers' => all the providers, 'eager' = [], 'deferred' => []] it then compiles this array
+
+	public function load(Application $app, array $providers)
+    	{
+    		$manifest = $this->loadManifest();
+
+    		// First we will load the service manifest, which contains information on all
+    		// service providers registered with the application and which services it
+    		// provides. This is used to know which services are "deferred" loaders.
+    		if ($this->shouldRecompile($manifest, $providers))
+    		{
+    			$manifest = $this->compileManifest($app, $providers);
+    		}
+
+    		// If the application is running in the console, we will not lazy load any of
+    		// the service providers. This is mainly because it's not as necessary for
+    		// performance and also so any provided Artisan commands get registered.
+    		if ($app->runningInConsole())
+    		{
+    			$manifest['eager'] = $manifest['providers'];
+    		}
+
+    		// Next, we will register events to load the providers for each of the events
+    		// that it has requested. This allows the service provider to defer itself
+    		// while still getting automatically loaded when a certain event occurs.
+    		foreach ($manifest['when'] as $provider => $events)
+    		{
+    			$this->registerLoadEvents($app, $provider, $events);
+    		}
+
+    		// We will go ahead and register all of the eagerly loaded providers with the
+    		// application so their services can be registered with the application as
+    		// a provided service. Then we will set the deferred service list on it.
+    		foreach ($manifest['eager'] as $provider)
+    		{
+    			$app->register($this->createProvider($app, $provider));
+    		}
+
+    		$app->setDeferredServices($manifest['deferred']);
+    	}
+
+    	protected function compileManifest(Application $app, $providers)
+        	{
+        		// The service manifest should contain a list of all of the providers for
+        		// the application so we can compare it on each request to the service
+        		// and determine if the manifest should be recompiled or is current.
+        		$manifest = $this->freshManifest($providers);
+
+        		foreach ($providers as $provider)
+        		{
+        			$instance = $this->createProvider($app, $provider);
+
+        			// When recompiling the service manifest, we will spin through each of the
+        			// providers and check if it's a deferred provider or not. If so we'll
+        			// add it's provided services to the manifest and note the provider.
+        			if ($instance->isDeferred())
+        			{
+        				foreach ($instance->provides() as $service)
+        				{
+        					$manifest['deferred'][$service] = $provider;
+        				}
+
+        				$manifest['when'][$provider] = $instance->when();
+        			}
+
+        			// If the service providers are not deferred, we will simply add it to an
+        			// of eagerly loaded providers that will be registered with the app on
+        			// each request to the applications instead of being lazy loaded in.
+        			else
+        			{
+        				$manifest['eager'][] = $provider;
+        			}
+        		}
+
+        		return $this->writeManifest($manifest);
+        	}
+        	protected function registerLoadEvents(Application $app, $provider, array $events)
+            	{
+            		if (count($events) < 1) return;
+
+            		$app->make('events')->listen($events, function() use ($app, $provider)
+            		{
+            			$app->register($provider);
+            		});
+            	}
+
+
+new $provider($app) gives a variable $this -> app inside provider's register method.
+isDeferred() in compile manifest checks the value of protected $defer = true in service provider
+so when we pass a key to resolve a deferred service which will be initially registered using illuminate/start.php by getProviderLoader() -> load() method will fill $this->deferredServices[$abstract] variable by $this->deferredServices[$service] = $provider in a loop with $instance -> provides(); which will create a binding between key to resolve and the $provider associated with that key.
+So when deferred providers are solved providers are picked from this deferredServices array based on the keys or services registered inside provides.
+
+All controllers in laravel are resolved and instantiated from IOC container. That's why all the dependencies that are there inside controller's constructor method are automatically instantiated and injected.
+
+public function singleton($abstract, $concrete = null)
+{
+    $this->bind($abstract, $concrete, true);
+}
+
+public function bindShared($abstract, Closure $closure)
+{
+    $this->bind($abstract, $this->share($closure), true);
+}
+Similarities:
+
+Both methods call bind() under the hood.
+Both methods pass true to the 3rd parameter of bind(), which signifies that this is a shared object.
+In both cases, because this is a shared object, a call to isShared($abstract) will return true.
+In both cases, because this is a shared object, a call to make($abstract) will return only the first instance.
+Differences:
+
+singleton() will accept a Closure or a string. bindShared() will only accept a Closure, not a string.
+bindShared(), in addition to binding the object into the IOC container as a shared object, takes the additional step of wrapping the passed Closure in a share'd Closure, which prevents the passed Closure from being executed more than once. At first glance, this appears to be a double assurance that the object will be treated as a singleton. I can only guess why this might be desirable.
+bindShared() is called 87 times inside the framework. singleton() is called 0 times.
+
+Cache::get call could be re-written like so:
+
+$value = $app->make('cache')->get('key');
+
+php artisan will also run everything from start so its like executing a complete life cycle again as with http.
+
+$this->package('vendor/package'); is put inside boot method of --resources package not in the generic global package.
+
+laravel will not be able to create folders inside bootstrap directory. So if deleted we will have to create them manually.
+
+if there are resolvingAny callbacks setup then we need to be careful about what is getting returned otherwise we might have certain issues such as session or cookies not getting set.
+
+Cookie::queue or make both send the cookie every time in response its not like that if a particular cookies exists then it won't be sent. If same cookie value changes then they update the cookie value otherwise if key changes the old cookie persists and new cookie will be added.
+
+namespace and prefix these both can also work in single routes and not only inside groups.
+
+When redirecting along with route parameters the parameters are first matched with the registered route , if there is any parameter inside the registered route which matches the passed parameters then based on the type ( int , string, etc ) the passed parameters are mapped to the matched routes any extra parameters are passed as get parameters.
+
+View::share share data with multiple views but what if we want to have a data all the time for only a specific view in this case we may use view::composers
+View composers are callbacks or class methods that are called when a view is rendered. If you have data that you want bound to a given view each time that view is rendered throughout your application, a view composer can organize that code into a single location
+View creators work almost exactly like view composers; however, they are fired immediately when the view is instantiated. To register a view creator, simply use the creator method:
+
+View::creator('profile', function($view)
+{
+    $view->with('count', User::count());
+});
+If you would like to define a custom response that you can re-use in a variety of your routes and controllers, you may use the Response::macro method:
+
+Response::macro('caps', function($value)
+{
+    return Response::make(strtoupper($value));
+});
+The macro function accepts a name as its first argument, and a Closure as its second. The macro's Closure will be executed when calling the macro name on the Response class:
+
+return Response::caps('foo');
+You may define your macros in one of your app/start files. Alternatively, you may organize your macros into a separate file which is included from one of your start files.
+
+We can have this response macros and view share also defined inside service providers. But view share is more like a global definition so should be in global.php.
+
+In blade templating @yield('content') is always used to get the contents from the child view and @section('content') is used to defin a section inside child or parent view. @section can be used with @stop or @show. @stop will define and stop after that where as @show will define and render the content so its similar to @section('bars') something @stop @yield('bars').
+So if we have extended a base view the in the child view we need to define section which we want parent to yield.
+All the child views will extend the parent and then start to overwrite the section matching in parent view. If we want to use parent view and child view both then we need to use @parent to include the parent section inside child section.
+@include also include various different view into another view.
+So in essence only child view are included from controllers and not base views.
+We can also use this parent layout and child view scheme in controllers and skip this blade inheritance mechanism totally.
+We need to set protected $layout property to the base view. Then from specific actions we can set $this -> layout -> content or whatever @yield() has in it to new view::make.
+@yield can also have default value returned @yield('section', 'Default Content')
+In blade template we can echo data with {{{ }}} or {{ }}
+
+{{{ }}} will escape the data and then print it whereas {{ }} will not escape the data.
+
+instead of writing a ternary statement, Blade allows you to use the following convenient short-cut:
+{{{ $name or 'Default' }}}
+
+If you need to display a string that is wrapped in curly braces, you may escape the Blade behavior by prefixing your text with an @ symbol:
+
+@{{ This will not be processed by Blade }}
+
+Including Sub-Views
+@include('view.name')
+You may also pass an array of data to the included view:
+
+@include('view.name', array('some'=>'data'))
+@include is similar to view::make in which we can provide view name along with the data.
+
+Before calling the controller action laravel calls setupLayout method on controller and uses its layout property to create view.
+
+When we are using blade layout we have two ways of using that
+Either we return a view by view::make which refers to another blade template which @extends another parent template. This way we use all the facilities of laravel blade inheritance.
+
+Or we can use $layout property of the controller which is used by setupLayout method to create a base view view::make($this -> layout). Then if we set $this -> layout -> content property to a view::make the that view will be used to pull content from and not that it will  be the content for @yield('content'). It will be used to yield sections from it.
+
+Controller filter give us a way to define
+
+cannot use this beforeFilter and afterFilter when using the class for route::filter neither in constructor nor in filter method.
+
+Even with Event::subscribe we cannot use $this -> before or after filters.
+
+If we are not returning any view or response then layout will be used as default view.
+
+cannot resolve and inject classes and objects in method calls unless its something internal to laravel in which it knows that it has to pass that value to callback function. Like filters and events
+
+When storing in Cache add its mandatory to give timeout using add or put otherwise if we don't give anything it generates error third parameter missing or else if we supply ttl as null then the key itself won't be created.
+Thats why we have forever method if we don't want to specify time.
+
+php artisan cache:table and session:table will generate migrations for session and cache.
+
+// Your Current Settings
+$mail->SMTPSecure = 'tls';
+$mail->Port = 587;
+Try this:
+
+// Updated Settings
+$mail->SMTPSecure = 'ssl';
+$mail->Port = 465;
+
+we can enable pretend mode for mail using two ways either changing the config mail.php which will global or otherwise if locally required then Mail::pretend(); inside a controller or any class will set it for that block of code.
+
+Mail::send([], [], function ($message) {
+  $message->to(..)
+    ->subject(..)
+    // here comes what you want
+    ->setBody('Hi, welcome user!');
+});
+
+When we set log mode on then every thing headers and text body of the mail will be logged to laravel logs but i we use pretend mode then nothing but
+local.INFO: Pretending to mail message to: kushagra.mishra05121987@gmail.com [] []
+will be logged
+
+Many packages ship with their own language lines. Instead of hacking the package's core files to tweak these lines, you may override them by placing files in the  app/lang/packages/{locale}/{package} directory. So, for example, if you need to override the English language lines in messages.php for a package named skyrim/hearthfire, you would place a language file at: app/lang/packages/en/hearthfire/messages.php. In this file you would define only the language lines you wish to override. Any language lines you don't override will still be loaded from the package's language files.
+
+You can use Composer to create new projects from an existing package. This is the equivalent of doing a git clone/svn checkout followed by a composer install of the vendors.
+
+There are several applications for this:
+
+You can deploy application packages.
+You can check out any package and start developing on patches for example.
+Projects with multiple developers can use this feature to bootstrap the initial application for development.
+To create a new project using Composer you can use the create-project command. Pass it a package name, and the directory to create the project in. You can also provide a version as third argument, otherwise the latest version is used.
+
+If the directory does not currently exist, it will be created during installation.
+
+php composer.phar create-project doctrine/orm path 2.2.*
+It is also possible to run the command without params in a directory with an existing composer.json file to bootstrap a project.
+
+--stability (-s): Minimum stability of package. Defaults to stable.
+--prefer-source: Install packages from source when available.
+--prefer-dist: Install packages from dist when available.
+--repository: Provide a custom repository to search for the package, which will be used instead of packagist. Can be either an HTTP URL pointing to a composer repository, a path to a local packages.json file, or a JSON string which similar to what the repositories key accepts.
+--dev: Install packages listed in require-dev.
+--no-dev: Disables installation of require-dev packages.
+--no-scripts: Disables the execution of the scripts defined in the root package.
+--no-progress: Removes the progress display that can mess with some terminals or scripts which don't handle backspace characters.
+--no-secure-http: Disable the secure-http config option temporarily while installing the root package. Use at your own risk. Using this flag is a bad idea.
+--keep-vcs: Skip the deletion of the VCS metadata for the created project. This is mostly useful if you run the command in non-interactive mode.
+--remove-vcs: Force-remove the VCS metadata without prompting.
+--no-install: Disables installation of the vendors.
+--ignore-platform-reqs: ignore php, hhvm, lib-* and ext-* requirements and force the installation even if the local machine does not fulfill these.
+
+php artisan queue:subscribe queue_name http://foo.com/queue/receive
+queue:failed-table
+To view all of your failed jobs, you may use the queue:failed Artisan command:
+php artisan queue:failed
+The queue:failed command will list the job ID, connection, queue, and failure time. The job ID may be used to retry the failed job. For instance, to retry a failed job that has an ID of 5, the following command should be issued:
+
+php artisan queue:retry 5
+If you would like to delete a failed job, you may use the queue:forget command:
+
+php artisan queue:forget 5
+To delete all of your failed jobs, you may use the queue:flush command:
+
+php artisan queue:flush
+Artisan::call('run:tests', array(
+//            "a1" => 20, "a3" => 390, '--option2' => 23, '--option3' => [34, 44], '--option4'
+//        ));
+
+So when using Mail::queue or Mail::later we cannot provide callback function($message) {} as last argument but we will have to provide another class with mail method in it which only receives $message and not $job . We cannot call class@method also in this.
+
+Laravel 4.2 mail also follows a send mail by using class and method as above, its not only specific to queue or later or queueOn or laterOn but this option is only documented in 5.5.
+
+
+
+<?php namespace Illuminate\Support;
+
+use Closure;
+
+abstract class Manager {
+
+	/**
+	 * The application instance.
+	 *
+	 * @var \Illuminate\Foundation\Application
+	 */
+	protected $app;
+
+	/**
+	 * The registered custom driver creators.
+	 *
+	 * @var array
+	 */
+	protected $customCreators = array();
+
+	/**
+	 * The array of created "drivers".
+	 *
+	 * @var array
+	 */
+	protected $drivers = array();
+
+	/**
+	 * Create a new manager instance.
+	 *
+	 * @param  \Illuminate\Foundation\Application  $app
+	 * @return void
+	 */
+	public function __construct($app)
+	{
+		$this->app = $app;
+	}
+
+	/**
+	 * Get the default driver name.
+	 *
+	 * @return string
+	 */
+	abstract public function getDefaultDriver();
+
+	/**
+	 * Get a driver instance.
+	 *
+	 * @param  string  $driver
+	 * @return mixed
+	 */
+	public function driver($driver = null)
+	{
+		$driver = $driver ?: $this->getDefaultDriver();
+
+		// If the given driver has not been created before, we will create the instances
+		// here and cache it so we can return it next time very quickly. If there is
+		// already a driver created by this name, we'll just return that instance.
+		if ( ! isset($this->drivers[$driver]))
+		{
+			$this->drivers[$driver] = $this->createDriver($driver);
+		}
+
+		return $this->drivers[$driver];
+	}
+
+	/**
+	 * Create a new driver instance.
+	 *
+	 * @param  string  $driver
+	 * @return mixed
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	protected function createDriver($driver)
+	{
+		$method = 'create'.ucfirst($driver).'Driver';
+
+		// We'll check to see if a creator method exists for the given driver. If not we
+		// will check for a custom driver creator, which allows developers to create
+		// drivers using their own customized driver creator Closure to create it.
+		if (isset($this->customCreators[$driver]))
+		{
+			return $this->callCustomCreator($driver);
+		}
+		elseif (method_exists($this, $method))
+		{
+			return $this->$method();
+		}
+
+		throw new \InvalidArgumentException("Driver [$driver] not supported.");
+	}
+
+	/**
+	 * Call a custom driver creator.
+	 *
+	 * @param  string  $driver
+	 * @return mixed
+	 */
+	protected function callCustomCreator($driver)
+	{
+		return $this->customCreators[$driver]($this->app);
+	}
+
+	/**
+	 * Register a custom driver creator Closure.
+	 *
+	 * @param  string    $driver
+	 * @param  \Closure  $callback
+	 * @return $this
+	 */
+	public function extend($driver, Closure $callback)
+	{
+		$this->customCreators[$driver] = $callback;
+
+		return $this;
+	}
+
+	/**
+	 * Get all of the created "drivers".
+	 *
+	 * @return array
+	 */
+	public function getDrivers()
+	{
+		return $this->drivers;
+	}
+
+	/**
+	 * Dynamically call the default driver instance.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+		return call_user_func_array(array($this->driver(), $method), $parameters);
+	}
+
+}
+
+remember_me cookie is like id|remembertoken
+list($id, $token) = explode('|', $recaller, 2);
+$this->provider->retrieveByToken($id, $token)
+
+While attempting to authenticate we can three args credentials, remember, login so it means with attempt we can also create remember me and login the user
+
+php artisan auth:reminders-table
+php artisan migrate
+auth:reminders-controller
+
+
+Route::filter('csrf', function()
+{
+	if (Session::token() !== Input::get('_token'))
+	{
+		throw new Illuminate\Session\TokenMismatchException;
+	}
+});
+So Session::token() can give your the csrf token inside the session
+So Session::token() can give your the csrf token inside the session
+
+Listening For Query Events
+You may listen for query events using the DB::listen method:
+
+DB::listen(function($sql, $bindings, $time)
+{
+    //
+});
+
+The update and delete statements return the number of rows affected by the operation.
+
+as we do DB::table a select * from tablename is created select() method only help to specify columns
+You may easily cache the results of a query using the remember or rememberForever method:
+$users = DB::table('users')->remember(10)->get();
+In this example, the results of the query will be cached for ten minutes. While the results are cached, the query will not be run against the database, and the results will be loaded from the default cache driver specified for your application.
+
+$users = DB::table('users')->cacheTags(array('people', 'authors'))->remember(10)->get();
+
+
+when using schema builder we have a nomanclature for keys tablename_columnname_keytype
+so for primary_key we have users_id_primary
+so for foreign_key we have users_id_foreign
+similarly for unique and index
+ $table->engine = 'InnoDB';
+
+ increments automatically creates a primary key.
+ foreign key actions
+ RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+
+ Ro add foreign key both the columns should have same data type also
+
+ Migrations are created as version with timestamps so if you want to do some modification the its better to create a separate migration file and then modify the db so that if required we may undo those changes.
+
+ Database seeder run method is also resolved from ioc.
+
+So when defining model for eloquent is not mandatory to implement UserInterface because thats a requirement for Auth provider which returns an instance of class UserProviderInterface which in turn returns instances of UserInterface. Also if we need to use reminder facility we implement Remindable interface and use Remindable trait.
+
+
+Find or findOrFail or firstOrfail will always put limit to 1 and they always match against table.id column.
+firstOrFail will put a limit of 1 and pull records rather than getting all the records first and then picking 1st.
+When using findOrfail or firtsOrFail with where it adds it as a and condition on where.
+Even if there are multiple records records of same id find or fail will give you only first record as it uses limit 1.
+
+When using chunk Eloquent will not pull al the records at once and return them one by one rather it will create pagination sort of queries.
+ ===Chunk===
+
+Listening ------
+select * from `duplicates` limit 1 offset 0
+Kushagra
+
+Listening ------
+select * from `duplicates` limit 1 offset 1
+Rgsh
+
+Listening ------
+select * from `duplicates` limit 1 offset 2
+oorot
+
+Listening ------
+select * from `duplicates` limit 1 offset 3
+
+Eloquent will assume lower case plural form of Model name as table name by default unless protected $table property is specified on model;
+It will also assume that there is a primary key column named id.
+You may define a primaryKey property to override this convention. Likewise, you may define a  connection.
+Model will automatically update timestamp columns but if we don't want this behaviour then we can set 'public' $timestamps to false.
+Typically, your Eloquent models will have auto-incrementing keys. However, if you wish to specify your own keys, set the 'public' incrementing property on your model to false.
+
+When you retrieve a record via Eloquent, you can access its properties as follows:
+
+$country = Country::find(1);
+print $country->name;
+We can update attribute values in the same manner:
+
+$country->name = 'INDIA';
+This will set the value in the model instance, but we need to persist the change to the database. We do this by calling the save method afterwards:
+
+$country->save();
+This also could be use for creating new record.
+
+If you have a table with lots of columns, then it will become tiresome to assign each property manually like this. Eloquent allows you to fill models by passing an associative array with values, and the keys representing the column names. You can fill a model while either creating or updating it:
+
+$data = [
+'name' => 'INDIA',
+'area' => '12345',
+'language' => 'hindi,
+];
+Country::create($data);
+However, this will throw a MassAssignmentException error.
+
+If the $data array in the previous example came from say, a user's form submission, then they can update any and all values in the same database. Consider that you have a users table with a column called is_admin, which determines whether or not that user can view your website's administration area. Also consider that users on the public side of your website can update their profile. If, during form submission, the user also included a field with the name of is_admin and a value of 1, that would update the column value in the database table and grant them access to your super secret admin area—this is a huge security concern and is exactly what mass-assignment protection prevents. To mark columns whose values are safe to set via mass-assignment (such as name, birth_date, and so on.), we need to update our Eloquent models by providing a new property called $fillable. This is simply an array containing the names of the attributes that are safe to set via mass assignment:
+
+class Country extends Model {
+
+protected $fillable = [
+'name',
+'area',
+'language',
+];
+}
+In short save() method is used both for saving new model, and updating existing one. here you are creating new model or find existing one, setting its properties one by one and finally saves in database, while in create method you are passing array, setting properties in model and persists in database in one shot.
+
+
+Model::create is a simple wrapper around this, if you look at its implementation:
+
+/**
+ * Save a new model and return the instance.
+ *
+ * @param  array  $attributes
+ * @return static
+ */
+public static function create(array $attributes = [])
+{
+    $model = new static($attributes);
+
+    $model->save();
+
+    /** my modification based on observation */
+    $model = forward_static_call(get_class(static), 'find', $model -> id);
+
+    return $model;
+}
+
+Just because we set incrementing to false eloquent is not able to get the new id from the table and hence unable to map the model record with that row.
+If we set incrementing to true with a table which has auto incrementing column everything work fine because now table and eloquent can work on same id so the new record inserted in table is will have same id as in eloquent.
+
+For Auto increment it calculates the id and not pull the last inserted id from db.
+
+update and delete in Eloquent also will return number of row affected.
+
+If we want to use softDeleting on our model we need to use SoftDeletingTrait
+
+withtrashed is including not trashed items but onlytrashed is only the trashed items.
+
+Y-m-d H:i:s
+whatever getDateFormat returns if its not according to the mysql datetime format we get 0000-00-00 00:00:00 type of value in record.
+So whatever we return from getDateFormat that is treated as new date value . if its a format then it will be converted to date time from current time.
+
+Example:
+
+Model::whereColumn_name('someValue')->get();
+Example 2:
+
+Model::where("column_name", "=", "someValue")->get();
+Query with both versions will look like:
+
+WHERE column_name = 'someValue'
+
+Scopes are like a Macro for Models
+
+List and pluck will mandatorly take column name .
+Pluck can use only one column name but can take multiple column names without generating error. But will create query using only first column name.
+Lists can take multiple column names but works only on firts two . Similar to PDO key_value fetch mode. 2nd arg wil be key and first will be value.
+Get can also take or not take column names.
+Pluck always pull the value of the first column.
+Get by default creates a * query but when passed array of columns it picks only those columns.
+
+Sometimes you may wish to limit the attributes that are included in your model's array or JSON form, such as passwords. To do so, add a hidden property definition to your model
+
+User::observe(new UserObserver);
+or
+User::observe('Observer Class Name');
+This is also resolved from ioc.
+
+Model -> boot -> using trait so trait bootTraitName()
+getDateFormat affects both inserts and selects. If you want to use a custom timestamp format you need your database schema to reflect this change - i.e. change your created_at and updated_at columns to a data type that supports the format you want.
+<?php echo $model->created_at->format('U') ?>
+
+getDates tell which all fields should be mutated by laravel using getDateFormat
+and this default format is 'Y-m-d H:i:s' anything apart from this creates a problem because laravel will match the datetime string from db value and try to break and format the string using the format returned from getDateFormat
+in User::has has is used to query on the child model and return thr relative results from parent.
+So $posts = Post::has('comments', '>=', 3)->get(); will return all the posts which have 3 or more comments if we need to have more conditions then we can use whereHas or OrWhereHas which will query on child model.
+
+$posts = Post::whereHas('comments', function($q)
+{
+    $q->where('content', 'like', 'foo%');
+
+})->get();
+The global or general workbench creator without resources will not create $this->package('vendor/package') in boot in fact it will not even create boot method.
+
+
+In 5.5 we have config helper method which can be used for both get and set for setting we need to pass associative array with config key name
+No we use DotEnv framework instead of core php parsing of .env.php files. Now we need only .env or .env.environment file
+App environment can be set using this .env file by APP_ENV variable. and env options can be retrieved by $_ENV or env method which takes second argument as default like others.
+There is also a config:cache option like artisan optimize or composer optimize . It wil create a single file at bootstrap/cache/config.php with all the configuration loaded into it . After doing this no .env files will be loaded and env() method will return null. So we must be sure to use env() method inside our configuration files so that when making the one cache config laravel is able to pull environment properly.
+
+Maintenance mode is almost same with two new things --retry and --message options. Where retry will add Http Retry-After header
+
+The Retry-After response HTTP header indicates how long the user agent should wait before making a follow-up request. There are three main cases this header is used:
+
+When sent with a 503 (Service Unavailable) response, this indicates how long the service is expected to be unavailable.
+When sent with a 429 (Too Many Requests) response, this indicates how long to wait before making a new request.
+When sent with a redirect response, such as 301 (Moved Permanently), this indicates the minimum time that the user agent is asked to wait before issuing the redirected request.
+
+Where Is The Models Directory?
+When getting started with Laravel, many developers are confused by the lack of a models directory. However, the lack of such a directory is intentional. We find the word "models" ambiguous since it means many different things to many different people. Some developers refer to an application's "model" as the totality of all of its business logic, while others refer to "models" as classes that interact with a relational database.
+
+For this reason, we choose to place Eloquent models in the app directory by default, and allow the developer to place them somewhere else if they choose.
+Along with config:cache we also have routes and service cache which is located in bootstrap/cache/.
+
+5.5 defines two entry points to our application Http and Console or cli along with Exceptions directory and Providers directory so these two directories are already created. With their kernal files in them. When we say make:command then new dummy command file will be created inside console.
+
+5.5 bootstrap directory has cache and app.php which is responsible for create new illuminate app instance and bind htt, console and exception kernals and return app.
+cache directory is used for holding compiled config, routes, packages and services.php(services.json inside storage/meta directory in 4.2)
+
+$this->app->when('App\Http\Controllers\UserController')
+          ->needs('$variableName')
+          ->give($value);
+
+$this->app->when(PhotoController::class)
+          ->needs(Filesystem::class)
+          ->give(function () {
+              return Storage::disk('local');
+          });
+
+$this->app->when(VideoController::class)
+          ->needs(Filesystem::class)
+          ->give(function () {
+              return Storage::disk('s3');
+          });
+
+
+
+Tagging
+Occasionally, you may need to resolve all of a certain "category" of binding. For example, perhaps you are building a report aggregator that receives an array of many different Report interface implementations. After registering the Report implementations, you can assign them a tag using the tag method:
+
+$this->app->bind('SpeedReport', function () {
+    //
+});
+
+$this->app->bind('MemoryReport', function () {
+    //
+});
+
+$this->app->tag(['SpeedReport', 'MemoryReport'], 'reports');
+Once the services have been tagged, you may easily resolve them all via the tagged method:
+
+$this->app->bind('ReportAggregator', function ($app) {
+    return new ReportAggregator($app->tagged('reports'));
+});
+
+Extending Bindings
+The extend method allows the modification of resolved services. For example, when a service is resolved, you may run additional code to decorate or configure the service. The extend method accepts a Closure, which should return the modified service, as its only argument:
+
+$this->app->extend(Service::class, function($service) {
+    return new DecoratedService($service);
+});
+This is not a service resolver we have to register service resolver spearatly and when service is resolve from container the before returning it its passed to this extends callback.
+
+If you are in a location of your code that does not have access to the $app variable, you may use the global resolve helper:
+
+$api = resolve('HelpSpot\API');
+
+$api = $this->app->makeWith('HelpSpot\API', ['id' => 1]);
+
+Even if i have not registered the class in ioc container but i can still resolve it form container with dependency injection
+
+Many types of classes in Laravel are resolved through the service container, including controllers, event listeners, middleware, queued jobs, and even route Closures
+So now we can type inject function also.
+
+There is no difference between {{ }} and {{ }} in Laravel 5 at all.
+
+In v4 it included the following two styles: “{{” and “{{{“. The double curly bracket was a raw echo and the triple curly bracket escaped.
+
+Currently in 5.0 both the double and triple curly brackets escape the variable and a new “{!! $var !!}” is for raw.
+
+<script>
+    var app = @json($array);
+</script>
+AppServiceProvider is a central service provider where we can register all the dependencies and other settings.
+
+13
+down vote
+accepted
+from the docs:
+
+e()
+
+The e function runs htmlentities over the given string:
+
+
+echo e('<html>foo</html>');
+
+// &lt;html&gt;foo&lt;/html&gt;
+
+@{{ }} is used for using it with different javascript frameworks. @ symbol will be removed by php and {{ }} expression will remain untouched so that it can be used by other javascript libraries.
+same is for @verbatim if we have multiple places in which we want to use @{{}}
+
+@php @endphp can be used to perform some php based work. Before we were supposed to use <?php ?>
+
+$loop->index	The index of the current loop iteration (starts at 0).
+$loop->iteration	The current loop iteration (starts at 1).
+$loop->remaining	The iteration remaining in the loop.
+$loop->count	The total number of items in the array being iterated.
+$loop->first	Whether this is the first iteration through the loop.
+$loop->last	Whether this is the last iteration through the loop.
+$loop->depth	The nesting level of the current loop.
+$loop->parent	When in a nested loop, the parent's loop variable.
+
+Of course, if you attempt to @include a view which does not exist, Laravel will throw an error. If you would like to include a view that may or may not be present, you should use the  @includeIf directive:
+
+@includeIf('view.name', ['some' => 'data'])
+
+If you would like to @include a view depending on a given boolean condition, you may use the  @includeWhen directive:
+
+@includeWhen($boolean, 'view.name', ['some' => 'data'])
+
+To include the first view that exists from a given array of views, you may use the includeFirst directive:
+
+@includeFirst(['custom.admin', 'admin'], ['some' => 'data'])
+
+@lang('language.line')
+
+@choice('language.line', 1)
+
+@push('scripts')
+    <script src="/example.js"></script>
+@endpush
+You may push to a stack as many times as needed. To render the complete stack contents, pass the name of the stack to the @stack directive:
+
+<head>
+    <!-- Head Contents -->
+
+    @stack('scripts')
+</head>
+
+@push('scripts')
+    This will be second...
+@endpush
+
+// Later...
+
+@prepend('scripts')
+    This will be first...
+@endprepend
+
+$app or $this -> app or App can also be accessed using app() equivalent to App facade;
+
+Its not like if we call a method with certain dependency on our own it ioc will still inject that dependency. Only when we use ioc or service container to resolve a method also then only it will inject that dependency as in case of route methods.
+
+getLocale and isLocale
+
+__() method is short for Lang::get which takes two type of arguments either the messagefile.messagekeyname or text which we need to translate to current locale. So instead of defining every sentence in specific language message file as key we can have a languageShortCode.json file in resource/lang with complete text in default language as key and value will be the translated version of it. If not found either the messagefile.messagekeyname or text then the alue passed to __() will be returned.
+
+Laravel mix is the dependency used for compiling and minifying sass scss css less and js file from resources/asset to public
+All we have to is run npm install and install laravel min then inside webpack.mix.js we require that package in mix variable and say mix.js('sourcefile', 'destination').scss().sass().less()
+Then to run the laravel mix compiler we use npm run dev
+mix.less('resources/assets/less/app.less', 'public/css')
+   .less('resources/assets/less/admin.less', 'public/css');
+   this will still generate only one file
+
+   Plain CSS
+   If you would just like to concatenate some plain CSS stylesheets into a single file, you may use the styles method.
+
+   mix.styles([
+       'public/css/vendor/normalize.css',
+       'public/css/vendor/videojs.css'
+   ], 'public/css/all.css');
+
+   Because Laravel Mix is built on top of Webpack, it's important to understand a few Webpack concepts. For CSS compilation, Webpack will rewrite and optimize any url() calls within your stylesheets. While this might initially sound strange, it's an incredibly powerful piece of functionality. Imagine that we want to compile Sass that includes a relative URL to an image:
+
+   .example {
+       background: url('../images/example.png');
+   }
+
+   By default, Laravel Mix and Webpack will find example.png, copy it to your public/images folder, and then rewrite the url() within your generated stylesheet. As such, your compiled CSS will be:
+
+   .example {
+     background: url(/images/example.png?d41d8cd98f00b204e9800998ecf8427e);
+   }
+   As useful as this feature may be, it's possible that your existing folder structure is already configured in a way you like. If this is the case, you may disable url() rewriting like so:
+
+   mix.sass('resources/assets/app/app.scss', 'public/css')
+      .options({
+         processCssUrls: false
+      });
+
+if (mix.inProduction()) {
+    mix.version();
+}
+
+BrowserSync can automatically monitor your files for changes, and inject your changes into the browser without requiring a manual refresh. You may enable support by calling the  mix.browserSync() method:
+mix.browserSync()
+You may pass either a string (proxy) or object (BrowserSync settings) to this method. Next, start Webpack's dev server using the npm run watch command. Now, when you modify a script or PHP file, watch as the browser instantly refreshes the page to reflect your changes.
+
+csrf_field()
+The field for reset password is token and not _token . _token is for csrf protection.
+
+Route::redirect nd Route:view
+Route::redirect('/here', '/there', 301);
+Route::view('/welcome', 'welcome');
+Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+
+For named routes we used to have 'as' key but now we have name method.
+
+$request->session()->token()
+
+name method may be used to prefix route as well as route name . if used with group name method will prefix supplied prefix to all the routes inside the group.
+Implicit model binding
+Now we don't have to only use bind and model methods on route to do model binding we can straight away say
+Route::get('/{id}, function(App/User $user) {
+
+})
+The user instance will be the instance in which user id is 1.
+Model and bind methods are still available.
+With implicit binding if we want to check the route argument with some other field for equality then we can use
+public function getRouteKeyName()
+{
+    return 'slug';
+}
+on model.
+If you would like to customize the value that is placed in the route parameter, you should override the getRouteKey method on your Eloquent model:
+
+/**
+ * Get the value of the model's route key.
+ *
+ * @return mixed
+ */
+public function getRouteKey()
+{
+    return $this->slug;
+}
+$request -> route() gives current route for the request.
+$request -> session() gives current session.
+Route::current() gives current route
+If you would like model binding to use a database column other than id when retrieving a given model class, you may override the getRouteKeyName method on the Eloquent model:
+
+/**
+ * Get the route key for the model.
+ *
+ * @return string
+ */
+public function getRouteKeyName()
+{
+    return 'slug';
+}
+You may use the method_field helper to generate the _method input:
+{{ method_field('PUT') }}
+
+$request is the base object whihc has everything we might not need to go here and there for searching a specific piece of information, everything is available on $request.
+Middleware receive two argument in their default handle method, first is $request and second is $next.
+
+The $next is a callback which calls the next middleware in chain but does not actually redirect everything to there . Its more like calling a function or callback with the $request as argument. So when all the middleware are done the request is handled once the request is handled and response is prepared it is sent back to the last calling middleware through $next which in turn returns it to the $next that called it and hence the same middleware is accessed twice once when request is created and is passed through middleware for processing and second when request is processed and passed back through all the middleware and finally to user.
+
+So this is why its a middleware's responsibility to be get applied before or after
+Whether a middleware runs before or after a request depends on the middleware itself. For example, the following middleware would perform some task before the request is handled by the application:
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class BeforeMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        // Perform action
+
+        return $next($request);
+    }
+}
+However, this middleware would perform its task after the request is handled by the application:
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class AfterMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        $response = $next($request);
+
+        // Perform action
+
+        return $response;
+    }
+}
+It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
+Middleware are also able to return anything which will be considered as a response if $next is not called.
+
+For Route::group everything should come before defining group
+Route::namespace()->group
+Route::name() -> group
+Route::middleware() -> group
+
+we can have another method with middlewares called terminate which will be called when response is sent to user and request is terminated . So just before terminating requests all the registered middleware's terminate method will be called.
+
+$token = $request->input('_token') ?: $request->header('X-CSRF-TOKEN');
+
+        if (! $token && $header = $request->header('X-XSRF-TOKEN')) {
+            $token = $this->encrypter->decrypt($header);
+        }
+
+        return $token;
+
+As csrf token check is performed on all the routes inside web.php file using web middleware group so if we need to skip some urls from this csrf token check we may need to divide the file in two, one will be web.php which has web group applied other will be someotherfilname.php which will have to be defined inside routeserviceprovider without web group. Or we may add the routes that we want to skip in VerifyCsrfToken middleware's $except array.
+protected $except = [
+        'stripe/*',
+        'http://example.com/foo/bar',
+        'http://example.com/foo/*',
+    ]
+
+    $request -> route() -> named('admin') -> checking if current route has admin name
+
+    In addition to checking for the CSRF token as a POST parameter, the VerifyCsrfToken middleware will also check for the X-CSRF-TOKEN request header. You could, for example, store the token in a HTML meta tag:
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    Then, once you have created the meta tag, you can instruct a library like jQuery to automatically add the token to all request headers. This provides simple, convenient CSRF protection for your AJAX based applications:
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    BaseController for both the laravel versions 4.2 and 5.6 is almost same in which it contains methods for registering filters or middleware. In 4.2 base controller has beforeFilter and afterFilter methods which take array as options of except and only , in 5.6 we have middleware method which takes just middleware name and the we have separate methods for options such as only and except. implicitController's missingMethod function is also defined in basecontroller only.
+    When terminateMiddleware is called it calls for the middleware method of both the route and controller so for controller basecontroller is the one that defines getMiddleware method which is consumed by terminateMiddleware();
+    Now Controllers extend Controller which extends BaseController
+
+    public function __invoke($id)
+        {
+            return view('user.profile', ['user' => User::findOrFail($id)]);
+        }
+    }
+    When registering routes for single action controllers, you do not need to specify a method:
+
+    Route::get('user/{id}', 'ShowProfile');
+    We still have that option to specify only or except options as array.
+
+    Basecontroller also has setupLayout method which is empty but can be overridden in child class . Base controller will call this method before setting $this -> layout. This is true only for 4.2
+
+    In 4.2 we had controller:make which made only resource controllers but in 5.6 we have make:controller which can make normal controllers also . if we need to generate resource controller then we need to use --resource.
+
+    Laravel 5.5 has concept of nested routing so inside route config if we give
+    Route::resource('user.post', 'RHomeController'); then laravel will create routes such as
+    GET|HEAD  | user/{user}/post  | user.post.index   | App\Http\Controllers\RHomeController@index | web        |
+    POST      | user/{user}/post | user.post.store   | App\Http\Controllers\RHomeController@store  | web        |
+    GET|HEAD  | user/{user}/post/create  | user.post.create  | App\Http\Controllers\RHomeController@create | web        |
+    GET|HEAD  | user/{user}/post/{post} | user.post.show    | App\Http\Controllers\RHomeController@show | web        |
+    PUT|PATCH | user/{user}/post/{post} | user.post.update  | App\Http\Controllers\RHomeController@update | web        |
+     GET|HEAD  | user/{user}/post/{post}/edit | user.post.edit    | App\Http\Controllers\RHomeController@edit | web
+
+     php artisan routes
+
+     Laravel 4.2 we had to create controller for such routes manually and inject the dependency manually or using resource controller and nested resource routes we defined Route::model or bind but in 5.5 because there is implicit binding for model we will not need to use bind or model on route we can simply state it Dependency in controller and it will inject the model instance in controller matching the id.
+     Laravel 5.5 --parent with make:controller is used for creating nested route resource controllers so that they will have their models automatically injected on the route functions because normal resource routes and their controllers are different that nested one's.
+     php artisan make:controller PhotoController --resource --model=Photo will generate resource controller for single route.
+     php artisan make:controller PhotoController --resource --parent=Photo will generate resource controller for nested route.
+     --resrouce along with --model or --parent is not necessary.
+
+     Middleware are can also be applied using direct middleware class name instead of registering them in kernal.php
+
+     Instead of using except and only clause on Route::resource we can have apiResource and apiResources method which will skip route registration for create and edit methods.
+
+     Naming Resource Routes
+     By default, all resource controller actions have a route name; however, you can override these names by passing a names array with your options:
+
+     Route::resource('photo', 'PhotoController', ['names' => [
+         'create' => 'photo.build'
+     ]]);
+
+     Naming Resource Route Parameters
+     By default, Route::resource will create the route parameters for your resource routes based on the "singularized" version of the resource name. You can easily override this on a per resource basis by passing parameters in the options array. The parameters array should be an associative array of resource names and parameter names:
+
+     Route::resource('user', 'AdminUserController', ['parameters' => [
+         'user' => 'admin_user'
+     ]]);
+     The example above generates the following URIs for the resource's show route:
+
+     /user/{admin_user}
+
+     Localizing resource urls
+     So if we need to change the language of the urls for resource routes we use Route::resourceVerbs(["create" => "crear", "index" => "ind"])
+     this will allow us to use urls like
+     /fotos/crear
+     /fotos/{foto}/editar
+
+     for
+     Route::resource('fotos', 'PhotoController')
+
+     dd(Request::url());
+             dd(Request::fullUrl());
+             dd(Request::query());
+             So laravel 4.2 also has all the above things as 5.6 $request has
+
+             All cookies created by the Laravel framework are encrypted and signed with an authentication code, meaning they will be considered invalid if they have been changed by the client
+
+$request -> session won't accept any parameters and will always give complete session.
+$request -> cookie will take parameters also and can give specific information.
+
+Cookie::make also takes secure httponly domain path arguments. That's why session.php settings page has these settings always specified.
+
+Alternatively, you can use the Cookie facade to "queue" cookies for attachment to the outgoing response from your application. The queue method accepts a Cookie instance or the arguments needed to create a Cookie instance. These cookies will be attached to the outgoing response before it is sent to the browser:
+
+Cookie::queue(Cookie::make('name', 'value', $minutes));
+
+Cookie::queue('name', 'value', $minutes);
+
+now we don't have withCookie method in which we were supposed to pass a cookie instance, we directly have cookie method in which we can pass parameters to create cookie.
+cookie method like queue method also takes cookie instance
+
+Laravel form builder class is gone from 5 version so we have to use a plugin from laravel collective
+
+in laravel 4.2 Note: Since HTML forms only support POST and GET, PUT and DELETE methods will be spoofed by automatically adding a _method hidden field to your form.
+getClientOriginalExtension gives the extension in filename where as extension() gives the extension in mimetype
+
+Instead of Response::make we have a response helper method.
+There is another new method on response method like withCookie which still exists we have withHeaders which take array of all the headers.
+By default because of EncryptCookies middleware all the cookies will get encrypted . So if we want to specify which cookies not to encrypt we can specify their name in $except array in EncryptCookies middleware. Session cookie is already exempted from encryption from session.php setting.
+
+Redirect responses are instances of the Illuminate\Http\RedirectResponse
+
+For implicit binding to work the parameter name {user} should be same as required injection variable name User $user. Or we will have to use model method to bind the route variable name to model variable name
+
+Redirect::away or redirect()->away is for redirecting outisde laravel environment such as google.com
+
+ response() -> file($pathToFile, $headers) because its not downloaded so no filename argument is needed.
+ Response::file is not in 4.2
+ Using the first method, you may create the first view that exists in a given array of views. This is useful if your application or package allows views to be customized or overwritten:
+
+ return view()->first(['custom.admin', 'admin'], $data);
+ return View::first(['custom.admin', 'admin'], $data);
+
+ During inheritance id we have a static method in child or parent and we try to overright it and make it in opposite case such that overright and make static to non static or make non static to static we get fatal error. parent:: is also accessible only from instance to instance or class to class methods.
+ TO use same composer on all the view we can use * instead of viewname
+ URL facade also now has helper url()
+
+ $request object is also able to provide user() which currently authenticated user as we used to get in Auth::user()
+
+ So URL::defaults not for redirect it won't attach the default value to the redirected route is not given
+ It only works for url genneration like url() and route() and action()
+
+ url() -> current() url() -> full() url()-> previous()
+ Instead of Sesssion facade we have session helper
+
+ there are two ways to interact with session either using $request -> session() or session() global helper
+
+ By default Exception handler.php has two methods report and render . Report is supposed to only report or log error messages to log file or external appications.
+ Render method renders the error view.
+ So both of the methods get executed in sequence all the time.
+ If we don't want to render the error view we can use report() helper method which only logs the error and does not stop the execution and does not render the view.
+ By default laravel logs to log file in a single log file. We can change this to daily logs. By default laravel keep 5 days of file but we can change this from app.php config setting use log_max_files.
+ Then by log_severity we can set which severity logs to log. By default this all .
+ Inside this render or report method we can check the type of exception by instanceof operator and customise whats happends. Or we can have our own custom exception handlers defined instead of check =ing with instance of. The render and report methods of these custom handler will automatically be called.
+ The $dontReport property of the exception handler contains an array of exception types that will not be logged. For example, exceptions resulting from 404 errors, as well as several other types of errors, are not written to your log files.
+
+ Custom exception handler is just like normal core php custom exception handler which in laravel shoud have report and render methods these methods will automatically be called and normal php exception object will be availabl in these.
+
+ If we want to have custom http error pages then we can create views inside views\error\404.html or anyerrorcode.blade.html.
+
+ sometime will not work if key is present and is null
+
+ php artisan make:request StoreBlogPost
+
+This method receives the fully constructed validator, allowing you to call any of its methods before the validation rules are actually evaluated
+$validator -> withValidator(function($validator) {
+    $validator -> after(function($validator) {
+
+    });
+});
+after method will execute after the validations are done.
+
+For Validator has 4 important methods messages , authorize, rules and withValidator
+not only messages can be customised from validation.php lang file but the :attribute value that laravel puts in errors messages can also be customised from
+'attributes' => [
+        'email' => "Email Address",
+        'file' => "Dhinchak"
+    ],
+validate method is callable on both $request and $validator instance. On request instance we have to pass rules and on validator instance we make validator mabually and then call validate without rules. This will still vaildate and automatically redirect.
+
+In DB Query build get returns a simple array of std class objects while in eloquent it returns a collection object with an array of model class objects.
+Untill get or any other method is used DB query give db query builder object.
+
+In 4.2 pluck could work only on a single column of a single row. If result contains multipe rows then pluck will not work.
+
+But in 5.5 lists and pluck have been combined to pluck only. A new method value has come which works as pluck for single row and single column.
+Value method also uses a limit of 1 same a Eloquen't findOrFail and firtOrFail so thats why if there are multiple records in result it takes first record and returns it column value. NOt like pluck of 4.2 which returned nothing if there were more than one records in resultset.
+DB raw wont take any parameter binding expressions . also binding doesn't work on table . It takes columns names as binding but will not then return results. So we can only do binding for where and other conditions.
+Anything we provide in select() method is escaped and put as is in query its not evaluated so there we might need to use db::raw.
+
+Determining If Records Exist
+Instead of using the count method to determine if any records exist that match your query's constraints, you may use the exists and doesntExist methods:
+
+return DB::table('orders')->where('finalized', 1)->exists();
+
+return DB::table('orders')->where('finalized', 1)->doesntExist();
+
+whereColumn
+
+The whereColumn method may be used to verify that two columns are equal:
+
+$users = DB::table('users')
+                ->whereColumn('first_name', 'last_name')
+                ->get();
+You may also pass a comparison operator to the method:
+
+$users = DB::table('users')
+                ->whereColumn('updated_at', '>', 'created_at')
+                ->get();
+The whereColumn method can also be passed an array of multiple conditions. These conditions will be joined using the and operator:
+
+$users = DB::table('users')
+                ->whereColumn([
+                    ['first_name', '=', 'last_name'],
+                    ['updated_at', '>', 'created_at']
+                ])->get();
+
+SERIAL is an alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE.
+
+So, be careful when creating a reference to a SERIAL PK, since that reference column has to be of this exact type.
+
+If you specify ZEROFILL for a numeric column, MySQL automatically adds the UNSIGNED attribute to the column.
+
+Foreign key column and parent key column must have exactly same type.
+
+SELECT this, that, other
+FROM tableName
+GROUP BY tableName.this, tableName.that, tableName.other
+
+
+As you already know, this part of our statement returns a set of results.
+
+SELECT this, that, other
+FROM tableName
+
+
+The set of results is then piped into our GROUP BY clause:
+
+GROUP BY tableName.this, tableName.that, tableName.other
+
+The GROUP BY statement produces a new table reference with just three columns. So, we see that by applying a GROUP BY clause, you reduce the number of columns available in any local clauses that follow (including SELECT).
+
+If you’ve ever seen an error thrown when you try to reference columns not in the GROUP BY clause in later SELECT statements, this is why.
+
+latest / oldest
+The latest and oldest methods allow you to easily order results by date. By default, result will be ordered by the created_at column. Or, you may pass the column name that you wish to sort by:
+
+$user = DB::table('users')
+                ->latest()
+                ->first();
+
+inRandomOrder
+The inRandomOrder method may be used to sort the query results randomly. For example, you may use this method to fetch a random user:
+
+$randomUser = DB::table('users')
+                ->inRandomOrder()
+                ->first();
+You may rollback a limited number of migrations by providing the step option to the  rollback command. For example, the following command will rollback the last five migrations:
+
+php artisan migrate:rollback --step=5
+
+rollback will rollback last migration and with steps it rollsback instead of just one migration the specified number of steps.
+reset will reset and rollback all the migrations
+refresh will rollback and run all the migrations and then and migrate.
+refresh --steps=5 will only rollback and refresh specified number of migrations.
+fresh command will drop all the database tables instead of rolling back migration and calling down method and run migrate again
+
+migrate::install will create migration table
+
+for using database seeder we have to manually put the insert commands there is also another way to do this by using factories.
+In order to create factories we have artisan make:factory nameoffactory class --model=model to be used . This command creates factory inside database/factory with specified model.
+
+The file will have a Faker library included which will generate the fields for the model automatically and they will be unique based on the table design.
+$factory->define(App\User::class, function (Faker $faker) {
+    static $password;
+
+    return [
+        'name' => $faker->name,
+        'email' => $faker->unique()->safeEmail,
+        'password' => $password ?: $password = bcrypt('secret'),
+        'remember_token' => str_random(10),
+    ];
+});
+
+Here we can define states also . States are like modifiers of column values . If applie the given model will have retuned value instead of the faker provided value.
+
+$factory -> state(App\User::class, 'email', [
+    'remember_token' => 'remkoen'
+]);
+
+$factory -> state(App\User::class, 'username', function($faker) {
+    return [
+        "name" => "Distilled ___".$faker -> name
+    ];
+});
+Then in order to use this factory we use factory global helper which takes the model name for which factory is defined . As second argument it takes number of entries to be generated of this model using faker and state settings. If non is given only one entry will be generated.
+$user = factory(\App\User::class, 5) -> states('email') -> make([
+            'name' => 'TYpo Name'
+        ]);
+ $user = factory(\App\User::class, 5) -> states('username', 'email') -> create([
+            'remember_token' => "not found"
+        ]);
+ There are two methods make and create which can be used to create the model objects . Make will create the objects but will not persist create will create and persist.
+ While making and creating we can pass array of attributes which need to be overridden. State gets applied first and then the array returned from make or create .
+
+Changing type of column doesn't work in 4.2 but works in 5.5 along with doctrine/db composer requirement.
+Inroder to drop primary key we can either specify only the name of the promary key in dropPrimary or any key method but this way we will have to give the excat key name
+but if we pass array ['columnname'] then the key value will automatically be generated.
+
+If primary key is not an integer then we can set $keyType.
+instead of method getDateFormat we now have $dateFormat = 'U'
+If we want to change the created and updated at columns then we can define two constant
+const CREATED_AT = 'creation_date';
+const UPDATED_AT = 'last_update';
+
+cursor will fire a single query using pdo fetch + php yield mechanism.
+
+create and new user will be able to take only one row related arguments they cannot take multiple rows arguments at same time.
+save is not supposed to take anything.
+If you already have a model instance, you may use the fill method to populate it with an array of attributes:
+$flight->fill(['name' => 'Flight 22']);
+instead of assigning elemennt one by one.
+Similar to $dateFormat we now have $date which will allow to customise which columns should me mutated to convert to specified date format. By default created_at and update_at will be used.
+protected $dates = ['deleted_at'];
+The retrieved event will fire when an existing model is retrieved from the database
+Now we don't have User::eventname we have
+$dispatchesEvents=[
+    'saved' => UserSaved::class,
+    'deleted' => UserDeleted::class,
+ ] array property on model which states what type of events will be caught by what event classes.
+
+ So user::creating etc are still available we just have a new way of creating the events in laravel so we are following that using this variable.
+
+ $casts will automatically type cast the columns to a specific data type and when saving them they will again be cast to that type only.
+ array type will cast json or json type text column to array when array is modified and saved it will be saved as json again.
+
+ $visible property is opposite to $hidden property which black lists while visible white lists
+ Similar to Eloquent::unguard we have makeVisible which temporarily makes properties on model visible and returns a model instance so it can be chained with other methods such as toArray or toJson
+ We also have makeHidden to temporarily hide the properties same as makeVisible.
+ Model accessors and mutators can basically be used with any attribute even if its not there in the result set.
+
+If you would like to remove a global scope for a given query, you may use the  withoutGlobalScope method. The method accepts the class name of the global scope as its only argument:
+
+User::withoutGlobalScope(AgeScope::class)->get();
+Or, if you defined the global scope using a Closure:
+
+User::withoutGlobalScope('age')->get();
+ If you would like to remove several or even all of the global scopes, you may use the  withoutGlobalScopes method:
+
+ // Remove all of the global scopes...
+ User::withoutGlobalScopes()->get();
+
+ // Remove some of the global scopes...
+ User::withoutGlobalScopes([
+     FirstScope::class, SecondScope::class
+ ])->get();
+
+Once the attribute has been added to the appends list, it will be included in both the model's array and JSON representations
+$appends = ['is_admin']
+return $user->append('is_admin')->toArray();
+return $user->setAppends(['is_admin'])->toArray();
+
+setAppends will replace the complete appends array . So by default whatever is apended it will replace everything.
+
+associate can be called only on the relation and not on individual model. Relation should be inverse relation and it takes the parent model instance and the save.
+
+relation method names inside models don't matter.
+
+Creating a new pivot model can be done by extending eloquent/model on a base class and then extending that base model on individual model classes.
+
+Base model will have a newPivot method which will return the instance of the new pivot model. As it extends pivot class it will not be able to do whatever normal model classes did.
+
+in 5.5 custom pivot model repects the $casts $table and other settings.
+
+Eager loading works only in 5.5 in 4.2 it wirks but doesnot fulfill the only purpose it it meant for.
+
+So pivot table setting has to be done one base model class which other normal models will overrite.
+
+On the pivot class we can now use over ride pivot base pivot class methods.
+
+Pivot can be accessed only on a relation and not on an individual object.
+
+first also takes array of columns
+
+wherePivotIn is only available in 5.5
+
+all the where queries are supposed to be performed on relationship such as $user -> roles -> where or orWhere or wherePivot or wherePivotIn and then we need to get the pivot object. NOthign works after pivot.
+
+as to rename pivot is not available on 4.2
+
+Sometimes you may want clauses to apply to a query only when something else is true. For instance you may only want to apply a where statement if a given input value is present on the incoming request. You may accomplish this using the when method:
+
+$role = $request->input('role');
+
+$users = DB::table('users')
+                ->when($role, function ($query) use ($role) {
+                    return $query->where('role_id', $role);
+                })
+                ->get();
+The when method only executes the given Closure when the first parameter is true. If the first parameter is false, the Closure will not be executed.
+
+You may pass another Closure as the third parameter to the when method. This Closure will execute if the first parameter evaluates as false. To illustrate how this feature may be used, we will use it to configure the default sorting of a query:
+
+$sortBy = null;
+
+$users = DB::table('users')
+                ->when($sortBy, function ($query) use ($sortBy) {
+                    return $query->orderBy($sortBy);
+                }, function ($query) {
+                    return $query->orderBy('name');
+                })
+                ->get();
+
+                If you need even more power, you may use the whereHas and orWhereHas methods to put "where" conditions on your has queries. These methods allow you to add customized constraints to a relationship constraint, such as checking the content of a comment:
+
+                // Retrieve all posts with at least one comment containing words like foo%
+                $posts = App\Post::whereHas('comments', function ($query) {
+                    $query->where('content', 'like', 'foo%');
+                })->get();
+
+                withCount is not available in 4.2
+
+                when we try to retrieve something like $user -> posts then only query runs
+
+                syncWithoutDetaching
+                $user->roles()->toggle([1, 2, 3]);
+
+                User Resource can be used or only one model object but if there is a collection then resource will not be able to directly pull the information form the collection object hence we need collection.
+
+                While resources translate a single model into an array, resource collections translate a collection of models into an array. It is not absolutely necessary to define a resource collection class for each one of your model types since all resources provide a collection method to generate an "ad-hoc" resource collection on the fly:
+
+                use App\User;
+                use App\Http\Resources\User as UserResource;
+
+                Route::get('/user', function () {
+                    return UserResource::collection(User::all());
+                });
+
+                if we use relation model with first such as User::find(1) -> first() -> posts then we will also get only one result for posts but if we directly do User::find(1) -> posts then we get all the results.
+Laravel 4.2 pivot base class didnt have $casts or $table or any such properties but 5.5 has.
+
+withCounts takes single or array or array with callback arguments and returns the complete model with the related model's relation_method_count field.
+withCounts doesnot have . notation to load models
+has whereHas orWhereHas doesnthave whereDoesntHave orWhereDoesntHave with and load all these can have . notation to load models.
+withCounts should be considered as along with counts.
+
+So when using relations to save other relation data , the parent model must be saved first and then its child model maybe saved by passing into save method

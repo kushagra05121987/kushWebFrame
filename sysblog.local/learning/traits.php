@@ -22,6 +22,7 @@ namespace PrivateTraits {
 
     trait traitA
     {
+//        $x = 0; this generates error. SO has to be used with private or public or protected
         private function method1()
         {
             echo "\n Inside Method 1 of trait A \n";
@@ -119,6 +120,7 @@ namespace {
     }
     // Abstract trait members
     trait Hello {
+        public $world;
         public function sayHelloWorld() {
             echo "\n Echoing from inside trait \n ";
             echo "Class: " . __CLASS__ . PHP_EOL;
@@ -128,13 +130,47 @@ namespace {
         abstract public function getWorld();
     }
 
+    /**
+     * You can't, use insteadof for properties its for methods only.
+    However they may use the same property name only if the value is the same:
+
+    trait Video {
+    public $name;
+    function getName(){
+    return 'Video';
+    }
+    }
+    trait Audio {
+    public $name;
+    function getName(){
+    return 'Audio';
+    }
+    }
+    class Media {
+    use Audio, Video {
+    Video::getName insteadof Audio;
+    }
+
+    function __construct(){
+    $this->name = $this->getName(); // 'Video'
+    }
+    }
+     */
+
     class MyHelloWorld {
-        private $world;
+//        public $world = "world"; cannot have same properties in both trait and class
         use Hello;
         public function __construct() {
             $this -> sayHelloWorld();
             echo "\n ============== \n";
             $this -> callMe();
+        }
+
+        public function sayHelloWorld() {
+            echo "\n Echoing from inside trait \n ";
+            echo "Class: " . __CLASS__ . PHP_EOL;
+            echo "Trait: " . __TRAIT__ . PHP_EOL;
+            echo 'Hello'.$this->getWorld().PHP_EOL;
         }
 
         public function getWorld() {
@@ -200,4 +236,21 @@ namespace {
 
     $example = new PropertiesExample;
     $example->x;
+
+    trait useAbdTrait {
+        abstract function s1(); // mandatory to implement this
+    }
+    class useAbsTrait {
+        use useAbdTrait;
+        function s1()
+        {
+        }
+    }
+
+    // traits cannot implement or extend other traits classes or interfaces
+
+//    class cc1 {}
+//    interface it1{}
+////    trait tatti1 extends cc1 {}
+//    trait tatti1 implements it1 {}
 }

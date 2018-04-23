@@ -13,7 +13,16 @@ strict - strict mode has to explicitly hinted.
  * '...' can be used to pass multiple number of arguments
  * Scalar Declaration can be done in two modes Coercive and Strict as follows:
  */
-//declare(strict_types=1);
+// declare(strict_types=1);
+// // you can use this:
+//declare(ticks=1) {
+    // entire script here
+//}
+
+// or you can use this:
+//declare(ticks=1);
+// entire script here
+
 // Scalar types as of php 5
 // Array, callable, class, implement
 namespace CoerciveStrictBlock {
@@ -70,7 +79,7 @@ namespace {
     arrayDec2([1,2,3,4], array(20,12,30,23,34));
 //    arrayDec(1,2); // Generates error as expected type is array
     echo "\n === Integer Scalar type declaration with only single argument === \n";
-    function IntegerDec(int $args) { // function expects multiple inputs here and every input should be an array
+    function IntegerDec(int $args) { // function expects multiple inputs here and every input should be an integer
         print_r($args);
         echo "\n";
     }
@@ -137,6 +146,26 @@ namespace {
     interface passMeInterface {}
 
     function interDec($i) {
+        echo "Class Implements";
+        // class_implements gives the interfaces which are implemented by the given class object or interface
+        // also can be used to autoload the class using __autoload method if the class is not found by passing second argument as true.
+        /**
+         * interface foo { }
+        class bar implements foo {}
+
+        print_r(class_implements(new bar));
+
+        // since PHP 5.1.0 you may also specify the parameter as a string
+        print_r(class_implements('bar'));
+
+
+        function __autoload($class_name) {
+        require_once $class_name . '.php';
+        }
+
+        // use __autoload to load the 'not_loaded' class
+        print_r(class_implements('not_loaded', true));
+         */
         print_r(class_implements($i));
         echo "\n";
     }
@@ -227,6 +256,8 @@ namespace {
         print_r($bool);
         echo "\n";
     }
+
+    // calling a method with more than the declared arguments is possible . In this case the extra arguments are ignored.
     booleanDec3(10,'20');// Generates error as expected type is boolean and integer given
     booleanDec3(40); // Generates error as expected type is boolean and integer given
     booleanDec3(true);
@@ -369,12 +400,21 @@ namespace {
     function returnClass() : stdClass {
         return new stdClass();
     }
-    class a {}; class b extends a {};
-    function returnClass2() : a {
-        return new b();
-    }
-    var_dump(returnClass());
-    var_dump(returnClass2());
+    echo PHP_EOL;
+    echo "Return with extended class";
+    echo PHP_EOL;
+    declare(strict_type=1) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        class a {}; class b extends a {};
+        function returnClass2() : a {
+            return new b();
+        }
+        var_dump(returnClass());
+        var_dump(returnClass2());
+    };
+
+    echo "<hr />";
 
     // Interface
     echo "\n Interface \n";
@@ -389,6 +429,10 @@ namespace {
     var_dump(returnInterface());
     var_dump(returnInterface2());
 
+    echo "\n Accept type of Extending Class \n";
+    class xs {}; class xd extends xs {};
+    class df {public function __construct(xs $instance){echo get_class($instance);}}
+    new df(new xd);
     // Callable
     echo "\n Callable \n";
     function callableFunction() { echo "\n Printing inside callable function \n "; return 0;}
@@ -420,6 +464,9 @@ namespace {
     echo "\n ======= Null coalescing operator ========= \n ";
     // This operator ?? makes use of the method isset() internally to return the value that is not null.
     // This works by making a check on first argument that if it is null similar to isset($x) ? $x:$y; . So isset($x) ? $x is replaced only by $x ??
+    // similar to ?? we had ?: operator which checks for the truthiness of the left expression instead of it being isset. So
+    // ?? is equivalent to isset($_GET['username']) ? $_GET['username'] : 'default';
+    // and ?: is equivalent to $_GET['username'] ? $_GET['username'] : 'default';
     echo $fit ?? "nothing";
     // or we can store it also
     $return = $fit ?? "nothing";
@@ -485,6 +532,7 @@ namespace {
     $obj = new fooBar();
     function createSerialization($obj) {
         return [
+            // by this we control which classes are allowed to be unserialized
             unserialize($obj),
             unserialize($obj, array("allowed_classes" => false)),
             unserialize($obj, array("allowed_classes" => array("barFoo", "parry")))
@@ -557,8 +605,9 @@ namespace {
     new Bg2;
     new Cg2;
     echo "\nInteger division with intdiv() \n";
-    // function for dividing operands
+    // function for dividing operands. Gives Whole number quotient.
     var_dump(intdiv(10, 3));
+    var_dump(intdiv(8, 3));
 
     echo "\n Session options \n";
     /*
@@ -572,6 +621,7 @@ For example, to set session.cache_limiter to private and immediately close the s
 session_start([
     'cache_limiter' => 'private',
     'read_and_close' => true,
+    'cookie_lifetime' => 86400,
 ]);
 ?>
      * */
@@ -617,18 +667,26 @@ Array
 3 matches for "b" found
      * */
     // This function can also be used to match the values inside array
+    // as the callbacks return the value the original string is replaced.
     echo "\n Replacement using string \n";
+    echo "\n Preg Replace Callback\n";
+    // if it will not match the expression then also the callback will be executed and the string returned will be prepended.
+    var_dump(preg_replace_callback('~[A-Za]+~', function($matches) {
+        return '%';
+    }, $subject, 4, $replaced));
+    echo "\n replaced => $replaced \n";
+    echo "\n Preg Replace Callback Array \n";
     var_dump(preg_replace_callback_array(
         [
-            '~[a]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
+            '~[A]+~' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
             print_r($match);
-                echo strlen($match[0]), ' matches for "a" found', PHP_EOL;
+                echo strlen($match[0]), ' matches for "a" found inside first', PHP_EOL;
                 return "$";
             },
-            '~[a]*~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
+            '~[a]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
                 print_r($match);
-                echo strlen($match[0]), ' matches for "a" found', PHP_EOL;
-                return "$";
+                echo strlen($match[0]), ' matches for "a" found inside second', PHP_EOL;
+                return "^";
             },
             '~[b]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regexs
                 print_r($match);
@@ -636,7 +694,7 @@ Array
                 return "#";
             }
         ],
-        $subject, 1, $c
+        $subject, 5, $c
     ));
     echo "\nCount $c\n";
     echo "\n Replacement using array \n";
@@ -647,13 +705,13 @@ Array
         [
             '~[a]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
                 print_r($match);
-                echo strlen($match[0]), ' matches for "a" found', PHP_EOL;
+                echo strlen($match[0]), ' matches for "a" found first', PHP_EOL;
                 return "$";
             },
-            '~[a]*~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
+            '~[a]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regex
                 print_r($match);
-                echo strlen($match[0]), ' matches for "a" found', PHP_EOL;
-                return "$";
+                echo strlen($match[0]), ' matches for "a" found second ', PHP_EOL;
+                return "^";
             },
             '~[b]+~i' => function ($match) { // This keeps on matching till it is able to find matches as defined by regexs
                 print_r($match);
@@ -728,7 +786,13 @@ Array
     $obj[] = 'Append 1';
     $obj[] = 'Append 2';
     $obj[] = 'Append 3';
+    $obj['path'] = array("path1" => "first path", "path 2" => "second path");
     print_r($obj);
+    echo "\n PAth \n";
+    print_r($obj['path.path1']);
+    print_r($obj['path']['path1']);
+
+    // ArrayObject is builtin class that uses ArrayAccess. Which has more methods to use objects as arrays.
 
     echo "\n =========== Generator Return Expressions ========== \n";
     /*

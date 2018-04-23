@@ -87,6 +87,8 @@ return [
     'unique'               => 'The :attribute has already been taken.',
     'uploaded'             => 'The :attribute failed to upload.',
     'url'                  => 'The :attribute format is invalid.',
+    'kushagraRule'         => 'The :attribute is required. This is making kushagra rule fail.',
+    'Uppercase'         => 'The :attribute is required. This is making kushagra rule fail.',
 
     /*
     |--------------------------------------------------------------------------
@@ -100,8 +102,8 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'email' => [
+            'required' => 'From validation.php',
         ],
     ],
 
@@ -116,6 +118,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'email' => "Email Address",
+        'file' => "Dhinchak"
+    ],
 
 ];

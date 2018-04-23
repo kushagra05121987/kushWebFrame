@@ -14,6 +14,7 @@ use Nexmo\Client\Credentials\CredentialsInterface;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Credentials\SignatureSecret;
+use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
@@ -38,7 +39,7 @@ use Zend\Diactoros\Request;
  */
 class Client
 {
-    const VERSION = '1.1.3';
+    const VERSION = '1.2.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -98,6 +99,9 @@ class Client
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
             'calls' => 'Nexmo\Call\Collection',
+            'conversion' => 'Nexmo\Conversion\Client',
+            'conversation' => 'Nexmo\Conversations\Collection',
+            'user' => 'Nexmo\User\Collection',
         ], $this));
     }
 
@@ -212,6 +216,18 @@ class Client
 
         return $request;
     }
+
+    /**
+     * @param array $claims
+     * @return \Lcobucci\JWT\Token
+     */
+    public function generateJwt($claims = [])
+    {
+        if (method_exists($this->credentials, "generateJwt")) {
+            return $this->credentials->generateJwt($claims);
+        }
+        throw new Exception(get_class($this->credentials).' does not support JWT generation');
+    }
     
     /**
      * Takes a URL and a key=>value array to generate a GET PSR-7 request object
@@ -251,6 +267,26 @@ class Client
         );
 
         $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function postUrlEncoded($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/x-www-form-urlencoded']
+        );
+
+        $request->getBody()->write(http_build_query($params));
         return $this->send($request);
     }
 
@@ -416,7 +452,9 @@ class Client
         $path = $request->getUri()->getPath();
         $isCallEndpoint = strpos($path, '/v1/calls') === 0;
         $isRecordingUrl = strpos($path, '/v1/files') === 0;
+        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
+        $isUserEndpoint = strpos($path, '/beta/users') === 0;
 
-        return $isCallEndpoint || $isRecordingUrl;
+        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 }

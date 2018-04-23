@@ -6,16 +6,16 @@
  * Time: 11:20 AM
  */
 echo "<pre>";
-$testStr = "This is a new string to add slashes into. \n\r\t #";
-echo " \n =============== Add C Slashes ============\n";
-// can define which set or range of characters will be escaped and then the function will escape them in c style
-echo " \n a..z \n";
-echo "\n ".addcslashes($testStr, "a..z")." \n";
-echo " \n A..z \n";
-echo addcslashes("zoo['.']", 'A..z')."\n"; // escapes ] also because it falls in the range of A..z of ascii values
-echo " \n z..A \n";
-echo addcslashes("zoo['.']", 'z..A')."\n";
-echo " \n a..z \n";
+// In order to convert decimal to binary we need to first check what power of two will get the number or more than number. Suppose that power is N so the binary number will be N digits long. Then we take 2 ^ N-1 N-2 N-3 ...
+// 13 = 1101. Here 2 ^ 4 = 16 > 13 > 2 ^ 3 = 8 so we take 2 ^ 4 so N becomes 4 so now we will have binary number with 4 digits.  2 ^ 3 -> 2 ^ 2 -> 2 ^ 1 -> 2 ^ 0 which means 8 4 2 1 that's why 1 1 0 1.
+// From binary to octal can be done by
+/**
+ * The octal numeral system, or oct for short, is the base-8 number system, and uses the digits 0 to 7. Octal numerals can be made from binary numerals by grouping consecutive binary digits into groups of three (starting from the right). For example, the binary representation for decimal 74 is 1001010. Two zeroes can be added at the left: (00)1 001 010, corresponding the octal digits 1 1 2, yielding the octal representation 112.
+ * Hexadecimal representation is base 16 that mean 2 ^ 4 sam way octal is base 8 which means 2 ^ 3 and binary is base 2 which mean 2 ^ 1 and hence we have a group of 4 binary digits(nibble) in hexadecimal 3 binary digits in octal and 1 binary digit in binary.
+ * Hexadecimal takes values from 0-9 and then a b c d e f 10 (1+0) and 11 (1+1). Total of 15 digits.
+ * In order to convert binary to hexadecimal we make a group of 4 bit from right and then translate it according to the values it takes.
+ * So 1101 0101 1100 1111 gets convert to D5CF.
+ */
 echo addcslashes("zoo['.']", 'a..z')."\n";
 echo " \n A..Z \n";
 echo addcslashes("zoo['.']", 'A..Z')."\n";
@@ -39,22 +39,23 @@ echo " \n=============== CHR ============\n";
 echo chr(120)."\n";
 
 echo " \n=============== Bin2Hex ============\n";
-// returns the character value of the given ascii code
+// converts binary to hex
 echo bin2hex("12345")."\n";
 echo bin2hex("kushagra")."\n";
 echo bin2hex(12345)."\n";
 
 echo " \n=============== Hex2Bin ============\n";
-// returns the character value of the given ascii code.Decodes a hexadecimally encoded binary string and not just convert the base. Returns actual string rather than just 0s and 1s
+// returns the character value of the given ascii code.Decodes a hexadecimally encoded binary string and not just convert the base. Returns actual string rather than just 0s and 1s.
 echo bin2hex("example hex data")."\n";
 echo hex2bin("6578616d706c65206865782064617461")."\n";
 
 echo " \n=============== PACK ============\n";
-// returns the character value of the given ascii code
+//Pack data into binary string. Final goal is to return data in binary format or string. The first arguments tell php about what type of data we are trying to
 echo pack("nvc*", 0x1234, 0x5678, 65, 66)."\n";
 echo pack("aec*", 0x1234, 0x5678, 65, 66)."\n";
 echo pack("H*", 0x1234, 0x5678, 65, 66)."\n";
 echo pack("H*", "6b75736861677261")."\n";
+echo pack("h*", "6b75736861677261")."\n";
 
 echo "\n ======== UNPACK ======== \n";
 echo "WITH H \n";
@@ -73,13 +74,16 @@ print_r(unpack("A*", "kushagra"));
 echo "WITH S\n";
 $s = unpack("S*", "kushagra");
 print_r($s);
+$s = unpack("H*", "kushagra");
+print_r($s);
+
 
 $ord = ord("kushagra");
 echo "\n".$ord;
 
 echo "\n Base Convert \n";
 /*
- * Inorder to convert string to binary manually we need to get ascii character code for every letter then encode it to binary using base 64
+ * In order to convert string to binary manually we need to get ascii character code for every letter then encode it to binary using base 64
  * so that 'k' with ascii value as 107 is represented by 11010110 and hence in hex it is 6b by moving last or least significant bit to first place making it 01101011.
  */
 echo "\n".base_convert($hex[1], 16, 2)."\n"; // returns 0s and 1s
@@ -90,22 +94,28 @@ echo "\n".base_convert($s[3], 16, 2)."\n";
 echo "\n".base_convert($s[4], 16, 2)."\n";
 echo "\n".base_convert($s[4], 8, 2)."\n";
 echo "\n".base_convert("1001", 2, 16)."\n";
+echo "\n".base_convert("1101", 2, 16)."\n";
 
 echo hex2bin("c6eae6c0b2bee4b2");
 echo chr(13);
 
 echo "\n Chop|Rtrim \n";
 echo "BEFORE PADDING \n";
+$testStr = "This is my name";
 echo strlen($testStr);
-$strPadded = str_pad($testStr, 55, " ", STR_PAD_BOTH);
+$strPadded = str_pad($testStr, 55, "^", STR_PAD_BOTH);
 echo "\n AFTER PADDING \n ";
 echo $strPadded;
 echo "\n";
 echo strlen($strPadded);
+/**
+ * string str_pad ( string $input , int $pad_length [, string $pad_string = " " [, int $pad_type = STR_PAD_RIGHT ]] )
+This function returns the input string padded on the left, the right, or both sides to the specified padding length. If the optional argument pad_string is not supplied, the input is padded with spaces, otherwise it is padded with characters from pad_string up to the limit.
+ */
 echo "\n === TRIMMING === \n";
 // all type of trims ltrim, rtrim, trim can use character map which will limit the characters to be escaped, also we can give a range of values by using '..' and without the second argument i.e character map it will strip all the characters given below
 /*
- * " " (ASCII 32 (0x20)), an ordinary space.
+ " " (ASCII 32 (0x20)), an ordinary space.
 "\t" (ASCII 9 (0x09)), a tab.
 "\n" (ASCII 10 (0x0A)), a new line (line feed).
 "\r" (ASCII 13 (0x0D)), a carriage return.
@@ -113,13 +123,14 @@ echo "\n === TRIMMING === \n";
 "\x0B" (ASCII 11 (0x0B)), a vertical tab.
 Default value of $character_mask = " \t\n\r\0\x0B"
  */
+$strPadded.="\n";
 echo trim($strPadded);
 echo "\n";
 echo rtrim($strPadded);
 echo "\n";
 echo ltrim($strPadded);
 echo "\n";
-$trimmed = trim($strPadded, "\n\t\r"); // this will leave spaces untouched
+$trimmed = trim($strPadded, "\n\t\r"); // this will leave spaces untouched. Strip whitespace (or other characters) from the beginning and end of a string
 
 echo $trimmed;
 echo "\n";
@@ -132,10 +143,10 @@ echo "\n";
 echo trim("This is a new string for me again \n\n########", "\n");
 echo "\n";
 echo "------- RTRIM ------- \n";
-$rtrim = "This is a new string for me again.\n Again this is a new line. \n \n \n \n";
+$rtrim = "This is a new string for me again.\n Again this is a new line. Thisisisisis \n \n \n \n";
 echo $rtrim;
 echo "\n\n";
-echo rtrim($rtrim, " \n\t\r");
+echo rtrim($rtrim, " \n\t\ra..zA..Z");
 echo "\n ------ LTRIM ------- \n";
 $ltrim = "\n This is a new string for me again \n\n########";
 echo $ltrim;
@@ -156,6 +167,7 @@ echo "\n".$strPadded."\n";
 echo "\n ===== Chunk Split ===== \n";
 // The second parameter tells that till what length do we need to split so 2 tell we need to split string after every two characters. Third argument tells what needs to be in the end of every chunk so with '.' and string as 'String'  we would get St.ri.ng.
 $chunk_split = "Create a string to split into chunks. But only till the given limit.";
+// string chunk_split ( string $body [, int $chunklen = 76 [, string $end = "\r\n" ]] )
 echo chunk_split($testStr, 2, "\t\n");
 echo chunk_split($testStr, 2, "\t");
 echo chunk_split($testStr, 2, "\t");
@@ -191,7 +203,7 @@ Each data line uses the format:
  <length character><formatted characters><newline>
  */
 echo "\n VARIABLE\n";
-//echo convert_uuencode($testStr);
+echo convert_uuencode($testStr);
 echo "\n DIRECT STRING \n";
 $kushagra = "Kushagra";
 //echo convert_uuencode($kushagra);
@@ -282,11 +294,12 @@ echo "\n Crypt \n";
  * CRYPT_STD_DES - Standard DES-based hash with a two character salt from the alphabet "./0-9A-Za-z". Using invalid characters in the salt will cause crypt() to fail.
  * CRYPT_EXT_DES - Extended DES-based hash. The "salt" is a 9-character string consisting of an underscore followed by 4 bytes of iteration count and 4 bytes of salt. These are encoded as printable characters, 6 bits per character, least significant character first. The values 0 to 63 are encoded as "./0-9A-Za-z". Using invalid characters in the salt will cause crypt() to fail.
  * CRYPT_MD5 - MD5 hashing with a twelve character salt starting with $1$
- * CRYPT_BLOWFISH - Blowfish hashing with a salt as follows: "$2a$", "$2x$" or "$2y$", a two digit cost parameter, "$", and 22 characters from the alphabet "./0-9A-Za-z". Using characters outside of this range in the salt will cause crypt() to return a zero-length string. The two digit cost parameter is the base-2 logarithm of the iteration count for the underlying Blowfish-based hashing algorithmeter and must be in range 04-31, values outside this range will cause crypt() to fail. Versions of PHP before 5.3.7 only support "$2a$" as the salt prefix: PHP 5.3.7 introduced the new prefixes to fix a security weakness in the Blowfish implementation. Please refer to » this document for full details of the security fix, but to summarise, developers targeting only PHP 5.3.7 and later should use "$2y$" in preference to "$2a$".
+ * CRYPT_BLOWFISH - 33 character long.Blowfish hashing with a salt as follows: "$2a$", "$2x$" or "$2y$", a two digit cost parameter, "$", and 22 characters from the alphabet "./0-9A-Za-z". Using characters outside of this range in the salt will cause crypt() to return a zero-length string. The two digit cost parameter is the base-2 logarithm of the iteration count for the underlying Blowfish-based hashing algorithmeter and must be in range 04-31, values outside this range will cause crypt() to fail. Versions of PHP before 5.3.7 only support "$2a$" as the salt prefix: PHP 5.3.7 introduced the new prefixes to fix a security weakness in the Blowfish implementation. Please refer to » this document for full details of the security fix, but to summarise, developers targeting only PHP 5.3.7 and later should use "$2y$" in preference to "$2a$".
  * CRYPT_SHA256 - SHA-256 hash with a sixteen character salt prefixed with $5$. If the salt string starts with 'rounds=<N>$', the numeric value of N is used to indicate how many times the hashing loop should be executed, much like the cost parameter on Blowfish. The default number of rounds is 5000, there is a minimum of 1000 and a maximum of 999,999,999. Any selection of N outside this range will be truncated to the nearest limit.
  * CRYPT_SHA512 - SHA-512 hash with a sixteen character salt prefixed with $6$. If the salt string starts with 'rounds=<N>$', the numeric value of N is used to indicate how many times the hashing loop should be executed, much like the cost parameter on Blowfish. The default number of rounds is 5000, there is a minimum of 1000 and a maximum of 999,999,999. Any selection of N outside this range will be truncated to the nearest limit.
  * The printable form of these hashes starts with $2$, $2a$, $2b$, $2x$ or $2y$ depending on which variant of the algorithm is used.
  *  If salt is passed then that salt will be used otherwise an automatically generated salt will be used which in case of crypt is a weak salt and will generate a notice. Hence password_hash() is recommended to generate a hash for passwords.
+ * password_hash() uses a strong hash, generates a strong salt, and applies proper rounds automatically. password_hash() is a simple crypt() wrapper and compatible with existing password hashes. Use of password_hash() is encouraged.
  * Based on the salt the crypting algorithm is chosen
 */
 echo "\n ======= CRYPTS AVAILABLE ==========";
@@ -349,6 +362,13 @@ echo "MD5 using hash(): ".hash("md5","rasmuslerdorf");
 echo "\n ========= PASSWORD HASH ========= \n";
 // Password hash creates a new password hash using one way encryption algorithm.
 // Password hash is a wrapper around crypt and hence both can be used with each other . Hash generated from crypt can be used as a salt in password hash.
+/**
+ * The following algorithms are currently supported:
+
+PASSWORD_DEFAULT - Use the bcrypt algorithm (default as of PHP 5.5.0). Note that this constant is designed to change over time as new and stronger algorithms are added to PHP. For that reason, the length of the result from using this identifier can change over time. Therefore, it is recommended to store the result in a database column that can expand beyond 60 characters (255 characters would be a good choice).
+PASSWORD_BCRYPT - Use the CRYPT_BLOWFISH algorithm to create the hash. This will produce a standard crypt() compatible hash using the "$2y$" identifier. The result will always be a 60 character string, or FALSE on failure.
+PASSWORD_ARGON2I - Use the Argon2 hashing algorithm to create the hash.
+ */
 echo password_hash("rasmuslerdorf", PASSWORD_DEFAULT);
 echo "\n";
 echo password_hash("rasmuslerdorf", PASSWORD_BCRYPT, array('salt'=>'$2a$12$usesomesillystringforsalt$', 'cost' => 12));
@@ -374,8 +394,12 @@ var_dump(password_get_info(crypt('rasmuslerdorf', '$2a$07$usesomesillystringfors
 var_dump(password_get_info(crypt('rasmuslerdorf', '$1$rasmusle$')));
 
 echo "\n ========= Password Needs Rehash ============= \n";
+// password_needs_rehash($hash, algo, $options)
+// hash generate by password_hash, algo is password algorithm constant which is used in password_hash, $options is the options that we use with password_hash.
+// It will check if the hash given can be generated by the algo and the options given.
 // Check to see if the supplied hash matches the given options and algorithm. If it doesnot matches the given options then password needs to be rehashed manually again.
-var_dump(password_needs_rehash(password_hash("rasmuslerdorf", PASSWORD_DEFAULT, array('salt'=>crypt('rasmuslerdorf', '$2a$07$usesomesillystringforsalt$'), 'cost' => 12)), PASSWORD_BCRYPT, array('salt'=>crypt('rasmuslerdorf', '$2a$07$usesomesillystringforsalt$'), 'cost' => 12)));
+var_dump(password_needs_rehash(
+    password_hash("rasmuslerdorf", PASSWORD_DEFAULT, array('salt'=>crypt('rasmuslerdorf', '$2a$07$usesomesillystringforsalt$'), 'cost' => 12)), PASSWORD_BCRYPT, array('salt'=>crypt('rasmuslerdorf', '$2a$07$usesomesillystringforsalt$'), 'cost' => 12)));
 
 var_dump(password_needs_rehash(crypt('rasmuslerdorf', '$1$rasmusle$'), PASSWORD_BCRYPT, array('salt'=>crypt('rasmuslerdorf', '$2a$07$usesomesillystringforsalt$'), 'cost' => 12)));
 
@@ -387,7 +411,7 @@ EOF;
 
 
 /** FEISTEL CIPHER is a symmetric structure used in the construction of block ciphers
- * Let be the round function and let K_{0},K_{1},K_{n}} K_0,K_1,K_{n} be the sub-keys for the rounds 0,1,n 0,1,n respectively.
+ * Let {\displaystyle {\rm {F}}} {\rm F} be the round function and let {\displaystyle K_{0},K_{1},\ldots ,K_{n}} K_0,K_1,\ldots,K_{n} be the sub-keys for the rounds {\displaystyle 0,1,\ldots ,n} 0,1,\ldots,n respectively.
 
 Then the basic operation is as follows:
 
@@ -405,7 +429,7 @@ Decryption of a ciphertext {\displaystyle (R_{n+1},L_{n+1})} (R_{n+1}, L_{n+1}) 
 {\displaystyle L_{i}=R_{i+1}\oplus \operatorname {F} (L_{i+1},K_{i}).} {\displaystyle L_{i}=R_{i+1}\oplus \operatorname {F} (L_{i+1},K_{i}).}
 Then {\displaystyle (L_{0},R_{0})} (L_0,R_0) is the plaintext again.
 
-One advantage of the Feistel model compared to a substitution-permutation network is that the round function {\displaystyle \operatorname {F} } \operatorname {F} does not have to be invertible.
+One advantage of the Feistel model compared to a substitution–permutation network is that the round function {\displaystyle \operatorname {F} } \operatorname {F} does not have to be invertible.
 
 The diagram illustrates both encryption and decryption. Note the reversal of the subkey order for decryption; this is the only difference between encryption and decryption.
  */
@@ -418,12 +442,13 @@ In general, an S-box takes some number of input bits, m, and transforms them int
 One good example of a fixed table is the S-box from DES (S5), mapping 6-bit input into a 4-bit output:
 
 S5	Middle 4 bits of input
-0000	0001	0010	0011	0100	0101	0110	0111	1000	1001	1010	1011	1100	1101	1110	1111
-Outer bits	00	0010	1100	0100	0001	0111	1010	1011	0110	1000	0101	0011	1111	1101	0000	1110	1001
+    0000	0001	0010	0011	0100	0101	0110	0111	1000	1001	1010	1011	1100	1101	1110	1111
+00	0010	1100	0100	0001	0111	1010	1011	0110	1000	0101	0011	1111	1101	0000	1110	1001
 01	1110	1011	0010	1100	0100	0111	1101	0001	0101	0000	1111	1010	0011	1001	1000	0110
 10	0100	0010	0001	1011	1010	1101	0111	1000	1111	1001	1100	0101	0110	0011	0000	1110
 11	1011	1000	1100	0111	0001	1110	0010	1101	0110	1111	0000	1001	1010	0100	0101	0011
 Given a 6-bit input, the 4-bit output is found by selecting the row using the outer two bits (the first and last bits), and the column using the inner four bits. For example, an input "011011" has outer bits "01" and inner bits "1101"; the corresponding output would be "1001".[2]
+Symmetric ciphers use symmetric algorithms to encrypt and decrypt data. These ciphers are used in symmetric key cryptography. A symmetric algorithm uses the same key to encrypt data as it does to decrypt data. For example, a symmetric algorithm will use key  to encrypt some plaintext information like a password into a ciphertext. Then, it uses again to take that ciphertext and turn it back into the password.
  */
 
 /*
@@ -550,7 +575,7 @@ string number_format ( float $number [, int $decimals = 0 ] )
 string number_format ( float $number , int $decimals = 0 , string $dec_point = "." , string $thousands_sep = "," )
 Dec Point tells how many integers will be there after decimal point if its greater than from original string then additional 0s are added to the end of the string. If its less than the actual integers in string after decimal point then digits after decimal point are rounded off to specified length.
  */
-$number = 1234.56;
+$number = 1234644767.56;
 
 // english notation (default)
 echo number_format($number);
@@ -567,13 +592,14 @@ echo number_format(number_format($number), "3"); // generates a notice Notice:  
 echo "\n";
 echo "========== Get Html translation table =========== \n";
 /*
- * ENT_COMPAT	Table will contain entities for double-quotes, but not for single-quotes.
+ENT_COMPAT	Table will contain entities for double-quotes, but not for single-quotes.
 ENT_QUOTES	Table will contain entities for both double and single quotes.
 ENT_NOQUOTES	Table will neither contain entities for single quotes nor for double quotes.
 ENT_HTML401	Table for HTML 4.01.
 ENT_XML1	Table for XML 1.
 ENT_XHTML	Table for XHTML.
 ENT_HTML5	Table for HTML 5.
+array get_html_translation_table ([ int $table = HTML_SPECIALCHARS [, int $flags = ENT_COMPAT | ENT_HTML401 [, string $encoding = "UTF-8" ]]] )
  */
 echo "Default ===== \n";
 print_r(get_html_translation_table()); // default returns HTML_SPECIALCHARS table . We can specify Which table to return. Either HTML_ENTITIES or HTML_SPECIALCHARS.
@@ -629,7 +655,7 @@ echo htmlentities($str, ENT_QUOTES | ENT_IGNORE, "UTF-8"); // with ignore invali
 echo "\n";
 
 echo " ============ Html special chars vs Html special entities =============== \n";
-echo htmlspecialchars("<a href='test'>Test</a>");
+echo htmlspecialchars("&amp;");
 echo "\n";
 echo htmlentities("<a href='test'>Test</a>");
 echo "\n";
@@ -668,6 +694,23 @@ echo "\n";
 echo $b; // I'll "walk" the <b>dog</b> now
 // htmlspecialchars changes only 5 entities with special characters if we want all special entities which have special characters meaning then we use htmlentities()
 echo "\n htmlspecialchars_decode \n";
+
+$str = "<p>this -&gt; &quot;</p>\n";
+
+echo htmlspecialchars_decode($str);
+
+// note that here the quotes aren't converted
+echo htmlspecialchars_decode($str, ENT_NOQUOTES);
+
+$orig = "I'll \"walk\" the <b>dog</b> now";
+
+$a = htmlentities($orig);
+
+$b = html_entity_decode($a);
+
+echo $a; // I'll &quot;walk&quot; the &lt;b&gt;dog&lt;/b&gt; now
+
+echo $b; // I'll "walk" the <b>dog</b> now
 /*
  * ENT_COMPAT	Will convert double-quotes and leave single-quotes alone.
 ENT_QUOTES	Will convert both double and single quotes.
@@ -686,6 +729,9 @@ echo htmlspecialchars_decode($str, ENT_NOQUOTES);
 
 echo "\n ============= levenshtein ============== \n";
 // can be used to calculate distance between two strings and suggest the correct or nearest string
+// int levenshtein ( string $str1 , string $str2 )
+//int levenshtein ( string $str1 , string $str2 , int $cost_ins , int $cost_rep , int $cost_del )
+//The Levenshtein distance is defined as the minimal number of characters you have to replace, insert or delete to transform str1 into str2. This function returns the Levenshtein-Distance between the two argument strings or -1, if one of the argument strings is longer than the limit of 255 characters.
 $input = 'carrrot';
 
 // array of words to check against
@@ -793,6 +839,8 @@ echo "\n ------- Change Date Time Zone -------- \n";
 $timezone = new DateTimeZone('Singapore');
 $datetime = new DateTime("today", $timezone);
 print_r($datetime);
+// date_default_timezone_set('America/Los_Angeles');
+//$script_tz = date_default_timezone_get();
 
 echo "\n ------- Format --------- \n";
 $now = new DateTime();
@@ -822,6 +870,7 @@ print_r($interval);
 echo "\n";
 echo $interval->format('%d day ago');
 echo "\n";
+//P7Y5M4DT4H3M2S -> P signifies the start of period for day and T specifies the start of time.
 $dateInterval = new DateInterval("P2D");
 print_r($dateInterval);
 echo "\n";
@@ -839,7 +888,10 @@ echo $today->format('Y-m-d') . PHP_EOL;
 echo "\n";
 $today->modify('+2 days');
 print_r($today);
+// one of the predefined constant using which datetime can generate a date time object.
 echo DateTime::ATOM;
+echo "\n";
+echo DateTime::COOKIE;
 echo "\n";
 
 echo "\n ============== Date Create Format ============= \n";
@@ -856,6 +908,18 @@ $date = new DateTime();
 $date->setDate(2001, 2, 3);
 echo $date->format('Y-m-d');
 echo "\n";
+$date = new DateTime('2000-01-01', new DateTimeZone('Pacific/Nauru'));
+echo $date->format('Y-m-d H:i:sP') . "\n";
+
+$date->setTimezone(new DateTimeZone('Pacific/Chatham'));
+echo $date->format('Y-m-d H:i:sP') . "\n";
+
+$date->setTime(14, 55, 24);
+echo $date->format('Y-m-d H:i:s') . "\n";
+
+$date->setTimestamp(1171502725);
+echo $date->format('U = Y-m-d H:i:s') . "\n";
+
 $date = date_create(); // returns datetime object only
 print_r($date);
 echo "\n";
@@ -914,6 +978,7 @@ print_r($today -> diff($yesterday));
 print_r(date_diff($today, $yesterday));
 
 echo "\n ========== Date Sub ========== \n";
+// Subtracts an amount of days, months, years, hours, minutes and seconds from a DateTime object. Similar to add.
 $today = new DateTime('today');
 $interval = new DateInterval('P2D');
 print_r($today -> sub($interval));
@@ -1029,6 +1094,16 @@ echo money_format('%.2n', $number) . "\n";
 // Using a negative number
 $number = -1234.5672;
 
+/* Set locale to Dutch */
+setlocale(LC_ALL, 'nl_NL');
+
+/* Output: vrijdag 22 december 1978 */
+echo strftime("%A %e %B %Y", mktime(0, 0, 0, 12, 22, 1978))."\n";
+
+/* try different possible locale names for german */
+$loc_de = setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
+echo "Preferred locale for german on this system is '$loc_de'\n";
+
 // US national format, using () for negative numbers
 // and 10 digits for left precision
 setlocale(LC_MONETARY, 'en_US');
@@ -1118,6 +1193,19 @@ parse_str("My Value=Something", $output);
 echo $output['My_Value']; // Something
 echo "\n";
 
+// till & one chunk is considered , then left to = is variable and right to it is its value. We can even use arrays in this.
+$str = "first=value&arr[]=foo+bar&arr[]=baz";
+
+// Recommended
+parse_str($str, $output);
+echo $output['first'];  // value
+echo "\n";
+echo $output['arr'][0]; // foo bar
+echo "\n";
+echo $output['arr'][1]; // baz
+echo "\n";
+
+
 
 echo PHP_EOL;
 echo "------------- PARSE URL -------------------";
@@ -1164,18 +1252,21 @@ echo "\n";
 
 echo "\n ============ Str Get CSV ============== \n";
 // this function can be used to break any text or file based on desired format. Its not necessarily for csv file.
-print_r(file('/home/kushagra/book.csv'));
-$csv = array_map('str_getcsv', file('/home/kushagra/book.csv'));
+//array str_getcsv ( string $input [, string $delimiter = "," [, string $enclosure = '"' [, string $escape = "\\" ]]] ). Because the default delimiter value is , that's why its called str_getcsv.
+//Returns an indexed array containing the fields read.
+print_r(file('/home/kushagra/books.csv'));
+$csv = array_map('str_getcsv', file('/home/kushagra/books.csv'));
 echo "\n";
-print_r($csv);
+echo "\n ============= CSV PARSED ============ \n";
+//print_r($csv);
 
-$Data = str_getcsv("/home/kushagra/book.csv", "\n"); // parse the rows
+$Data = str_getcsv("/home/kushagra/books.csv", "\n"); // parse the rows
 foreach($Data as &$Row) $Row = str_getcsv($Row, ";"); // parse the items in rows
 echo "\n ====== printing here ========= \n";
 // delimiter tells till what point should text be treated as one row or one entry in array and when we hit delimiter the new array entry starts
-print_r(str_getcsv(file_get_contents("/home/kushagra/book.csv"))); // this will create a new array entry for every column value
-print_r(str_getcsv(file_get_contents("/home/kushagra/book.csv"), "\n")); // this will treat \n only as a breakpoint for new array entry. So now columns will be separated with ','.
-print_r(str_getcsv(file_get_contents("/home/kushagra/book.csv"), "\n", "#", "]"));
+print_r(str_getcsv(file_get_contents("/home/kushagra/books.csv"))); // this will create a new array entry for every column value
+print_r(str_getcsv(file_get_contents("/home/kushagra/books.csv"), "\n")); // this will treat \n only as a breakpoint for new array entry. So now columns will be separated with ','.
+print_r(str_getcsv(file_get_contents("/home/kushagra/books.csv"), "\n", "#", "]"));
 print_r(str_getcsv(file_get_contents("/home/kushagra/Documents/csv.txt")));
 
 $line = 'Dem##o ^java2s .com. ^ "abc##.jpg"';
@@ -1196,8 +1287,10 @@ print_r( $parsed );
  * Escape tells that this specific char is supposed to treated as escape char. If encountered then escape the next character
  */
 $line = 'field1,field2,field3,"this is field having backslash at end ",anothersomeval';
+$line3 = 'field1,field2,field3,"this is field having backslash at end ,anothersomeval';
 $line2 = 'field1,field2,field3,"this is field having backslash at end\",anothersomeval';
 $arrField = str_getcsv($line, ",", '"', '\\');
+$arrField5 = str_getcsv($line3, ",", '"', '\\'); // will not break even when delimiter was encountered
 $arrField2 = str_getcsv($line, ",", '"', '#');
 $arrField4 = str_getcsv($line2, ",", '"', '\\');
 $line = 'field1\t,field2\t,field3,this is f#ield having backslash at end\',anothersomeval';
@@ -1206,6 +1299,7 @@ print_r($arrField);
 print_r($arrField2);
 print_r($arrField3);
 print_r($arrField4);
+print_r($arrField5);
 
 $line = '"A";"Some \"Stuff\" -&reg; ";"C"';
 $token = str_getcsv($line, ';', '"', 'A');
@@ -1292,18 +1386,22 @@ echo "\n ======== strcspn ============ \n";
 $a = strcspn('abcd',  'apple');
 $b = strcspn('abcd',  'banana');
 $c = strcspn('hello', 'l');
+$x = strcspn('hello', 'l', 1, 3);
 $d = strcspn('hello', 'world');
 $e = strcspn('abcdhelloabcd', 'abcd', -9);
 $f = strcspn('abcdhellabcde', 'abcde', -9, -5);
 $g = strcspn('abcdhellabcd', 'abcde', -9, -5);
+$h = strcspn('abcdhellabcd', 'jkasdkhaksjhdka', 0, -1);
 
 var_dump($a);
 var_dump($b);
 var_dump($c);
+var_dump($x);
 var_dump($d);
 var_dump($e);
 var_dump($f);
 var_dump($g);
+var_dump($h);
 
 echo "\n ========== Strip Tags ========== \n";
 // This function tries to return a string with all NULL bytes, HTML and PHP tags stripped from a given str.
@@ -1384,6 +1482,7 @@ echo $dir;
 echo "\n";
 
 // get everything after last newline
+echo " -------------------- ";
 $text = "Line 1\nLine 2\nLine 3";
 $text2 = "This is line. 10 This is new line";
 $last = strrchr($text2, '12');
@@ -1412,7 +1511,12 @@ echo "\n =========== Strtok ============ \n";
 $string = "This is\tan example\nstring";
 /* Use tab and newline as tokenizing characters as well  */
 $tok = strtok($string, " \n\t");
-
+print_r($tok);
+$tok = strtok(" \n\t");
+print_r($tok);
+$tok = strtok(" \n\t");
+print_r($tok);
+//Note that only the first call to strtok uses the string argument. Every subsequent call to strtok only needs the token to use, as it keeps track of where it is in the current string. To start over, or to tokenize a new string you simply call strtok with the string argument again to initialize it. Note that you may put multiple tokens in the token parameter. The string will be tokenized when any one of the characters in the argument is found.
 while ($tok !== false) {
     echo "Word=$tok\n";
     $tok = strtok(" \n\t");
@@ -1423,6 +1527,9 @@ echo "\n ======= sub str replace ============= \n";
 echo substr_replace("This is a string", "2", strlen("This is a string"));
 echo "\n";
 echo substr_replace("This is a string", "#", 2, strlen("This is a string"));
+echo "\n";
+
+echo substr_replace("This is a string", "This is a new string which very big", 2, 4);
 echo "\n";
 
 echo "\n ============ Sub str count ============= \n";
@@ -1484,6 +1591,7 @@ $text = "A very long woooooooooooorddddddddd. Take this now.";
 $newtext = wordwrap($text, 8, "\n", true); // this true here wraps the word if its length is greater than width
 echo "$newtext\n";
 echo "\n";
+// this without cut will not break the continuing word even if the width is exceeded. Break will happen from next line.
 $newtext = wordwrap($text, 8, "\n", false); // because its false here so the longer word will completely go to next line.
 
 echo "$newtext\n";
@@ -1507,6 +1615,8 @@ print "(doing: set _env barney)\n";
 $_ENV["USER"]="barney";
 print "getenv is: ".getenv("USER")."\n";
 print "env is: ".$_ENV["USER"]."\n";
+// phpomfp env values gets affected by putenv but not by $_ENV
+putenv("USER=fred");
 phpinfo(INFO_ENVIRONMENT);
 
 /**
@@ -1527,3 +1637,20 @@ Variable => Value
 ...
 USER => dave
  */
+
+/**
+ * urlencode
+(PHP 4, PHP 5, PHP 7)
+
+urlencode — URL-encodes string
+
+Description ¶
+string urlencode ( string $str )
+This function is convenient when encoding a string to be used in a query part of a URL, as a convenient way to pass variables to the next page.
+ */
+$_ENV['key'] = [1,2,3,45];
+var_dump($_ENV['key']);
+class a{public function __toString() {return json_encode($this);}}
+$newObj = new a;
+putenv("a_obj=".(string) $newObj);
+echo getenv('a_obj');

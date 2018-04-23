@@ -1,0 +1,11 @@
+<?php echo $__env->make('blade.sidebar_left', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>;
+<?php $__env->startSection('trial_section'); ?>
+    @parent
+    This is child trial
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+    This is content
+<?php echo $__env->yieldSection(); ?>
+<?php /* or stop */ ?>
+This is not going to be printed
+<?php echo $__env->make('blade.sidebar_right', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>;

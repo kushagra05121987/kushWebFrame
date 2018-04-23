@@ -9,6 +9,10 @@
 // changes the session parameter.
 // With strict mode on any new session id which is uninitialized that means does not exist PHP will create a new another session id different from the
 // one passed by the user and initializes it rather that using the id passed by the user ( PHPSESSID: HI)
+/**
+ * session.use_strict_mode specifies whether the module will use strict session id mode. If this mode is enabled, the module does not accept uninitialized session ID. If uninitialized session ID is sent from browser, new session ID is sent to browser. Applications are protected from session fixation via session adoption with strict mode. Defaults to 0 (disabled).
+ * session_create_id can be used to create a collision free session id and then pass it to session_id. We can also use a callback inside session_id to generate a custom session id but this will be not be collision free session id.
+ */
 ini_set('session.use_strict_mode', 0); // example of usecase is in  sessionCheck.php and sessionResponse.php
 session_start();
 //session_start([
@@ -39,6 +43,18 @@ echo "<br /> SESSION WITH NEXT VALUE ASSIGNMENT =========== <br />";
 print_r($_SESSION);
 session_reset(); // resets the session to the original value and discards any new changes.
 //If you need to rollback the session values after seting new value to session variables use session_reset()
+/**
+ * session_abort() is analogous to session_write_close().
+
+PHP locks session data during a web request to prevent data corruption on multiple simultaneous requests.
+
+When Request 1 comes in, Session 1 is locked by that process so it can make any changes needed. If Request 2 comes in for Session 1, php blocks until the session lock is released to make sure that Request 2 has the most up-to-date session data.
+
+session_abort() closes the session and releases the lock without flushing session data to the session storage mechanism while session_write_close() writes the current content of session back and then closes / releases the lock.
+
+edit: Calling session_abort() or session_write_close() will let php process Request 2 even if Request 1 is not finished processing.
+ */
+$_SESSION['new_key_after_reset'] = "SET";
 echo "<br /> SESSION AFTER RESET =========== <br />";
 print_r($_SESSION);
 session_write_close(); // opposite to read_and_close option writes to session and closes the session. Anything written after if would not affect the global session
@@ -52,6 +68,16 @@ session_start();
 echo "<br /> SESSION AFTER ABORT =========== <br />";
 print_r($_SESSION);
 session_commit();
+/**
+session_unset just clears the $_SESSION variable. It’s equivalent to doing:
+
+$_SESSION = array();
+So this does only affect the local $_SESSION variable instance but not the session data in the session storage.
+
+In contrast to that, session_destroy destroys the session data that is stored in the session storage (e.g. the session file in the file system).
+
+Everything else remains unchanged.
+ */
 //session_create_id("MyCustomSessionName-");// Available for php >= 7.1.0 // creates a session id with a specific prefix given. Generates a
 // COLLISION Free session id. If session is not active, collision check is omitted. This function Generates session id , if prefix is specified then with
 // prefix other wise without prefix the default id is generated. This id is supposed to be used with session_id
@@ -138,3 +164,4 @@ echo "<br /> ========== DECODED SESSION ============ <br />";
 $data = 'My-Penis-Is-Big|s:7:"anddark";custom-x-session|s:14:"Custom-x-value";custom-y-session|s:14:"Custom-y-value";kushagra|s:6:"Mishra";login_ok|b:1;nome|s:4:"sica";inteiro|i:34;';
 session_decode($data); // unserialises session data and sets global php session variable
 print_r($_SESSION);
+session_destroy();

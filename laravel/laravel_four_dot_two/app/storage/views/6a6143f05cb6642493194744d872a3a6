@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title> Default Template </title>
+</head>
+<body>
+<?php echo $__env->make('blade.header', array('message' => 'This is a Header'), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+<?php $__env->startSection('trial_section'); ?>
+    This is parent trial
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->yieldContent('sidebar_left'); ?>
+<?php echo $__env->yieldContent('trial_section'); ?>
+<?php echo $__env->yieldContent('sidebar_right'); ?>
+<?php echo $__env->make('blade.footer', array('message' => 'This is a Footer'), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+</body>
+</html>

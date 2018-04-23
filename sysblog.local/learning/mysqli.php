@@ -19,11 +19,14 @@ echo "\n --------------------------------- MYSQLI REAL QUERY -------------------
 print_r($resultRealQuery); /// it returns true / false but not result set as mysqli_query
 $storedReal = mysqli_store_result($mysqli);
 print_r($storedReal);
-
+print_r(mysqli_fetch_all($storedReal));
 $result = mysqli_query($mysqli, "select * from test"); // returns number of columns and rows affected by query whereas in pdo we got a pdo object without all this info
+print_r($result);
+// $storedReal and $result above are all mysql_result_objects. They are not actual
 // Fetching a result from query or prepared statement moves the result cursor to next fetch_all moves it to end
 
 echo "\n -------------- Prepared Statement Normal Affected/Num Rows Start ------------------- \n";
+// for pdo both are rowCount
 echo "AF -> ". mysqli_affected_rows($mysqli);
 echo PHP_EOL;
 echo "NUM -> ".mysqli_num_rows($result);
@@ -78,7 +81,7 @@ mysqli_fetch_field($result);
 print_r(mysqli_field_tell($result));
 
 echo "\n ---------------- Field Lengths -------------- \n";
-$result = mysqli_query($mysqli, "select * from test");
+$result = mysqli_query($mysqli, "select * from test LIMIT 1");
 var_dump(mysqli_fetch_lengths($result));
 
 echo "\n ---------------- Field Counts --------------- \n";
@@ -87,6 +90,7 @@ $result = mysqli_query($mysqli, "select id, name from test");
 echo "\n";
 print_r(mysqli_num_fields($result)); // takes in result as argument and returns the number of columns in query.
 
+// For SELECT statements mysqli_affected_rows() works like mysqli_num_rows().
 echo "\n -------------- Num Rows -------------- \n";
 var_dump(mysqli_affected_rows($mysqli));
 echo "\n";
@@ -128,7 +132,7 @@ print_r($query);
 echo "\n";
 //$use = mysqli_use_result($mysqliNew); // this will transfer the result set from the last query run on the connectionecho "<pre>";
 do {
-    $use = mysqli_store_result($mysqliNew); // this will transfer the result set from the last query run on the connection
+    $use = mysqli_use_result($mysqliNew); // this will transfer the result set from the last query run on the connection
     echo PHP_EOL." Printing all the values ".PHP_EOL;
     echo PHP_EOL."--- Starting 1 ----".PHP_EOL;
     print_r(mysqli_fetch_all($use));
@@ -148,7 +152,7 @@ mysqli_free_result($stored);
 echo "\n --------- MYSQLI STORE RESULT WITH SINGLE QUERY ----------- \n";
 $mysqli2 = mysqli_connect("localhost", "root", "12345", "sys_blog");
 $query = mysqli_query($mysqli2,"SELECT name from test;");
-$stored = mysqli_use_result($mysqli2);
+//$stored = mysqli_use_result($mysqli2); // this does not work because we used mysqli_query which already has mysqli_use_result
 while($row = mysqli_fetch_row($stored)) {
     print_r($row);
 }
@@ -217,7 +221,7 @@ mysqli_stmt_execute($stmtAffectedCheck);
 
 print_r($result = mysqli_stmt_get_result($stmtAffectedCheck));
 echo "\n -------------- Prepared Statement Affected/Num Rows Start ------------------- \n";
-echo "AF -> ". mysqli_stmt_affected_rows($stmtAffectedCheck);
+echo "AF -> ". mysqli_stmt_affected_rows($mysqliAffectedCheck);
 echo PHP_EOL;
 echo "NUM -> ".mysqli_stmt_num_rows($stmtAffectedCheck);
 echo "\n";
@@ -310,6 +314,7 @@ mysqli_stmt_bind_param($stmtCheck, "ii", ... $ar);
 //mysqli_stmt_bind_param($stmtCheck, "i", $id);
 //mysqli_stmt_bind_param($stmtCheck, "s", $name);
 //mysqli_stmt_bind_param($stmtCheck, "i", $active);
+
 mysqli_stmt_execute($stmtCheck);
 mysqli_stmt_store_result($stmtCheck);
 var_dump(mysqli_stmt_num_rows($stmtCheck));

@@ -33,6 +33,7 @@ header("Access-Control-Allow-Credentials: true");
 
 $path = "./dummy.pdf";
 $filename = "dummy.pdf";
+// when this is a accessed in browser it uses the same technique in which it dumps everything on browser and because array buffer string from pdf is not supported by browser so it doesn't open it there and downloads it but while downloading it take the response headers into consideration.
 header('Content-Transfer-Encoding: binary');  // For Gecko browsers mainly
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($path)) . ' GMT');
 header('Accept-Ranges: bytes');  // For download resume

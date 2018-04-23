@@ -1,0 +1,3 @@
+<?php $__env->startSection('sidebar_right'); ?>
+    This is a right side bar form parent
+<?php $__env->stopSection(); ?>

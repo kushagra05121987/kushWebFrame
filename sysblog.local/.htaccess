@@ -19,6 +19,6 @@ Options +FollowSymLinks
 #Header add X-Frame-Options "ALLOW-FROM http://localhost:9000/"
 #Header add Content-Security-Policy "default-src 'unsafe-inline' self http://localhost:9000/ http://sysblog.local:8080/; script-src self http://localhost:9000/ http://sysblog.local:8080/ 'unsafe-inline'; frame-src self http://localhost:9000/ http://sysblog.local:8080/"
 # Header add ETag "W/675af34563dc-tr34"
-RequestHeader  edit "If-None-Match" "^(.*)-gzip$" "$1"
-Header  edit "ETag" "-gzip" ""
+#RequestHeader  edit "If-None-Match" "^(.*)-gzip$" "$1"
+#Header  edit "ETag" "-gzip" ""
 #Header unset "Keep-Alive"

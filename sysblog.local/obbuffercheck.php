@@ -76,7 +76,7 @@ file_put_contents("obGetContents2.txt", ob_get_contents());
 // flush will flush the buffered data to the system buffer example to php fpm incase of php-fpm or to apache system in case of mod_php buffers.
 
 // If working with php-fpm and apache and then we need to check if gzip compression is set in both if yes then we need to disable that before we can start doing live stream as ob_flush will flush to its parent buffer that is the buffer that is strated in php but it never flushes the output of the apache system buffers because php is connect to fpm and not apache directly so flush will only flush the data from fpm but not apache. 
-// Hence the browser waits untill apache level buffers are flushed.
+// Hence the browser waits until apache level buffers are flushed.
 // This works correctly in mod_php where php is directly connected to apache.
 
 // Apache starts dumping because the buffer is full but browser doesnot show anything because it wait for full content to come and then it will decode the data at once and show.

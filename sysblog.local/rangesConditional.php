@@ -1,5 +1,5 @@
 <?php
-	header("Access-Control-Allow-Origin: http://localhost:9000");
+	header("Access-Control-Allow-Origin: http://ui.local:8080");
 	header("Access-Control-Allow-Methods: GET, HEAD");
 	header("Access-Control-Expose-Headers: Custom, Accept-Ranges, Content-Disposition, Content-Length, Etag");
 	header("Custom: custom-x");
@@ -32,17 +32,19 @@
  			header("Etag: $etag");
 			header("Content-Length: ". strlen($fileContents));
         } else {
-        	header("Etag: $etag");
-			header("Content-Length: 2000" );
+//            header("HTTP/1.1: 206 Partial Content");
+            header("HTTP/1.1: 200 OK");
+            header("Etag: $etag");
+			header("Content-Length: 10762150" );
         	header("Accept-Ranges: bytes");
-        	// header("Content-Type: application/pdf");
+        	 header("Content-Type: application/pdf");
         	echo gettype(filesize('annual_report_2009.pdf'));
         	echo $read1;
-        	flush();
-	        sleep(1);
-	        echo $read1;
-	        flush();
-	        sleep(1);
+//        	flush();
+//	        sleep(1);
+//	        echo $read1;
+//	        flush();
+//	        sleep(1);
         }
         // header("HTTP/1.1: 200 OK");
         // header("Content-Disposition: attachment; filename=annual_report_2009.pdf");

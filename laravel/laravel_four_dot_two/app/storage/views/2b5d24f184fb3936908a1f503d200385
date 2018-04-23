@@ -1,0 +1,2 @@
+Hello this home blade template.
+<?php echo JMin::startMinification(); ?>

@@ -1,0 +1,3 @@
+@section('footer')
+    {{ $message }}
+@show

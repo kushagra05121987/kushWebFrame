@@ -1,0 +1,4 @@
+<?php $__env->startSection('header'); ?>
+    <?php echo e($message); ?>
+
+<?php echo $__env->yieldSection(); ?>

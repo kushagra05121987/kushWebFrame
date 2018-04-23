@@ -10,3 +10,5 @@ echo "<br /> ============ POST CHECK ========== <br />";
 print_r($_POST);
 echo "<br />";
 print_r(file_get_contents('php://input'));
+echo "<br />";
+print_r($_GET);

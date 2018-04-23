@@ -17,8 +17,9 @@ $array1 = $array2 = array("img12.png", "img10.png", "img2.png", "img1.png");
 sort($array1);
 echo "Sort\n";
 print_r($array1);
+print_r($array2);
 rsort($array2);
-echo "RSort\n";
+echo "RSort\n"; // rsort reverse sorts the array from sort.
 print_r($array2);
 asort($array1); // sorts based on values in array maintaining key => value association
 echo "Standard sorting\n";
@@ -62,23 +63,28 @@ print_r(array_column($array4, 'first_name', 'last_name')); // Generates array fr
 
 echo "Array Combine \n";
 $array5 = array(1,2,3,4,5);
+$array55 = array("ee" => 1,"rt" => 2,"ct" => 3,"st" => 4,"ry" => 5);
 $array6 = array("one","two","three","four","five");
+$array7 = array("extra" => "one", "new array" => "two", "to" => "three", "try" => "four","five");
 print_r(array_combine($array5, $array6)); // uses array1 to get keys for new array and array 2 for getting values. Both arrays should have equal number of elements
+print_r(array_combine($array55, $array7)); // uses array1 to get keys for new array and array 2 for getting values. Both arrays should have equal number of elements
+
 
 echo "Array Merge\n";
 $array7 = array(1,2,3,4,5);
 $array8 = array("me" => "kushagra", "she" => "ekta");
-$array9 = array("relation" => array("me" => "wife", "she" => "husband"), 2,3,4);
+$array9 = array("relation" => array("me" => "wife", "she" => "husband"), 2,3,4, "me" => "named flacon"); // same named keys get replaced while in array_merge_recursive all these values are put inside a sub array on the common key.
 print_r(array_merge($array7, $array8, $array9));
 
 echo "Array Reverse\n";
 print_r(array_reverse($array7));
+print_r(array_reverse($array8));
 
 echo "Array Count Values \n";
 print_r(array_count_values($array3)); // counts the number of occurrences of every value in array
 
 echo "List \n";
-list($a, $b, $c) = array("My", "Name", "Is", "Kushagra"); // list helps to assign variables to their corresponding counterparts in array
+list($a, $b, $c) = array("My", "Name", "Is", "Kushagra", "MIshra"); // list helps to assign variables to their corresponding counterparts in array
 echo "$a $b $c \n";
 list($a, $b, $c, $d) = array("My", "Name", "Is", "Kushagra");
 echo "$a $b $c $d \n";
@@ -134,9 +140,10 @@ echo "Array Map \n";
 $array1 = range(10,100, 10);
 $array2 = array("one"=>1, "two"=>2, "three"=>3);
 // Array map can only take value and not keys. This array_map just takes in the value and passes it to callback. Return type is array created by the value returned from callback.
-$c = array_map(function($n) {
+$c = array_map(function(& $n) {
+    $n = "This is not returned $n";
     echo "$n\n";
-}, $array1, $array2); // if we dont return anything then all the values for keys will be empty
+}, $array1, $array2); // if we don't return anything then all the values for keys will be empty
 print_r($c);
 
 $c = array_map(function(& $n) {
@@ -150,8 +157,8 @@ echo "Array Merge Recursive \n";
 // Takes in multiple arrays and merges them with keys. Doesn't remove duplicate values but if same key is found in more than one array then that key is assigned a new array with all the values of that key from other different arrays
 $ar1 = array("color" => array("favorite" => "red"), 5, 10, "key" => 20);
 $ar2 = array(10, "color" => array("favorite" => "green", "blue"), "key" => 30);
-$result = array_merge_recursive($ar1, $ar2);
-$result2 = array_merge($ar1, $ar2); // this will overwrite the same keynames and last array's keys persist
+$result = array_merge_recursive($ar1, $ar2, $array7);
+$result2 = array_merge($ar1, $ar2); // this will overwrite the same key names and last array's keys persist
 print_r($result);
 print_r($result2);
 
@@ -161,24 +168,27 @@ $fruits = array("d" => "lemon", "a" => "orange", "b" => "banana", "c" => "apple"
 
 function test_alter(&$item1, $key, $prefix)
 {
-    $item1 = "$prefix: $item1";
+    $item1 = "$prefix: $key. $item1";
 }
 
 function test_print($item2, $key)
 {
+    $item2 = "$key. $item2";
     echo "$key. $item2<br />\n";
+    return $item2; // it will not have any affect on array if we are not using pointer to array element to change it.
 }
 
 echo "Before ...:\n";
 array_walk($fruits, 'test_print');
-
+print_r($fruits);
 array_walk($fruits, 'test_alter', 'fruit');
 echo "... and after:\n";
 print_r($fruits);
+
 echo "================= MODIFICATION ================ \n";
 $fruits = array("d" => "lemon", "a" => "orange", "b" => "banana", "c" => "apple");\
 array_walk($fruits, 'test_print');
-$a = array_walk($fruits, function(&$value, $key, $opt) { // inorder to modify the array we need to take pointer to the value and modify it
+$a = array_walk($fruits, function(&$value, $key, $opt) { // in order to modify the array we need to take pointer to the value and modify it
     echo "$key ===>>> $value\n";
     $value = $opt."-".$value;
 //    return array($key => "$opt-$value");
@@ -244,6 +254,9 @@ $state = "CA";
 $event = "SIGGRAPH";
 
 $location_vars = array("city", "state");
+//Creates an array containing variables and their values.
+//For each of these, compact() looks for a variable with that name in the current symbol table and adds it to the output array such that the variable name becomes the key and the contents of the variable become the value for that key. In short, it does the opposite of extract().
+///compact() takes a variable number of parameters. Each parameter can be either a string containing the name of the variable, or an array of variable names. The array can contain other arrays of variable names inside it; compact() handles it recursively.
 
 $result = compact("event", "nothing_here", "location_vars"); // will use location_vars as is without checking variable names in keys
 print_r($result);
@@ -254,18 +267,32 @@ print_r($result);
 
 echo "Array Multisort \n";
 // Sort multiple or multidimensional arrays
+// this is a dependent sorting . This method sorts the first array first then based on the sorted first array it will sort the second array and then so on.
+//// in this all the arrays must have the same number of elements then only this sort will work. Or we can say it will sort only the elements that have same number of elements. If we have to chain the sorting then we need to have all the array having same number of elements so that every other array can be used to sort the next one.
 $array1 = array("apple", "lemon", "orange", "banana");
+$array5 = array("bananas", "lemons", "oranges", "apples");
 $array2 = range(10, 100, 10);
 $array3 = array(13,2,34,4,52,6,79,80,91,210);
 $array4 = array("apples", "Vegetables" => array("lauki", "kundru", "baingan", "mooli", "gajar"));
-array_multisort($array4);
+array_multisort($array5, $array4['Vegetables'], $array1, $array2, $array3); // in this all the arrays must have the same number of elements then only this sort will work. Or we can say it will sort only the elements that have same number of elements. If we have to chain the sorting then we need to have all the array having same number of elements so that every other array can be used to sort the next one.
 print_r($array1);
 echo "\n";
+//array_multisort($array2);
 print_r($array2);
 echo "\n";
+//array_multisort($array3);
 print_r($array3);
 echo "\n";
+//array_multisort($array1);
 print_r($array4);
+
+$ar1 = array(10, 100, 100, 0);
+$ar2 = array(1, 3, 2, 4);
+array_multisort($ar1, $ar2, SORT_DESC); // this will desc sort the elements which had their position unchanged in second
+
+print_r($ar1);
+print_r($ar2);
+
 echo "\n";
 
 echo "Array Pad \n";
@@ -308,16 +335,29 @@ echo "\nArray random \n";
 // Picks given number of random values from array
 $input = array("Neo", "Morpheus", "Trinity", "Cypher", "Tank");
 $rand_keys = array_rand($input, 2);
+print_r($rand_keys);
 echo $input[$rand_keys[0]] . "\n";
 echo $input[$rand_keys[1]] . "\n";
 
 echo "\nNat Case sort \n";
-// Sorts array using natural lexical sorting as humans do without taking case in consideration
-$array1 = $array2 = array('IMG0.png', 'img12.png', 'img10.png', 'img2.png', 'img1.png', 'IMG3.png');
+// Sorts array using natural lexical sorting as humans do without taking case in consideration. Sort an array using a case insensitive "natural order" algorithm
+$array1 = $array2 = array('IMG13.png', 'img12.png', 'img10.png', 'img2.png', 'img1.png', 'IMG3.png');
 natcasesort($array1);
+natsort($array2);
 print_r($array1);
+print_r($array2);
+
+/**
+ * We can convert string to array as follow but array to string is not possible.
+ */
+$d = "sdsds";
+$ar = array("sffdfd");
+print_r((array) $d);
+//print_r((string) $ar);
 
 echo "\n Array Splice \n";
+// The starting position is included in removal but ending position is excluded.
+// If length is specified and is zero, no elements will be removed. And with length of 1 self is removed.
 // Array splice is used to replace element/s in array at given position till given length by a given value.
 // Array splice Removes a portion of the array and replace it with something else
 // append two elements to $input
@@ -325,6 +365,8 @@ $input = range(10, 1000, 100);
 $x = "lemon";
 $y = "papaya";
 array_push($input, $x, $y);
+echo count($input);
+echo sizeof($input);
 array_splice($input, count($input), 0, array($x, $y));
 echo "Append\n";
 print_r($input);
@@ -366,6 +408,7 @@ echo "\n";
 
 echo "Array Slice \n";
 // Extracts a slice of array at a given position and till given length without actually removing it from array.
+// If length is omitted, then the sequence will have everything from offset up until the end of the array.
 $input = [1,2,3,4,5,6,7,8,9,0, "key" => [1,2,3,4], "value"];
 print_r(array_slice($input, 2, -1, true));
 print_r(array_slice($input, 2, -1, false));
@@ -418,10 +461,32 @@ $replacements2 = array(0 => "grape");
 
 $basket = array_replace($base, $replacements, $replacements2);
 print_r($basket);
+print_r(array_merge($base, $replacements, $replacements2));
+$a = array('a' => 'hello', 'b' => 'world');
+$b = array('a' => 'person', 'b' => 'thing', 'c'=>'other', '15'=>'x');
+
+print_r(array_merge($a, $b));
+/*Array
+(
+    [a] => person
+    [b] => thing
+    [c] => other
+    [0] => x
+)*/
+
+print_r(array_replace($a, $b));
+/*Array
+(
+    [a] => person
+    [b] => thing
+    [c] => other
+    [15] => x
+)*/
+// Array replace also merges two arrays.
 
 echo "\n Array Replace Recursive \n";
-$base = array('citrus' => array( "orange") , 'berries' => array("blackberry", "raspberry"), );
-$replacements = array('citrus' => array('pineapple'), 'berries' => array('blueberry'));
+$base = array('citrus' => array( "orange", 'eggs', 'straw') , 'berries' => array("blackberry", "raspberry"), );
+$replacements = array('citrus' => array('pineapple', 'apple'), 'berries' => array('blueberry'));
 
 $basket = array_replace_recursive($base, $replacements);
 print_r($basket);
@@ -439,16 +504,32 @@ print_r(array_reduce($input, function($carry, $value) {
 
 echo "\n Array change key case \n ";
 $input = array("small" => "one", "key" => "value", "column" => "value");
-print_r(array_change_key_case($input, CASE_UPPER));
+print_r(array_change_key_case($input, CASE_UPPER)); //CASE_LOWER
 // for values to uppercase we can use array_flip then array_keys then array_change_key_case
 // or we can use array_map
 
+echo "\n Array Flip \n ";
+$input = array("oranges", "apples", "pears");
+$flipped = array_flip($input);
+
+print_r($flipped);
+
 echo "\n Array Shuffle \n ";
+// destroys the keys and their order. Like shuffling of cards. Doesnot preserve keys
 $input = array("small" => "one", "key" => "value", "column" => "value");
 shuffle($input);
 print_r($input);
 
+echo "\n ksort \n";
+$fruits = array("d"=>"lemon", "a"=>"orange", "b"=>"banana", "c"=>"apple");
+ksort($fruits);
+foreach ($fruits as $key => $val) {
+    echo "$key = $val\n";
+}
+print_r($fruits);
+
 echo "\n usort \n";
+// THis will not preserve keys and rename them with 0 1 3 etc.
 // sort array based on user defined function
 // if first == second then dont do anything and return 0 , If first is less than second then also dont do anything and return -1, if first > second then exchange the position of two and return 1.
 $input = array(34,50,1,2,23,12,23,34,50);
@@ -513,15 +594,21 @@ $array = array('a' => 4, 'b' => 8, 'c' => -1, 'd' => -9, 'e' => 2, 'f' => 5, 'g'
 // Sort and print the resulting array
 uasort($array, 'cmpua');
 print_r($array);
+usort($array, 'cmpua');
+print_r($array);
 
 echo "\n Array Diff \n";
+// One or more arrays
+// preserves the keys
 $array1 = array("a" => "green", "red", "blue", "red");
-$array2 = array("b" => "green", "yellow", "red");
+$array2 = array("b" => "greens", "yellow", "red");
 $result = array_diff($array1, $array2);
 
 print_r($result);
 
 echo "\n Array Intersect \n";
+// One or more arrays
+// preserves the keys
 $array1 = array("a" => "green", "red", "blue", "red");
 $array2 = array("b" => "green", "yellow", "red");
 $result = array_intersect($array1, $array2);

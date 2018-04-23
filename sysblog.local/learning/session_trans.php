@@ -79,6 +79,7 @@ print_r($_SESSION);
 echo "<br />";
 output_add_rewrite_var('var', 'value');
 echo "<br /> ================ LIST ALL HANDLERS ================ <br />";
+//ob_start(function($body) {return $body;});
 print_r(ob_list_handlers()); // list all handlers currently active
 print_r(ini_get('url_rewriter.tags'));
 echo "<br />";

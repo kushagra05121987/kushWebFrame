@@ -1,0 +1,166 @@
+// some useful php commandline arguments.
+// -r <code>        Run PHP <code> without using script tags <?..?>.
+// -f <file>        Parse and execute <file>.
+
+You can install composer to a specific directory by using the --install-dir option and providing a target directory. Example:
+php composer-setup.php --install-dir=bin
+--filename
+You can specify the filename (default: composer.phar) using the --filename option. Example:
+
+php composer-setup.php --filename=composer
+--version
+You can install composer to a specific release by using the --version option and providing a target release. Example:
+
+php composer-setup.php --version=1.0.0-alpha8
+
+By default the installer and composer self-update  will download stable versions only.If you would like to help test pre-release versions you can use the --preview flag on either installer or self-update. For snapshot builds which are done from the latest Composer commit, you can use the --snapshot flag.
+selfupdate will work only with composer.phar installation of composer and not with apt install composer installed composer.
+
+This brings us to the second scenario. If there is already a composer.lock file as well as a composer.json file when you run composer install, it means either you ran the install command before, or someone else on the project ran the install command and committed the composer.lock file to the project (which is good).
+
+Either way, running install when a composer.lock file is present resolves and installs all dependencies that you listed in composer.json, but Composer uses the exact versions listed in composer.lock to ensure that the package versions are consistent for everyone working on your project. As a result you will have all dependencies requested by your composer.json file, but they may not all be at the very latest available versions (some of the dependencies listed in the composer.lock file may have released newer versions since the file was created). This is by design, it ensures that your project does not break because of unexpected changes in dependencies.
+
+As mentioned above, the composer.lock file prevents you from automatically getting the latest versions of your dependencies. To update to the latest versions, use the update command. This will fetch the latest matching versions (according to your composer.json file) and update the lock file with the new versions. (This is equivalent to deleting the composer.lock file and running install again.)
+
+Composer will display a Warning when executing an install command if composer.lock and composer.json are not synchronized.
+
+If you only want to install or update one dependency, you can whitelist them:
+
+php composer.phar update monolog/monolog [...]
+
+For libraries that specify autoload information, Composer generates a vendor/autoload.php file. You can simply include this file and start using the classes that those libraries provide without any extra work:
+
+require __DIR__ . '/vendor/autoload.php';
+
+$log = new Monolog\Logger('name');
+$log->pushHandler(new Monolog\Handler\StreamHandler('app.log', Monolog\Logger::WARNING));
+$log->addWarning('Foo');
+You can even add your own code to the autoloader by adding an autoload field to composer.json.
+
+{
+    "autoload": {
+        "psr-4": {"Acme\\": "src/"}
+    }
+}
+Composer will register a PSR-4 autoloader for the Acme namespace.
+
+You define a mapping from namespaces to directories. The src directory would be in your project root, on the same level as vendor directory is. An example filename would be src/Foo.php containing an Acme\Foo class.
+
+After adding the autoload field, you have to re-run dump-autoload to re-generate the vendor/autoload.php file.
+
+Including that file will also return the autoloader instance, so you can store the return value of the include call in a variable and add more namespaces. This can be useful for autoloading classes in a test suite, for example.
+
+$loader = require __DIR__ . '/vendor/autoload.php';
+$loader->addPsr4('Acme\\Test\\', __DIR__);
+In addition to PSR-4 autoloading, Composer also supports PSR-0, classmap and files autoloading.
+
+psr-0 vs psr-4
+For example if you define that the Acme\Foo\ namespace is anchored in src/, with PSR-0 it means it will look for Acme\Foo\Bar in src/Acme/Foo/Bar.php while in PSR-4 it will look for it in src/Bar.php, allowing for shorter directory structures.
+
+{
+    "autoload": {
+        "exclude-from-classmap": ["/Tests/", "/test/", "/tests/"]
+    }
+}
+
+
+Exclude files from classmaps#
+If you want to exclude some files or folders from the classmap you can use the exclude-from-classmap property. This might be useful to exclude test classes in your live environment, for example, as those will be skipped from the classmap even when building an optimized autoloader.
+
+The classmap generator will ignore all files in the paths configured here. The paths are absolute from the package root directory (i.e. composer.json location), and support * to match anything but a slash, and ** to match anything. ** is implicitly added to the end of the paths.
+
+Example:
+
+{
+    "autoload": {
+        "exclude-from-classmap": ["/Tests/", "/test/", "/tests/"]
+    }
+}
+
+/usr/local/bin -> whatever is there in this directory it is used as global thing. Thats why we have apt in here and also pstorm.
+
+If the bin folder of your Composer isn’t in the PATH variable, add it:
+echo "export PATH=\$PATH:\$HOME/.composer/vendor/bin/" >> ~/.bashrc
+echo "export CGR_BIN_DIR=\$HOME/.composer/vendor/bin" >> ~/.bashrc
+source ~/.bashrc
+
+echo "export PATH=\$PATH:\$HOME/.composer/vendor/" >> ~/.bashrc
+echo "export CGR_BIN_DIR=\$HOME/.composer/vendor/" >> ~/.bashrc
+source ~/.bashrc
+
+/root/.composer/vendor/autoload.php -> composer home.
+global#
+The global command allows you to run other commands like install, remove, require or update as if you were running them from the COMPOSER_HOME directory.
+
+This is merely a helper to manage a project stored in a central location that can hold CLI tools or Composer plugins that you want to have available everywhere.
+
+This can be used to install CLI utilities globally. Here is an example:
+
+php composer.phar global require friendsofphp/php-cs-fixer
+Now the php-cs-fixer binary is available globally. Make sure your global vendor binaries directory is in your $PATH environment variable, you can get its location with the following command :
+
+php composer.phar global config bin-dir --absolute
+If you wish to update the binary later on you can run a global update:
+
+php composer.phar global update.
+
+Laravel can be installed either from dependency from packagist or a laravel installer.
+composer global require "laravel/installer=~1.1". This gives a cli exexutable for laravel.
+
+Once installed, the simple laravel new command will create a fresh Laravel installation in the directory you specify. For instance, laravel new blog would create a directory named blog containing a fresh Laravel installation with all dependencies installed. This method of installation is much faster than installing via Composer.
+
+You may also install Laravel by issuing the Composer create-project command in your terminal:
+
+composer create-project laravel/laravel {directory} 4.2 --prefer-dist
+
+create-project#
+You can use Composer to create new projects from an existing package. This is the equivalent of doing a git clone/svn checkout followed by a composer install of the vendors.
+
+There are several applications for this:
+
+You can deploy application packages.
+You can check out any package and start developing on patches for example.
+Projects with multiple developers can use this feature to bootstrap the initial application for development.
+To create a new project using Composer you can use the create-project command. Pass it a package name, and the directory to create the project in. You can also provide a version as third argument, otherwise the latest version is used.
+
+If the directory does not currently exist, it will be created during installation.
+
+php composer.phar create-project doctrine/orm path 2.2.*
+It is also possible to run the command without params in a directory with an existing composer.json file to bootstrap a project.
+
+By default the command checks for the packages on packagist.org.
+
+Options
+--stability (-s): Minimum stability of package. Defaults to stable.
+--prefer-source: Install packages from source when available.
+--prefer-dist: Install packages from dist when available.
+--repository: Provide a custom repository to search for the package, which will be used instead of packagist. Can be either an HTTP URL pointing to a composer repository, a path to a local packages.json file, or a JSON string which similar to what the repositories key accepts.
+--dev: Install packages listed in require-dev.
+--no-dev: Disables installation of require-dev packages.
+--no-scripts: Disables the execution of the scripts defined in the root package.
+--no-progress: Removes the progress display that can mess with some terminals or scripts which don't handle backspace characters.
+--no-secure-http: Disable the secure-http config option temporarily while installing the root package. Use at your own risk. Using this flag is a bad idea.
+--keep-vcs: Skip the deletion of the VCS metadata for the created project. This is mostly useful if you run the command in non-interactive mode.
+--remove-vcs: Force-remove the VCS metadata without prompting.
+--no-install: Disables installation of the vendors.
+--ignore-platform-reqs: ignore php, hhvm, lib-* and ext-* requirements and force the installation even if the local machine does not fulfill these.
+
+There is also a 3rd option to install laravel by downloading it from the repository and then running composer.phar install inside the downloaded directory.
+or we can also put laravel dependency inside composer.json file
+"require": {
+		"laravel/framework": "4.2.*"
+	},
+	and then install.
+	
+	or we use composer require "laravel/framework": "4.2.*"
+	composer require vendor/package:version
+
+	chdir('/var/www/');
+    echo realpath('./../../etc/passwd') . PHP_EOL;
+
+    echo realpath('/tmp/') . PHP_EOL;
+    ?>
+    The above example will output:
+
+    /etc/passwd
+    /tmp

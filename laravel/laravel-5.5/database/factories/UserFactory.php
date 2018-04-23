@@ -23,3 +23,13 @@ $factory->define(App\User::class, function (Faker $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory -> state(App\User::class, 'email', [
+    'remember_token' => 'remkoen'
+]);
+
+$factory -> state(App\User::class, 'username', function($faker) {
+    return [
+        "name" => "Distilled ___".$faker -> name
+    ];
+});

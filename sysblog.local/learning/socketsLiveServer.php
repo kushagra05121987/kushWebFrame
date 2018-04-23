@@ -12,10 +12,13 @@ $host = "sysblog.local";
 $port = "41234";
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); // Protocol : 0 [ or IPPROTO_IP This is IP protocol]
 
-socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+// socket_get_option
+socket_set_option($socket, SOL_SOCKET/** which level of socket option needs to set*/, SO_REUSEADDR , 1); // SO_REUSEADDR Reports whether local addresses can be reused
 
 $socket_bindTcp = socket_bind($socket, $host, $port);
 
+//backlog
+//A maximum of backlog incoming connections will be queued for processing. If a connection request arrives with the queue full the client may receive an error with an indication of ECONNREFUSED, or, if the underlying protocol supports retransmission, the request may be ignored so that retries may succeed.
 $socketListen = socket_listen($socket, 10); // returns socket resource
 
 $clients = [];

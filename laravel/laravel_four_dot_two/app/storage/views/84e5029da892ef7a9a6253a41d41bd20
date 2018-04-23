@@ -1,0 +1,15 @@
+<?php $__env->startSection('sidebar_left'); ?>
+    @parent
+    This is from child side bar left
+<?php echo $__env->yieldSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    This is the body content <?php echo $delivery_status; ?> and <?php echo e($contact); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('sidebar_right'); ?>
+    @parent
+    This is from child side bar right
+<?php echo $__env->yieldSection(); ?>
+<?php echo $__env->make('blade.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

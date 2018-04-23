@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 
 class Handler extends ExceptionHandler
 {
@@ -36,6 +37,9 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if($exception instanceof \App\Exceptions\CustomHandler) {
+            $exception -> report($exception);
+        }
         parent::report($exception);
     }
 
@@ -48,6 +52,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if($exception instanceof \App\Exceptions\CustomHandler) {
+            $exception -> render($request, $exception);
+        }
         return parent::render($request, $exception);
     }
 }

@@ -5,7 +5,47 @@
  * Date: 31/10/17
  * Time: 7:39 PM
  */
+/***
+ * PDO::ATTR_CASE: Force column names to a specific case.
 
+PDO::CASE_LOWER: Force column names to lower case.
+
+PDO::CASE_NATURAL: Leave column names as returned by the database driver.
+
+PDO::CASE_UPPER: Force column names to upper case.
+
+PDO::ATTR_ERRMODE: Error reporting.
+
+PDO::ERRMODE_SILENT: Just set error codes.
+
+PDO::ERRMODE_WARNING: Raise E_WARNING.
+
+PDO::ERRMODE_EXCEPTION: Throw exceptions.
+
+PDO::ATTR_ORACLE_NULLS (available with all drivers, not just Oracle): Conversion of NULL and empty strings.
+
+PDO::NULL_NATURAL: No conversion.
+
+PDO::NULL_EMPTY_STRING: Empty string is converted to NULL.
+
+PDO::NULL_TO_STRING: NULL is converted to an empty string.
+
+PDO::ATTR_STRINGIFY_FETCHES: Convert numeric values to strings when fetching. Requires bool.
+
+PDO::ATTR_STATEMENT_CLASS: Set user-supplied statement class derived from PDOStatement. Cannot be used with persistent PDO instances. Requires array(string classname, array(mixed constructor_args)).
+
+PDO::ATTR_TIMEOUT: Specifies the timeout duration in seconds. Not all drivers support this option, and its meaning may differ from driver to driver. For example, sqlite will wait for up to this time value before giving up on obtaining an writable lock, but other drivers may interpret this as a connect or a read timeout interval. Requires int.
+
+PDO::ATTR_AUTOCOMMIT (available in OCI, Firebird and MySQL): Whether to autocommit every single statement.
+
+PDO::ATTR_EMULATE_PREPARES Enables or disables emulation of prepared statements. Some drivers do not support native prepared statements or have limited support for them. Use this setting to force PDO to either always emulate prepared statements (if TRUE and emulated prepares are supported by the driver), or to try to use native prepared statements (if FALSE). It will always fall back to emulating the prepared statement if the driver cannot successfully prepare the current query. Requires bool.
+
+PDO::MYSQL_ATTR_USE_BUFFERED_QUERY (available in MySQL): Use buffered queries.
+
+PDO::ATTR_DEFAULT_FETCH_MODE: Set default fetch mode. Description of modes is available in PDOStatement::fetch() documentation.
+ */
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // creating pdo connection using string in dsn
 $pdo = new \PDO("mysql:host=localhost;dbname=sys_blog;charset=utf8mb4", "root", "12345", [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -23,6 +63,7 @@ $pdo = new \PDO("mysql:host=localhost;dbname=sys_blog;charset=utf8mb4", "root", 
 // 2). Prepared Statements if there are any variables in query . It prevents passing unwanted data to queries which prevents certain attacks such as Sql Injection
 echo "<pre>";
 $stmt = $pdo -> query("select * from test;");
+// this is pdo statement when we do fetch or fetch all then only we get actual result
 var_dump($stmt);
 echo "\n ===== \n";
 
@@ -70,7 +111,8 @@ $execute = $stmtQuestionMark -> execute(array($id, $name)); // here parameter ar
 $result = $stmtQuestionMark -> fetch(); // fetch has to performed on statement only and not on execute return value
 print_r($result);
 /**
- * Following code works when prepare emulate mode is off
+ * emulate prepared statement off work like the below because mysql don't have any native support for named preapred statements
+ * Following code works when prepare emulate mode is off.
  */
 //$execute2 = $stmtQuestionMark -> execute(array("id" => $id, "name" => $name)); // here parameter are taken as strings. This returns true and not the object of statement
 //$result = $stmtQuestionMark -> fetch(); // fetch has to performed on statement only and not on execute return value
@@ -115,7 +157,7 @@ echo "\n ============================================= bindValue ===============
 
 echo "\n ------------------ Question Mark Value ------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindValueQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
@@ -129,7 +171,7 @@ print_r($result);
 
 echo "\n -------------------- Named Mark Value ----------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindValueNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -144,7 +186,7 @@ print_r($result);
 echo "\n ========================================== bindParam ======================================= \n";
 echo "\n -------------------- Question Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindparamQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
@@ -159,7 +201,7 @@ print_r($result);
 
 echo "\n -------------------- Named Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindParamNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -173,7 +215,7 @@ $stmtBindParamNamed -> execute();
 $result = $stmtBindParamNamed -> fetchAll();
 print_r($result);
 
-
+// bindValue or bindParam don't work with out ATTR_EMULATE_PREPARES being true
 $pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 echo "\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ BEHAVIOUR WITH PDO::ATTR_EMULATE_PREPARES = false ++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 echo "\n ===== Binding Parameters ===== \n ";
@@ -181,7 +223,7 @@ echo "\n ============================================= bindValue ===============
 
 echo "\n ------------------ Question Mark Value ------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindValueQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
@@ -195,7 +237,7 @@ print_r($result);
 
 echo "\n -------------------- Named Mark Value ----------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindValueNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -210,7 +252,7 @@ print_r($result);
 echo "\n ========================================== bindParam ======================================= \n";
 echo "\n -------------------- Question Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindparamQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
@@ -225,7 +267,7 @@ print_r($result);
 
 echo "\n -------------------- Named Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindParamNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -246,21 +288,21 @@ echo "\n ============================================= bindValue ===============
 
 echo "\n ------------------ Question Mark Value ------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-$stmtBindValueQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
+$stmtBindValueQuestion12 = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
 
-$stmtBindValueQuestion -> bindValue(1, $id, PDO::PARAM_INT);
-$stmtBindValueQuestion -> bindValue(2, $name, PDO::PARAM_STR);
-$stmtBindValueQuestion -> bindValue(3, $active, PDO::PARAM_INT);
-$stmtBindValueQuestion -> execute();
-$result = $stmtBindValueQuestion -> fetchAll();
+$stmtBindValueQuestion12 -> bindValue(1, $id, PDO::PARAM_INT);
+$stmtBindValueQuestion12 -> bindValue(2, $name, PDO::PARAM_STR);
+$stmtBindValueQuestion12 -> bindValue(3, $active, PDO::PARAM_INT);
+$stmtBindValueQuestion12 -> execute();
+$result = $stmtBindValueQuestion12 -> fetchAll();
 print_r($result);
 
 echo "\n -------------------- Named Mark Value ----------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindValueNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -275,7 +317,7 @@ print_r($result);
 echo "\n ========================================== bindParam ======================================= \n";
 echo "\n -------------------- Question Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindparamQuestion = $pdo -> prepare("select * from test where id = ? and name = ? and is_active = ?");
@@ -289,7 +331,7 @@ $result = $stmtBindparamQuestion -> fetchAll();
 print_r($result);
 echo "\n -------------------- Named Mark Value -------------------- \n";
 $id = 1;
-$name = "Kushagra";
+$name = "name 2";
 $active = true;
 //$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $stmtBindParamNamed = $pdo -> prepare("select * from test where id = :id and name = :name and is_active = :active");
@@ -311,7 +353,7 @@ $pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $data = [
     1 => "name",
     1 => "is",
-    130 => "ksuhagra",
+    130 => "name 2",
 ];
 $stmt = $pdo->prepare('UPDATE test SET name = ? WHERE id = ?');
 foreach ($data as $id => $active)
@@ -323,7 +365,7 @@ echo "\n ------------- With :named -------------- \n";
 $data = [
     1 => "new 2",
     1 => "name 2",
-    130 => "is kushagra 2",
+    130 => "is name 2",
 ];
 $stmt = $pdo->prepare('UPDATE test SET name = :name WHERE id = :id');
 foreach ($data as $id => $name)
@@ -394,7 +436,7 @@ echo "\n ---- Class Mode With Fetch----- \n";
 $st = prepareFetch();
 $st -> setFetchMode(PDO::FETCH_CLASS, "a");
 $st -> execute();
-print_r($st -> fetch(PDO::FETCH_CLASS));
+print_r($st -> fetch(   PDO::FETCH_CLASS));
 
 echo "\n ------- Function ------ \n ";
 // PDO::FETCH_FUNC is only allowed in fetchAll and not in fetch
@@ -470,10 +512,13 @@ print_r(prepare() -> fetchAll(PDO::FETCH_COLUMN, 1));
 echo "\n FETCH_ASSOC \n";
 print_r(prepare() -> fetchAll(PDO::FETCH_ASSOC));
 echo "\n FETCH_UNIQUE \n";
-print_r(prepare() -> fetchAll(PDO::FETCH_UNIQUE));
+$pdoQSingleC = $pdo -> query('select name, id  from test');
+print_r($pdoQSingleC -> fetchAll(PDO::FETCH_UNIQUE));
 echo "\n FETCH_GROUP \n";
-print_r(prepare() -> fetchAll(PDO::FETCH_GROUP));
+$pdoQSingleC = $pdo -> query('select name, id  from test'); // groups the second column based on the first one
+print_r($pdoQSingleC -> fetchAll(PDO::FETCH_GROUP));
 echo "\n FETCH_KEY_PAIR \n";
+// if more than two columns are given error will be generated. This requires exactly two columns.
 $stmt = $pdo -> query("select id, name from test;");
 print_r($stmt -> fetchAll(PDO::FETCH_KEY_PAIR)); // this mode requires the result set to have exactly two column if more than two columns are returned in result set then PDOException is thrown
 
@@ -490,9 +535,9 @@ $pdo = new \PDO("mysql:host=localhost;dbname=sys_blog;charset=utf8mb4", "root", 
 //    PDO::MYSQL_ATTR_FOUND_ROWS => true // doesnt work with mysql
 ]);
 //echo $pdo -> getAttribute(PDO::MYSQL_ATTR_FOUND_ROWS); // PDO::MYSQL_ATTR_FOUND_ROWS is not supported by mysql.
-$stmt = $pdo -> prepare("update test set uniqueEntry = 2 where name = ? and is_active = 0");
-$stmt -> execute(["mishra", false]);
-echo $stmt -> rowCount(); // always returns the number of rows affected
+//$stmt = $pdo -> prepare("update test set uniqueEntry = 2 where name = ? and is_active = 0");
+//$stmt -> execute(["mishra", false]);
+//echo $stmt -> rowCount(); // always returns the number of rows affected
 
 echo "\n ------------------------------------ Last Insert Id ---------------------------------------- \n";
 //PDO::lastInsertId is concurrent environment safe.
@@ -528,9 +573,9 @@ $pdoT = new \PDO("mysql:host=localhost;dbname=sys_blog;charset=utf8mb4", "root",
     PDO::ATTR_PERSISTENT => false,
     PDO::MYSQL_ATTR_MULTI_STATEMENTS => true
 ]);
-$stmtPrepare = $pdoT -> prepare("select ? as c1, ? as c2, ? as c3, ? as c4 UNION select * from test;");
-$stmtPrepare -> execute([1,2,3,4]);
-echo $stmtPrepare -> columnCount();
+//$stmtPrepare = $pdoT -> prepare("select ? as c1, ? as c2, ? as c3, ? as c4 UNION select * from test;");
+//$stmtPrepare -> execute([1,2,3,4]);
+//echo $stmtPrepare -> columnCount();
 
 $stmtQuery = $pdoT -> query("select VERSION();select CURRENT_USER();");
 
