@@ -63,6 +63,7 @@ class AuthManager implements FactoryContract
      */
     public function guard($name = null)
     {
+//        echo "Name = $name";
         $name = $name ?: $this->getDefaultDriver();
 
         return $this->guards[$name] ?? $this->guards[$name] = $this->resolve($name);
@@ -79,6 +80,7 @@ class AuthManager implements FactoryContract
     protected function resolve($name)
     {
         $config = $this->getConfig($name);
+//        echo "Name = $name, Driver = {$config['driver']}";
 
         if (is_null($config)) {
             throw new InvalidArgumentException("Auth guard [{$name}] is not defined.");

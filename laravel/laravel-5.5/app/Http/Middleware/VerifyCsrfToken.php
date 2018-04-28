@@ -13,5 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
+        'api/*',
+//        'http://laravel.test.v5:8080/oauth/*'
     ];
 }

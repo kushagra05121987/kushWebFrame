@@ -72,3 +72,70 @@ Route::get('getUserName', function() {
 Route::get('queryingDB', 'HomeTownController@queryingDB');
 Route::get('getUserResources', 'HomeTownController@getUserResources');
 Route::get('nm', 'HomeTownController@nm');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('checkAuth', 'HomeTownController@checkAuth') -> middleware('auth');
+Route::get('checkAuths', 'HomeTownController@queryingDB') -> middleware('can:update, App\Post');
+Route::get('checkAuthBlade', 'HomeTownController@checkAuthBlade');
+
+//Route::controller('impl', 'HomeController'); Non implicit controllers in 5.5 or after 5.3
+
+Route::get('api/createAuthClient', 'HomeTownController@createClient');
+
+
+
+Route::get('requestToken', function () {
+    $http = new GuzzleHttp\Client;
+    $response = $http->post('http://laravel.test.v5:8080/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'password',
+            'client_id' => '2',
+            'client_secret' => 'JJofxOPwvx75PT4gIrVdAB1mXTuV2yNApHfLxLdy',
+            'username' => 'karizmatic.kay@gmail.com',
+            'password' => '123456',
+            'scope' => '*',
+        ],
+    ]);
+    return json_decode((string) $response->getBody(), true);
+});
+Route::get('createPersonalToken', function () {
+    $user = App\User::find(24);
+
+// Creating a token without scopes...
+    $token = Auth::user()->createToken('TokenName')->accessToken;
+    dd($token);
+});
+
+Route::get('/redirect', function () {
+    $query = http_build_query([
+        'client_id' => '4',
+        'redirect_uri' => 'http://laravel.test.v5:8080/auth/callback',
+        'response_type' => 'code',
+        'scope' => '*',
+    ]);
+
+    return redirect('http://laravel.test.v5:8080/oauth/authorize?'.$query);
+});
+
+Route::get('auth/callback', function(\Illuminate\Http\Request $request) {
+//    dd($request -> code);
+    if($request -> has('code')) {
+        $http = new GuzzleHttp\Client;
+        $response = $http->post('http://laravel.test.v5:8080/oauth/token', [
+            'form_params' => [
+                'grant_type' => 'authorization_code',
+                'client_id' => '4',
+                'client_secret' => 'doSVVJAsuXv2tOC2KD4Jh1jb7rA5NefwrkElUKa5',
+                'code' => $request -> code,
+                'redirect_uri' => 'http://laravel.test.v5:8080/auth/callback',
+            ],
+        ]);
+        return json_decode((string) $response->getBody(), true);
+    } else {
+        echo "hello";exit;
+    }
+
+});
+

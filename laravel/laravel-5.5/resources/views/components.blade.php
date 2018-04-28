@@ -81,7 +81,24 @@
                             {!! \Form::submit('Please click here to submit') !!}
                             {!! \Form::close() !!}
 
+                            @php
+                                $post = \App\Post::find(4);
+                            @endphp
+                            @can('update',$post)
+                                Update Action is Authorized
+                            @elsecan('create', $post)
+                                Create Action is Authorized
+                            @else
+                                None Of the actions are authorized
+                            @endcan
 
+                                @if (Auth::user()->can('update', $post))
+                                    The Current User Can Update The Post
+                                @endif
+
+                                @unless (Auth::user()->can('update', $post))
+                                    The Current User Can't Update The Post
+                                @endunless
                     </div>
                 </div>
             </div>

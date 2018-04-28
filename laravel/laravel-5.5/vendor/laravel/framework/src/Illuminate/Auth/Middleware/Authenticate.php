@@ -38,6 +38,7 @@ class Authenticate
      */
     public function handle($request, Closure $next, ...$guards)
     {
+
         $this->authenticate($guards);
 
         return $next($request);
@@ -53,11 +54,14 @@ class Authenticate
      */
     protected function authenticate(array $guards)
     {
+//        var_dump($guards);
         if (empty($guards)) {
             return $this->auth->authenticate();
         }
 
         foreach ($guards as $guard) {
+//            echo "Calling ";
+//            var_dump($guard);
             if ($this->auth->guard($guard)->check()) {
                 return $this->auth->shouldUse($guard);
             }

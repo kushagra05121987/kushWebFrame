@@ -13,5 +13,6 @@ class EncryptCookies extends Middleware
      */
     protected $except = [
         //
+//        'http://laravel.test.v5:8080/oauth/*'
     ];
 }

@@ -28,6 +28,7 @@ Route::pattern('id', '[0-9]+');
 
 Route::get("use/{id}", "UseController@getIndex") -> where('id', '^[0-9]+$');
 Route::controller('use', 'UseController'); // implicit controller
+Route::controller('impl.post', 'UseController'); // implicit controller
 
 Route::get('getCookieResponse', "HomeController@returnCookieResponse");
 Route::get('getLetter/admin/{function}/{id?}', array("uses" => "HomeController@getLetter", "as" => "letter.receive")); /// the controller action receives the arguments based on the action argument names.

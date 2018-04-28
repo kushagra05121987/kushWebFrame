@@ -12,6 +12,7 @@ trait HandlesAuthorization
      */
     protected function allow($message = null)
     {
+        echo "inside allow from HandlesAuthorization";
         return new Response($message);
     }
 
@@ -25,6 +26,7 @@ trait HandlesAuthorization
      */
     protected function deny($message = 'This action is unauthorized.')
     {
+//        echo "This is not allowed";exit;
         throw new AuthorizationException($message);
     }
 }

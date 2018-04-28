@@ -225,7 +225,7 @@ echo "AF -> ". mysqli_stmt_affected_rows($mysqliAffectedCheck);
 echo PHP_EOL;
 echo "NUM -> ".mysqli_stmt_num_rows($stmtAffectedCheck);
 echo "\n";
-echo "\n -------------- Prepared Statement Affected/Num Rows End ------------------- \n";
+echo "\n -------------- Prepared Statement Affected/Num Rows End 11 ------------------- \n";
 while($row = mysqli_fetch_assoc($result)) {
     print_r($row);
 }
@@ -233,17 +233,23 @@ $stmt = mysqli_prepare($mysqli, "select * from test where id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_bind_result($stmt, $id, $name, $is_active, $unique);
 mysqli_stmt_execute($stmt);
-while(mysqli_stmt_fetch($stmt)) {
+while(mysqli_stmt_fetch($stmt)) { // Fetch results from a prepared statement into the bound variables
     echo "\n -------------- Prepared Statement Affected/Num Rows Start------------------- \n";
     echo mysqli_stmt_affected_rows($stmt);
     echo PHP_EOL;
     echo mysqli_stmt_num_rows($stmt);
     echo "\n";
     echo "\n -------------- Prepared Statement Affected/Num Rows End ------------------- \n";
-    print_r($id);
-    print_r($name);
-    print_r($is_active);
-    print_r($unique);
+    print_r("Id = ".$id);
+    print_r("Name = ".$name);
+    print_r("Is Active = ".$is_active);
+    print_r("Unique = ".$unique);
+}
+
+$mysqliFetchT = mysqli_prepare($mysqli, 'select * from test');
+$resultMysqliFetchT = mysqli_stmt_execute($mysqliFetchT);
+while($r = mysqli_stmt_fetch($mysqliFetchT)) {
+    print_r($r);
 }
 
 

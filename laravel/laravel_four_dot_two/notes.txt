@@ -1489,3 +1489,532 @@ has whereHas orWhereHas doesnthave whereDoesntHave orWhereDoesntHave with and lo
 withCounts should be considered as along with counts.
 
 So when using relations to save other relation data , the parent model must be saved first and then its child model maybe saved by passing into save method
+
+getReminderEmail form password reset will only give the email for the currently authenticated in user passed in remind. Not from the reminders table.
+
+After resetting your password it takes you back to home by default if you want to overrite the url you can have
+protected $redirectTo = '/dashboard';
+
+sendPasswordResetNotification we need gto override it in model so that we can send custom notification
+
+public function sendPasswordResetNotification($token)
+{
+    $this->notify(new ResetPasswordNotification($token));
+}
+
+RegisterController in 5.5 is having two methods create and validator
+Validator is supposed to be used for the form data validation
+Create method creates records is validation passes.
+
+currently authenticated user can also be get by $request->user()
+
+Auth manager 5.5 has two provider to extend Auth and create custom provider and extend to extend Auth and create custom driver.
+
+auth middle ware by default will redirect the un authenticated user to login page or respond with 401 if request is ajax.' if we need to change this behaviour then we need to define unauthenticated in exception handler.php
+
+protected function unauthenticated($request, AuthenticationException $exception)
+{
+    return $request->expectsJson()
+                ? response()->json(['message' => $exception->getMessage()], 401)
+                : redirect()->guest(route('login'));
+}
+
+Specifying A Guard
+When attaching the auth middleware to a route, you may also specify which guard should be used to authenticate the user. The guard specified should correspond to one of the keys in the  guards array of your auth.php configuration file:
+
+public function __construct()
+{
+    $this->middleware('auth:api');
+}
+
+
+If defining a policy in 5.5 for User model then we don't need to specify the --model as this attribute tell to create a policy for specific model but User model is always available in policy so if we specify the uSr as --model then it will again inject $user as second parameter.
+--model is useful when we are creating a policy for model other than user.
+
+If we don't specify the model then there won't be any method generated.
+
+Policies are also created over Gates.
+
+public function registerPolicies()
+    {
+        foreach ($this->policies as $key => $value) {
+            Gate::policy($key, $value);
+        }
+    }
+
+    /**
+         * Determine if a given ability has been defined.
+         *
+         * @param  string|array  $ability
+         * @return bool
+         */
+        public function has($ability)
+        {
+            $abilities = is_array($ability) ? $ability : func_get_args();
+
+            foreach ($abilities as $ability) {
+                if (! isset($this->abilities[$ability])) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        The Default abilities of gate resource can be overridden by passing 3rd argument as array of new ability or gate names and method names.
+
+public function resource($name, $class, array $abilities = null)
+     {
+         $abilities = $abilities ?: [
+             'view'   => 'view',
+             'create' => 'create',
+             'update' => 'update',
+             'delete' => 'delete',
+         ];
+
+         foreach ($abilities as $ability => $method) {
+             $this->define($name.'.'.$ability, $class.'@'.$method);
+         }
+
+         return $this;
+     }
+
+
+      public function getPolicyFor($class)
+         {
+             if (is_object($class)) {
+                 $class = get_class($class);
+             }
+
+             if (! is_string($class)) {
+                 return;
+             }
+
+             if (isset($this->policies[$class])) {
+                 return $this->resolvePolicy($this->policies[$class]);
+             }
+
+             foreach ($this->policies as $expected => $policy) {
+                 if (is_subclass_of($class, $expected)) {
+                     return $this->resolvePolicy($policy);
+                 }
+             }
+         }
+
+         public function share(Closure $closure)
+         	{
+         		return function($container) use ($closure)
+         		{
+         			// We'll simply declare a static variable within the Closures and if it has
+         			// not been set we will execute the given Closures to resolve this value
+         			// and return it back to these consumers of the method as an instance.
+         			static $object;
+
+         			if (is_null($object))
+         			{
+         				$object = $closure($container);
+         			}
+
+         			return $object;
+         		};
+         	}
+Gate
+         	public function define($ability, $callback)
+                {
+                    if (is_callable($callback)) {
+                        $this->abilities[$ability] = $callback;
+                    } elseif (is_string($callback) && Str::contains($callback, '@')) {
+                        $this->abilities[$ability] = $this->buildAbilityCallback($ability, $callback);
+                    } else {
+                        throw new InvalidArgumentException("Callback must be a callable or a 'Class@method' string.");
+                    }
+
+                    return $this;
+                }
+
+                protected function buildAbilityCallback($ability, $callback)
+                    {
+                        return function () use ($ability, $callback) {
+                            list($class, $method) = Str::parseCallback($callback);
+
+                            $policy = $this->resolvePolicy($class);
+
+                            $arguments = func_get_args();
+
+                            $user = array_shift($arguments);
+
+                            $result = $this->callPolicyBefore(
+                                $policy, $user, $ability, $arguments
+                            );
+
+                            if (! is_null($result)) {
+                                return $result;
+                            }
+
+                            return $policy->{$method}(...func_get_args());
+                        };
+                    }
+
+If before callback returns null then only the actual callack will be executed otherwise whatever is returned from before callback will be considered as result and after callback will be executed.
+
+trait Authorizable
+{
+    /**
+     * Determine if the entity has a given ability.
+     *
+     * @param  string  $ability
+     * @param  array|mixed  $arguments
+     * @return bool
+     */
+    public function can($ability, $arguments = [])
+    {
+        return app(Gate::class)->forUser($this)->check($ability, $arguments);
+    }
+
+    /**
+     * Determine if the entity does not have a given ability.
+     *
+     * @param  string  $ability
+     * @param  array|mixed  $arguments
+     * @return bool
+     */
+    public function cant($ability, $arguments = [])
+    {
+        return ! $this->can($ability, $arguments);
+    }
+
+    /**
+     * Determine if the entity does not have a given ability.
+     *
+     * @param  string  $ability
+     * @param  array|mixed  $arguments
+     * @return bool
+     */
+    public function cannot($ability, $arguments = [])
+    {
+        return $this->cant($ability, $arguments);
+    }
+}
+
+can or cant work on $user -> can because they are methods of authenticable trait.
+
+HandlesAuthorization trait used with every policy class has two methods allow or deny which will be called from the authorize method of the controller based on if it fails or succeeds
+
+Gate allows or denies won't get executed if there is a policy attached to a model being queried . Because of the coding structure instead of gate that policy model will be returned.
+If the policy is not having that specific method which gate calls then it will fail. If policy returns null then also it will fail . If policy returns true then only it will pass.
+
+Gate before and after will be called no matter what.
+
+If the called method or ability on Gate are not defined inside Policy class then Gate's callback or method will be executed.
+
+Laravel 5.5 controllers use following traits by default which are indirectly used inside Controller extends BaseController
+AuthorizesRequests, ValidatesRequests, DispatchesJobs
+
+AuthorizesRequests along with authorize method we have authorize forUser which can take $user as a specific user like forUser in gate.
+It also has authorize method for policy and
+protected function resourceMethodsWithoutModels()
+    {
+        return ['index', 'create', 'store'] ;
+    }
+    so basically AuthorizesRequests trait is for policy authorization.
+
+    this controller authorize method will call the authorize of AuthorizesRequests which in turn calls the authorize method of Gate and which in turn calls raw method of gate for current User.
+    Gate can change the user in only one way by forUser and so policy can also change the user in one way by authorizeForUser.
+
+   authorizeForUser calls authorize on forUser.
+   forUser Returns a new gate instance with the user passed.
+
+   So in policy the methods such as index, create, or store which donot require $post its not mandatory that we cannot pass the $post or $model to these methods its just that in these cases we will not have such model so laravel provides an option to pass the Model Class Name. But Still if we pass $model to these methods laravel will detect the class of the policy.
+
+   Like when executing gates if there was already a policy on that model and had a method name equal to the ability used in gate that policy will be used instead of gate same way if policy is not found and a gate has a method with the same name then the gate will be used.
+   So policy is given preference.
+
+   When middleware can is used a proper unauthorised exception is thrown this is because we use Authorize middleware which calls authenticate and then authorize so this authorize is responsible for proper exception because it calls allows or denies and in denies we have AuthorizeException.
+
+   If you are not going to use Passport's default migrations, you should call the  Passport::ignoreMigrations
+
+   use Laravel\Passport\HasApiTokens; after doing passport:install so that we have the helper methods to check and pull auth tokens. Its included on model and defines some relational mappings needed on the user model with the token tables.
+
+   laravel 5.5 has not implict controllers or we may laravel after 5.3 has not controller method on Route.
+   Using . notation on implicit controllers we don't get nested controller routes created.
+
+   laravel 5.5 provides laravel/passport facility for securing your api routes. Inorder to use this we first need to install it from packagist and then run php artisan passport:install
+
+   This will generate two types of clients along with their secrets for testing purposes. This command will also create the encryption keys needed to generate secure access tokens
+   Grant Type passport and other is personal client
+   laravel passport also ships with its own migrations for auth tables.
+   In order to run those migrations we first need to run php artisan vendor:publish --tag=passport-migrations this binding and others can be found in passport service provider.
+   Other bindings that need to be published are views and assets.
+   In order to publish them we can use same artisan vendor publish command with tag=passport-views and tag=passport-components
+   Then when this is done we can run php artisan migrate and passport install so that it creates passport tables and fills them with dummy clients.
+
+   After doing this we can compile all the assets using npm run dev
+    If we do not want to run passport migrations the we may use Passport::ignoreMigrations in authserviceprovider and run migrate.
+    After this we have to use HasApiTokens trait on user model which gives us helper methods like getting token for a user , defining relationships between user and oauth models , with can method checking if current access token has given scopes, or for personal token createToken method.
+
+After this we should use Passport::routes() to register passport related oauth routes such as oauth/authorize oauth/token etc
+Then because all the requests are now going to be token based requests so we need to change out guard in auth.php to api guard which has passport as its driver.
+
+We can also re generate the keys for encryption we can use passport:keys at any time.
+By default tokens have a very long expiration time about year but we can configure them using tokensExpireIn and  refreshTokensExpireIn methods
+Passport::tokensExpireIn(now()->addDays(15));
+
+Passport::refreshTokensExpireIn(now()->addDays(30));
+
+We can create more dummy clients using passport:client which will give a interactive cli installation with some questions for creating clients.
+Once done we can start accessing
+GET /oauth/clients
+This route returns all of the clients for the authenticated user. This is primarily useful for listing all of the user's clients so that they may edit or delete them:
+
+axios.get('/oauth/clients')
+    .then(response => {
+        console.log(response.data);
+    });
+POST /oauth/clients
+This route is used to create new clients. It requires two pieces of data: the client's name and a  redirect URL. The redirect URL is where the user will be redirected after approving or denying a request for authorization.
+
+When a client is created, it will be issued a client ID and client secret. These values will be used when requesting access tokens from your application. The client creation route will return the new client instance:
+
+const data = {
+    name: 'Client Name',
+    redirect: 'http://example.com/callback'
+};
+
+axios.post('/oauth/clients', data)
+    .then(response => {
+        console.log(response.data);
+    })
+    .catch (response => {
+        // List errors on response...
+    });
+PUT /oauth/clients/{client-id}
+This route is used to update clients. It requires two pieces of data: the client's name and a  redirect URL. The redirect URL is where the user will be redirected after approving or denying a request for authorization. The route will return the updated client instance:
+
+const data = {
+    name: 'New Client Name',
+    redirect: 'http://example.com/callback'
+};
+
+axios.put('/oauth/clients/' + clientId, data)
+    .then(response => {
+        console.log(response.data);
+    })
+    .catch (response => {
+        // List errors on response...
+    });
+DELETE /oauth/clients/{client-id}
+This route is used to delete clients:
+
+axios.delete('/oauth/clients/' + clientId)
+    .then(response => {
+        //
+    });
+
+The base route being
+GET /oauth/clients/
+Post /oauth/clients/
+Put /oauth/clients/{client_id}
+Delete /oauth/clients/{client_id}
+
+Which work on current user.
+
+Requesting Tokens
+Redirecting For Authorization
+Once a client has been created, developers may use their client ID and secret to request an authorization code and access token from your application. First, the consuming application should make a redirect request to your application's /oauth/authorize route like so:
+
+Route::get('/redirect', function () {
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://example.com/callback',
+        'response_type' => 'code',
+        'scope' => '',
+    ]);
+
+    return redirect('http://your-app.com/oauth/authorize?'.$query);
+});
+
+After the redirection the authorization ui will be presented with approve or reject buttons once approved it redirects to the callback given along with the code generated
+Then we can have following mechanism to obtain token
+Route::get('/callback', function (Request $request) {
+    $http = new GuzzleHttp\Client;
+
+    $response = $http->post('http://your-app.com/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'authorization_code',
+            'client_id' => 'client-id',
+            'client_secret' => 'client-secret',
+            'redirect_uri' => 'http://example.com/callback',
+            'code' => $request->code,
+        ],
+    ]);
+
+    return json_decode((string) $response->getBody(), true);
+});
+
+Refreshing Tokens
+If your application issues short-lived access tokens, users will need to refresh their access tokens via the refresh token that was provided to them when the access token was issued. In this example, we'll use the Guzzle HTTP library to refresh the token:
+
+$http = new GuzzleHttp\Client;
+
+$response = $http->post('http://your-app.com/oauth/token', [
+    'form_params' => [
+        'grant_type' => 'refresh_token',
+        'refresh_token' => 'the-refresh-token',
+        'client_id' => 'client-id',
+        'client_secret' => 'client-secret',
+        'scope' => '',
+    ],
+]);
+return json_decode((string) $response->getBody(), true);
+
+Now we come to password grant tokens for which we have created a client using passport:install earlier
+These types of clients have a field called password_client or personal_access_client always set to 0 or 1
+In order to generate more clients of this type we may use
+php artisan passport:client --password or
+php artisan passport:client --personal
+
+$http = new GuzzleHttp\Client;
+
+$response = $http->post('http://your-app.com/oauth/token', [
+    'form_params' => [
+        'grant_type' => 'password',
+        'client_id' => 'client-id',
+        'client_secret' => 'client-secret',
+        'username' => 'taylor@laravel.com',
+        'password' => 'my-password',
+        'scope' => '',
+    ],
+]);
+
+return json_decode((string) $response->getBody(), true);
+In this the user must have password_client field 1 otherwise this will give error. For redirection based authorization_grant neither password_client nor personal_access_client must be 1.
+For requesting multiple scope we may pass multiple values for scope separated by space.
+Or if we want all scopes then we can have *
+Possible values of scopes can be defined using
+Passport::tokensCan([
+    'place-orders' => 'Place orders',
+    'check-status' => 'Check order status',
+]);
+inside boot or authserviceprovider
+
+Implicit grant is same as authorization_grant we just have to notify laravel about this so that instead of creating authorization cycle it can directly respond with access token
+We can do this by defining a method enableImplicitGrant in authserviceprovider.
+Route::get('/redirect', function () {
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://example.com/callback',
+        'response_type' => 'token',
+        'scope' => '',
+    ]);
+
+    return redirect('http://your-app.com/oauth/authorize?'.$query);
+});
+
+Now in order to check on scopes and personal access tokens we have following routes
+GET /oauth/scopes
+This route returns all of the scopes defined for your application. You may use this route to list the scopes a user may assign to a personal access token:
+
+axios.get('/oauth/scopes')
+    .then(response => {
+        console.log(response.data);
+    });
+GET /oauth/personal-access-tokens
+This route returns all of the personal access tokens that the authenticated user has created. This is primarily useful for listing all of the user's tokens so that they may edit or delete them:
+
+axios.get('/oauth/personal-access-tokens')
+    .then(response => {
+        console.log(response.data);
+    });
+POST /oauth/personal-access-tokens
+This route creates new personal access tokens. It requires two pieces of data: the token's name and the scopes that should be assigned to the token:
+
+const data = {
+    name: 'Token Name',
+    scopes: []
+};
+
+axios.post('/oauth/personal-access-tokens', data)
+    .then(response => {
+        console.log(response.data.accessToken);
+    })
+    .catch (response => {
+        // List errors on response...
+    });
+DELETE /oauth/personal-access-tokens/{token-id}
+This route may be used to delete personal access tokens:
+
+axios.delete('/oauth/personal-access-tokens/' + tokenId);
+
+In order to work with client credentials grant we have to define a middleware for routeMiddleware in kernal.php CheckClientCredentials
+protected $routeMiddleware = [
+    'client' => CheckClientCredentials::class,
+];
+ONce defined we need to use this with our routes and then we are ready to get the client credentials using following
+Route::get('/user', function(Request $request) {
+    ...
+})->middleware('client');
+
+$guzzle = new GuzzleHttp\Client;
+
+$response = $guzzle->post('http://your-app.com/oauth/token', [
+    'form_params' => [
+        'grant_type' => 'client_credentials',
+        'client_id' => 'client-id',
+        'client_secret' => 'client-secret',
+        'scope' => 'your-scope',
+    ],
+]);
+
+return json_decode((string) $response->getBody(), true)['access_token'];
+
+Now we can access the routes by passing Authorization Bearer access_token
+
+Personal access tokens
+These can be created for personal use so that we can skip the long access token retrieval process using $user -> createToken facility given by HasApiToken
+
+We can generate a dummy user for personal access token in same way as we did for password
+php artisan password:client --personal
+which was already generated during password:install
+
+$user = App\User::find(1);
+
+// Creating a token without scopes...
+$token = $user->createToken('Token Name')->accessToken;
+
+// Creating a token with scopes...
+$token = $user->createToken('My Token', ['place-orders'])->accessToken;
+
+There are two more middlewares which can be used to check if the access token in the request as given scope or scopes.
+'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+Scopes middleware can be used to check if all the given scopes are in access_token
+middleware('scopes:update,create')
+
+Scope middleware can be used to check if any of the requested scopes are in access_token.
+middleware('scope:update,create')
+
+Checking using personal access_token
+$request->user()->tokeCan('place-orders')
+
+ 'Laravel\Passport\Events\AccessTokenCreated' => [
+        'App\Listeners\RevokeOldTokens',
+    ],
+
+    'Laravel\Passport\Events\RefreshTokenCreated' => [
+        'App\Listeners\PruneOldTokens',
+    ],
+
+    For passport authentication with auth:api or client the http authorization header modification inside .htaccess is necessary.
+
+    Typically, if you want to consume your API from your JavaScript application, you would need to manually send an access token to the application and pass it with each request to your application. However, Passport includes a middleware that can handle this for you. All you need to do is add the CreateFreshApiToken middleware to your web middleware group in your  app/Http/Kernel.php file:
+
+    'web' => [
+        // Other middleware...
+        \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+    ],
+    This Passport middleware will attach a laravel_token cookie to your outgoing responses. This cookie contains an encrypted JWT that Passport will use to authenticate API requests from your JavaScript application. Now, you may make requests to your application's API without explicitly passing an access token:
+
+    axios.get('/api/user')
+        .then(response => {
+            console.log(response.data);
+        });

@@ -415,7 +415,13 @@ print_r(prepare() -> fetch(PDO::FETCH_BOTH));
 echo "\n ---- Obj ----- \n";
 print_r(prepare() -> fetch(PDO::FETCH_OBJ));
 echo "\n ---- Lazy ----- \n";
-print_r(prepare() -> fetch(PDO::FETCH_LAZY));
+$pdo -> setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+$prepareLazy = $pdo -> prepare('select * from test;');
+$prepareLazy -> execute();
+$resultLazy = $prepareLazy -> fetch(PDO::FETCH_LAZY);
+print_r($resultLazy);
+//print_r();
+
 echo "\n ---- BOUND ----- \n";
 $stmtBound = $pdo -> prepare("select * from test");
 $stmtBound -> bindColumn(1, $idBound);
@@ -445,6 +451,10 @@ echo "\n ------- Function ------ \n ";
 //    print_r($arg);
 //});
 //$st -> execute();
+
+//ctor_args
+//Arguments of custom class constructor when the fetch_style parameter is PDO::FETCH_CLASS.
+
 prepare() -> fetchAll(PDO::FETCH_FUNC, function($id, $name, $active) {
     echo "\n ------- Row ----- \n";
     print_r($id);
